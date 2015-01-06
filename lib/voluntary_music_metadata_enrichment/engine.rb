@@ -1,0 +1,4 @@
+module VoluntaryMusicMetadataEnrichment
+  class Engine < ::Rails::Engine
+  end
+end
