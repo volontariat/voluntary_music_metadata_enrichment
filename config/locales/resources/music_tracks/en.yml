@@ -1,0 +1,19 @@
+en:
+  music_tracks:
+    index:
+      title: Music Tracks
+      short_title: Tracks
+      name: Name
+      empty_collection: No music tracks available.
+      
+    new: 
+      title: New Music Track
+      
+  activerecord:
+    models:
+      music_track: Music Track
+    attributes:
+      music_track:
+        nr: Number
+        duration: Duration
+        

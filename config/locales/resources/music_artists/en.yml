@@ -1,0 +1,24 @@
+en:
+  music_artists:
+    index:
+      title: Music Artists
+      short_title: Artists
+      name: Name
+      empty_collection: No music artists available.
+      
+    new: 
+      title: New Music Artist
+    name_confirmation: 
+      title: Music artist name confirmation
+      empty_collection: No music artists found for the given term @ MusicBrainz
+      
+  activerecord:
+    models:
+      music_artist: Music Artist
+    attributes:
+      music_artist:
+        disambiguation: Disambiguation
+        type: Type
+        gender: Gender
+        founded_at: Founded at
+        dissolved_at: Dissolved at

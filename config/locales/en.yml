@@ -1,0 +1,7 @@
+en:
+  attributes:
+    mbid: MusicBrainz ID
+    artist_id: Artist
+    release_id: Release
+    listeners: Listeners
+    plays: Plays

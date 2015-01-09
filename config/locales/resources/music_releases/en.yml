@@ -1,0 +1,17 @@
+en:
+  music_releases:
+    index:
+      title: Music Releases
+      short_title: Releases
+      name: Name
+      empty_collection: No music releases available.
+      
+    new: 
+      title: New Music Release
+      
+  activerecord:
+    models:
+      music_release: Music Release
+    attributes:
+      music_release:
+        released_at: 'Released at'
