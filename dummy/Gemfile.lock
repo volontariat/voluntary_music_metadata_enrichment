@@ -38,9 +38,19 @@ GIT
       rake
 
 PATH
+  remote: ../../../gem_repos/gem_coop/musicbrainz
+  specs:
+    musicbrainz (0.7.6)
+      faraday
+      nokogiri (~> 1.6.5)
+      roxml (~> 3.3.1)
+
+PATH
   remote: /Users/gawlim/workspace/voluntary/voluntary_music_metadata_enrichment
   specs:
     voluntary_music_metadata_enrichment (0.0.1)
+      lastfm (~> 1.25.0)
+      musicbrainz
       voluntary (~> 0.2.1)
 
 GEM
@@ -213,6 +223,9 @@ GEM
     highline (1.6.21)
     hike (1.2.3)
     http_accept_language (1.0.2)
+    httparty (0.13.3)
+      json (~> 1.8)
+      multi_xml (>= 0.5.2)
     httpauth (0.2.1)
     i18n (0.7.0)
     i18n-inflector (2.6.7)
@@ -235,6 +248,10 @@ GEM
       addressable
       faraday
       multi_json
+    lastfm (1.25.0)
+      activesupport (>= 3.2.0)
+      httparty
+      xml-simple
     libv8 (3.16.14.7)
     linecache (0.46)
       rbx-require-relative (> 0.0.4)
@@ -264,6 +281,7 @@ GEM
       optionable (~> 0.2.0)
     multi_json (1.10.1)
     multi_test (0.1.1)
+    multi_xml (0.5.5)
     multipart-post (1.2.0)
     mysql2 (0.3.17)
     net-scp (1.2.1)
@@ -354,6 +372,9 @@ GEM
     ref (1.0.5)
     remotipart (1.2.1)
     rinku (1.5.1)
+    roxml (3.3.1)
+      activesupport (>= 2.3.0)
+      nokogiri (>= 1.3.3)
     rspec (3.1.0)
       rspec-core (~> 3.1.0)
       rspec-expectations (~> 3.1.0)
@@ -521,6 +542,7 @@ GEM
       crack (>= 0.1.7)
     wicked (1.0.3)
       rails (>= 3.0.7)
+    xml-simple (1.1.4)
     xpath (2.0.0)
       nokogiri (~> 1.3)
     yard (0.8.7.6)
@@ -543,6 +565,7 @@ DEPENDENCIES
   fastercsv (~> 1.5.5)
   jasmine!
   linecache (= 0.46)
+  musicbrainz!
   mysql2 (~> 0.3.13)
   rack-cors (~> 0.2.4)
   rack-google-analytics (~> 0.11.0)
