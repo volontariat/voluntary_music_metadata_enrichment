@@ -21,6 +21,8 @@ pickle-email-*.html
 /config/database.yml
 /dummy/.bundle
 /dummy/config/database.yml
+/dummy/config/intializers/lastfm.rb
+/dummy/config/initializers/musicbrainz.rb
 /dummy/log/*
 /dummy/tmp/
 /dummy/db/structure.sql
