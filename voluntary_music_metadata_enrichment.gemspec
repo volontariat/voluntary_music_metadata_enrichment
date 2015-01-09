@@ -10,11 +10,14 @@ Gem::Specification.new do |s|
   s.authors     = ["Mathias Gawlista"]
   s.email       = ["gawlista@gmail.com"]
   s.homepage    = "https://github.com/volontariat/voluntary_music_metadata_enrichment"
-  s.summary     = "Music metadata encryption product for crowdsourcing engine voluntary."
-  s.description = "Music metadata encryption product for crowdsourcing engine voluntary."
+  s.summary     = "Music metadata enrichment product for crowdsourcing engine voluntary."
+  s.description = "Music metadata enrichment product for crowdsourcing engine voluntary."
   s.license     = "MIT"
 
   s.files = Dir["{app,config,db,lib}/**/*", "MIT-LICENSE", "Rakefile", "README.rdoc"]
 
-  s.add_dependency "voluntary", "~> 0.2.1"
+  s.add_dependency 'voluntary', '~> 0.2.1'
+  
+  s.add_dependency 'musicbrainz'
+  s.add_dependency 'lastfm', '~> 1.25.0'
 end
