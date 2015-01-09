@@ -1,0 +1,10 @@
+<h3><%= @track.artist_name %> - <%= @track.name %></h3>
+
+<dl class="dl-horizontal">
+ <%= show_attribute :mbid %>
+ <%= show_attribute :artist_id, value: link_to(@track.artist_name, music_metadata_enrichment_artist_path(@track.artist_id)) %>
+ <%= show_attribute :release_id, value: link_to(@track.release_name, music_metadata_enrichment_release_path(@track.release_id)) %>
+ <%= show_attribute :duration %>
+ <%= show_attribute :listeners %>
+ <%= show_attribute :plays %>
+</dl>

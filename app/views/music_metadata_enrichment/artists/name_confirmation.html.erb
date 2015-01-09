@@ -1,0 +1,37 @@
+<h3><%= t('music_artists.name_confirmation.title') %></h3>
+
+<% if @artists.none? %>
+<p><%= I18n.t("music_artists.name_confirmation.empty_collection")%></p>
+<% else %>
+  <%= form_tag music_metadata_enrichment_artists_path, method: :post do %>
+    <table class="table table-striped">
+      <thead>
+        <tr class="<%= cycle('odd', 'even') %>">
+          <th/>
+          <th><%= t("attributes.name") %></th>
+          <th><%= t("activerecord.attributes.music_artists.disambiguation") %></th>
+          <th><%= t("activerecord.attributes.music_artists.type") %></th>
+          <th><%= t("activerecord.attributes.music_artists.gender") %></th>
+          <th><%= t("activerecord.attributes.music_artists.founded_at") %></th>
+          <th><%= t("activerecord.attributes.music_artists.dissolved_at") %></th>
+        </tr>
+      </thead>
+      <tbody>
+      <% @artists.each do |artist| %>
+        <tr class="<%= cycle('odd', 'even') %>">
+          <td><%= radio_button_tag 'music_artist[name_and_mbid]', "#{artist[:name]};#{artist[:mbid]}" %></td>
+          <td><%= artist[:name] %></td>
+          <td><%= artist[:disambiguation] %></td>
+          <td><%= artist[:type] %></td>
+          <td><%= artist[:gender] %></td>
+          <td><%= artist[:begin] %></td>
+          <td><%= artist[:end] %></td>
+        </tr>
+      <% end %>
+      </tbody>
+    </table>
+    <p>
+      <%= submit_tag 'Confirm' %>
+    </p>
+  <% end %>
+<% end %>

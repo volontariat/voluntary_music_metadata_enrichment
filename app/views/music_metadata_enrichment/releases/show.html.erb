@@ -1,0 +1,38 @@
+<h3><%= @release.artist_name %> - <%= @release.name %></h3>
+
+<dl class="dl-horizontal">
+ <%= show_attribute :mbid %>
+ <%= show_attribute :artist_id, value: link_to(@release.artist_name, music_metadata_enrichment_artist_path(@release.artist_id)) %>
+ <%= show_attribute :released_at, value: @release.released_at.present? ? @release.released_at.strftime('%d.%m.%Y') : nil %>
+ <%= show_attribute :listeners %>
+ <%= show_attribute :plays %>
+</dl>
+
+<h4><%= t('music_tracks.index.short_title') %></h4>
+
+<% if @tracks.none? %>
+<p><%= I18n.t("music_tracks.index.empty_collection")%></p>
+<% else %>
+  <table class="table table-striped">
+    <thead>
+      <tr class="<%= cycle('odd', 'even') %>">
+        <th><%= t("attributes.nr") %></th>
+        <th><%= t("attributes.name") %></th>
+        <th><%= t("attributes.duration") %></th>
+        <th><%= t("attributes.listeners") %></th>
+        <th><%= t("attributes.plays") %></th>
+      </tr>
+    </thead>
+    <tbody>
+    <% @tracks.each do |track| %>
+      <tr class="<%= cycle('odd', 'even') %>">
+        <td><%= track.nr %></td>
+        <td><%= link_to track.name, music_metadata_enrichment_track_path(track.id) %></td>
+        <td><%= track.duration %></td>
+        <td><%= track.listeners %></td>
+        <td><%= track.plays %></td>
+      </tr>
+    <% end %>
+    </tbody>
+  </table>
+<% end %>

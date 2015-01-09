@@ -1,0 +1,8 @@
+<h3><%= t('music_artists.new.title') %></h3>
+
+<%= simple_form_for(@artist, url: name_confirmation_music_metadata_enrichment_artists_path, method: :get, html: {class: 'form-horizontal'}) do |f| %>
+  <%= render partial: 'shared/form/error_messages', locals: { resource: @artist } %>
+  <%= f.input :name %>
+  <%= f.input :mbid %>
+  <%= f.submit %>
+<% end %>
