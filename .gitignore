@@ -31,3 +31,4 @@ pickle-email-*.html
 /dummy/.sass-cache
 /pkg/
 .rvmrc
+.DS_Store
