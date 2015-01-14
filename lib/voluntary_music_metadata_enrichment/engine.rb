@@ -11,6 +11,7 @@ module VoluntaryMusicMetadataEnrichment
     end
     
     config.to_prepare do
+      User.send :include, ::VoluntaryMusicMetadataEnrichment::Concerns::Model::User::HasMusicLibrary
       ::Ability.add_after_initialize_callback(VoluntaryMusicMetadataEnrichment::Ability.after_initialize)
     end
   end

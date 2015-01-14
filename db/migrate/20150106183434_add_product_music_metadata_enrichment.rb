@@ -34,7 +34,7 @@ class AddProductMusicMetadataEnrichment < ActiveRecord::Migration
     end
     
     add_index :music_releases, :artist_id
-    add_index :music_releases, [:artist_id, :name], unique: true
+    add_index :music_releases, :mbid, unique: true
     
     create_table :music_tracks do |t|
       t.string :mbid
@@ -72,6 +72,9 @@ class AddProductMusicMetadataEnrichment < ActiveRecord::Migration
     add_index :music_videos, [:type, :track_id], unique: true
     add_index :music_videos, :url, unique: true
     add_index :music_videos, :track_id
+    
+    add_column :users, :lastfm_user_name, :string
+    add_column :users, :music_library_imported, :boolean, default: false
   end
   
   def down
@@ -79,5 +82,8 @@ class AddProductMusicMetadataEnrichment < ActiveRecord::Migration
     drop_table :music_releases
     drop_table :music_tracks
     drop_table :music_videos
+    
+    remove_column :users, :lastfm_user_name
+    remove_column :users, :music_library_imported
   end
 end
