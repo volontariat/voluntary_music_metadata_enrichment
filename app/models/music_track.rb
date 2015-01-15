@@ -1,5 +1,5 @@
 class MusicTrack < ActiveRecord::Base
-  belongs_to :master_track_id, class_name: 'MusicTrack'
+  belongs_to :master_track, class_name: 'MusicTrack'
   
   # cached associations
   belongs_to :artist, class_name: 'MusicArtist'
@@ -7,10 +7,11 @@ class MusicTrack < ActiveRecord::Base
   
   has_many :videos, foreign_key: 'track_id', class_name: 'MusicVideo'
   
-  validates :name, presence: true, uniqueness: { scope: :artist_id }
+  validates :name, presence: true, uniqueness: { scope: :release_id }
   
   attr_accessible :mbid, :artist_id, :artist_name, :release_id, :release_name, :master_track_id, :nr, :name, :duration, :listeners, :plays
   
+  before_create :set_master_track_id_if_available
   after_save :synchronize_track_name
   
   state_machine :state, initial: :without_metadata do
@@ -24,6 +25,12 @@ class MusicTrack < ActiveRecord::Base
   end
   
   private
+  
+  def set_master_track_id_if_available
+    if track = MusicTrack.where(artist_id: artist_id, name: name).first
+      self.master_track_id = track.id
+    end  
+  end
   
   def synchronize_track_name
     return unless name_changed?
