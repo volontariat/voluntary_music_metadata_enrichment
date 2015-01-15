@@ -8,10 +8,16 @@ en:
       
     new: 
       title: New Music Artist
+      mbid_invalid: MBID is invalid.
+      
     name_confirmation: 
       title: Music artist name confirmation
       empty_collection: No music artists found for the given term @ MusicBrainz
+      scheduled_metadata_import: Successfully scheduled music artist for metadata import.
       
+    create:
+      scheduled_artist_for_import: Successfully scheduled music artist for metadata import.
+        
   activerecord:
     models:
       music_artist: Music Artist
