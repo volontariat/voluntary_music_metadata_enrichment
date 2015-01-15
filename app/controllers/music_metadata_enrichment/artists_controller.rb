@@ -25,6 +25,17 @@ class MusicMetadataEnrichment::ArtistsController < ApplicationController
     @releases = @artist.releases.order('released_at ASC')
   end
   
+  def by_name
+    artist = MusicArtist.where("LOWER(name) = ?", params[:name].downcase.strip).first
+    
+    if artist
+      redirect_to music_metadata_enrichment_artist_path(artist.id)
+    else
+      artists_table = MusicArtist.arel_table
+      @artists = MusicArtist.where(artists_table[:name].matches("%#{params[:name]}%")).limit(10)
+    end
+  end
+  
   def resource
     @artist
   end

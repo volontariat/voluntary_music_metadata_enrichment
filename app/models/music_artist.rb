@@ -1,5 +1,6 @@
 class MusicArtist < ActiveRecord::Base
   has_many :releases, class_name: 'MusicRelease', foreign_key: 'artist_id', dependent: :destroy
+  has_many :tracks, class_name: 'MusicTrack', foreign_key: 'artist_id'
   
   validates :name, presence: true
   validates :mbid, presence: true, uniqueness: true

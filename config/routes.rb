@@ -8,6 +8,7 @@ Rails.application.routes.draw do
     resources :artists, only: [:index, :new, :create, :show] do
       collection do
         get :name_confirmation
+        get 'by_name/:name', to: 'artists#by_name'
       end
     end
     
