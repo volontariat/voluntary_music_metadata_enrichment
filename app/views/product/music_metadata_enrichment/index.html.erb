@@ -1,0 +1,6 @@
+<dl class="dl-horizontal">
+ <%= show_attribute nil, title: t('music_metadata_enrichment.index.artists_count'), value: MusicArtist.count %>
+ <%= show_attribute nil, title: t('music_metadata_enrichment.index.releases_count'), value: MusicRelease.count %>
+ <%= show_attribute nil, title: t('music_metadata_enrichment.index.tracks_count'), value: MusicTrack.count %>
+ <%= show_attribute nil, title: t('music_metadata_enrichment.index.videos_count'), value: MusicVideo.count %>   
+</dl>

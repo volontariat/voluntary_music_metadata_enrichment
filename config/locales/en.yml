@@ -1,4 +1,11 @@
 en:
+  music_metadata_enrichment:
+    index: 
+      artists_count: Artists count
+      releases_count: Releases count
+      tracks_count: Tracks count
+      videos_count: Videos count
+      
   attributes:
     mbid: MusicBrainz ID
     artist_id: Artist
