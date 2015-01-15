@@ -18,6 +18,8 @@ module VoluntaryMusicMetadataEnrichment
                 begin
                   lastfm_artists = lastfm.library.get_artists(user: lastfm_user_name, page: page)
                   
+                  puts "USER #{lastfm_user_name}: LIBRARY PAGE ##{page}"
+                  
                   break
                 rescue Lastfm::ApiError
                   sleep 30
@@ -44,6 +46,8 @@ module VoluntaryMusicMetadataEnrichment
               
               break if over_last_page
             end
+            
+            update_attribute(:music_library_imported, true) unless new_record?
           end
         end
       end
