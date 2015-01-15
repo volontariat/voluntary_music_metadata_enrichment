@@ -1,0 +1,8 @@
+<h3><%= title %></h3>
+
+<%= simple_form_for(@artist, url: form_url, method: :get, html: {class: 'form-horizontal'}) do |f| %>
+  <%= render partial: 'shared/form/error_messages', locals: { resource: @artist } %>
+  <%= f.input :name %>
+  <%= f.input :mbid %>
+  <%= f.submit 'Search Artist' %>
+<% end %>
