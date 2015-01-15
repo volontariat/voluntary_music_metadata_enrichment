@@ -7,11 +7,48 @@ en:
       empty_collection: No music releases available.
       
     new: 
-      title: New Music Release
+      title: "New Music Release: enter artist information"
       
+    artist_confirmation:
+      title: Artist Confirmation  
+      artist_import_scheduled: Music artist has been scheduled for metadata import. After it you can add the release to the artist.
+      
+    select_artist:
+      wait_until_artist_metadata_import_completed: Please wait until the artist metadata import has been completed.  
+      scheduled_artist_for_import: Music artist has been scheduled for metadata import. After it you can add the release to the artist.
+      
+    name:
+      title: Enter a name for the release  
+
+    name_confirmation:
+      title: Music release name confirmation
+      confirm: Confirm
+      release_not_found: Release not found. Not yet released yet then maybe you like to announce the release.
+      release_found_but_does_not_satisfy_criteria: "Release found on MusicBrainz but it's not matching release criteria which are: official album or EP, no live album and no multiple artists per release like compilations and split EPs."
+        
+    create:
+      release_already_imported: Release has been already imported.
+      scheduled_release_for_import: Successfully scheduled music release for metadata import.
+    
+    announce:
+      please_select_existing_release: "A release for the given artist and name is available on MusicBrainz: please select one."
+      title: Announce a music release
+      future_release_date_format: "Format: $DD.$MM.$YYYY, XX.$MM.$YYYY, XX.XX.$YYYY, North|South Spring $YYYY, North|South Summer $YYYY, North|South Autumn $YYYY or North|South Winter $YYYY"
+    
+    create_announcement:
+      success: Successfully announced music release.
+    
   activerecord:
     models:
       music_release: Music Release
     attributes:
       music_release:
-        released_at: 'Released at'
+        released_at: Released at
+        type: Type
+        secondary_types: Secondary types
+    errors:
+      models:
+        music_release:
+          attributes:
+            future_release_date:
+              wrong_format: 'Wrong format.'

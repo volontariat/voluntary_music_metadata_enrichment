@@ -16,4 +16,15 @@ end
 
 FactoryGirl.define do
   Voluntary::Test::RspecHelpers::Factories.code.call(self)
+  
+  factory :music_artist do
+    sequence(:mbid) { |n| "mbid-#{n}#{r_str}" } 
+    sequence(:name) { |n| "music artist #{n}#{r_str}" } 
+  end
+  
+  factory :music_release do
+    sequence(:mbid) { |n| "mbid-#{n}#{r_str}" } 
+    association :artist, factory: :music_artist
+    sequence(:name) { |n| "music release #{n}#{r_str}" } 
+  end
 end

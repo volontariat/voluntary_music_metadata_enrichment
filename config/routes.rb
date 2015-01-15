@@ -11,7 +11,16 @@ Rails.application.routes.draw do
       end
     end
     
-    resources :releases, only: [:show]
+    resources :releases, only: [:index, :new, :create, :show] do
+      collection do
+        get :artist_confirmation
+        get :select_artist
+        get :name
+        get :name_confirmation
+        get :announce
+        post :create_announcement
+      end
+    end
     
     resources :tracks, only: [:show]
     

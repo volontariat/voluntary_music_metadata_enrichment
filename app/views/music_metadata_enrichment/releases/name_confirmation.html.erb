@@ -1,0 +1,32 @@
+<h3><%= t('music_releases.name_confirmation.title') %></h3>
+
+<% if @release_groups.none? %>
+<p><%= I18n.t("music_releases.name_confirmation.release_found_but_does_not_satisfy_criteria")%></p>
+<% else %>
+  <%= form_tag music_metadata_enrichment_releases_path, method: :post do %>
+    <%= hidden_field_tag 'music_release[artist_id]', @release.artist_id %>
+    <table class="table table-striped">
+      <thead>
+        <tr class="<%= cycle('odd', 'even') %>">
+          <th/>
+          <th><%= t("attributes.name") %></th>
+          <th><%= t("activerecord.attributes.music_releases.type") %></th>
+          <th><%= t("activerecord.attributes.music_releases.secondary_types") %></th>
+        </tr>
+      </thead>
+      <tbody>
+      <% @release_groups.each do |release_group| %>
+        <tr class="<%= cycle('odd', 'even') %>">
+          <td><%= radio_button_tag 'music_release[name_and_mbid]', "#{release_group[:title]};#{release_group[:mbid]}" %></td>
+          <td><%= release_group[:title] %></td>
+          <td><%= release_group[:type] %></td>
+          <td><%= (release_group[:secondary_types] || []).join(', ') %></td>
+        </tr>
+      <% end %>
+      </tbody>
+    </table>
+    <p>
+      <%= submit_tag t('music_releases.name_confirmation.confirm') %>
+    </p>
+  <% end %>
+<% end %>

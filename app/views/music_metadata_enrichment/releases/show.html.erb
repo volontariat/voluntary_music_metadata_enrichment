@@ -3,7 +3,7 @@
 <dl class="dl-horizontal">
  <%= show_attribute :mbid %>
  <%= show_attribute :artist_id, value: link_to(@release.artist_name, music_metadata_enrichment_artist_path(@release.artist_id)) %>
- <%= show_attribute :released_at, value: @release.released_at.present? ? @release.released_at.strftime('%d.%m.%Y') : nil %>
+ <%= show_attribute :released_at, value: @release.formatted_released_at_or_future_release_date %>
  <%= show_attribute :listeners %>
  <%= show_attribute :plays %>
 </dl>
