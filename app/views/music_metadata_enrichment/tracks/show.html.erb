@@ -18,7 +18,7 @@
 
   <% @videos.each do |video| %>
 <h5><%= link_to video.name, music_metadata_enrichment_video_path(video) %></h4>
-<p><%= markdown video.url %></p>
+<p><%= video.url_html %></p>
   <% end %>
 
 <% end %>

@@ -19,6 +19,14 @@ class MusicVideo < ActiveRecord::Base
   before_save :set_artist
   before_save :set_track_name
   
+  auto_html_for :url do
+    youtube(width: 515, height: 300)
+    dailymotion(width: 515, height: 300)
+    vimeo(width: 515, height: 300)
+    google_video(width: 515, height: 300)
+    link :target => "_blank", :rel => "nofollow"
+  end
+  
   def self.order_by_status
     if Rails.env.production?
       order_by = ["case"]

@@ -6,4 +6,4 @@
  <%= show_attribute(:recorded_at, value: @video.recorded_at.present? ? @video.recorded_at.strftime('%d.%m.%Y') : nil) if @video.status == 'Live' %>
 </dl>
 
-<%= markdown @video.url %>
+<%= @video.url_html %>
