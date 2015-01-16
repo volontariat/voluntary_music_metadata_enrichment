@@ -17,11 +17,6 @@ module VoluntaryMusicMetadataEnrichment
             tracks.item :new, I18n.t('general.new'), new_music_metadata_enrichment_track_path
           end
           
-          if user_signed_in?
-            primary.item :workflow, I18n.t('workflow.index.title'), music_metadata_enrichment_workflow_path do |workflow|
-            end
-          end
-          
           instance_exec primary, ::Voluntary::Navigation::Base.menu_options(:authentication), &::Voluntary::Navigation.menu_code(:authentication)
         end
       end

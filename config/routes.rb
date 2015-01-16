@@ -3,8 +3,6 @@ Rails.application.routes.draw do
   get '/music_metadata_enrichment' => 'product/music_metadata_enrichment#index'
   
   namespace :music_metadata_enrichment do
-    get 'workflow' => 'workflow#index', as: :workflow
-    
     resources :artists, only: [:index, :new, :create, :show] do
       collection do
         get :name_confirmation
@@ -32,9 +30,6 @@ Rails.application.routes.draw do
         get :name_confirmation
         get 'by_name/:artist_name/:name', to: 'tracks#by_name'
       end
-    end
-    
-    namespace 'workflow' do
     end
   end
 end
