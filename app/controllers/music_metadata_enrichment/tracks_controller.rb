@@ -70,6 +70,20 @@ class MusicMetadataEnrichment::TracksController < ApplicationController
     @track = MusicTrack.find(params[:id])
   end
   
+  def by_name
+    track = MusicTrack.where(
+      "LOWER(artist_name) = :artist_name AND LOWER(name) = :name", 
+      artist_name: params[:artist_name].downcase.strip, name: params[:name].downcase.strip
+    ).first
+    
+    if track
+      redirect_to music_metadata_enrichment_track_path(track.id)
+    else
+      tracks_table = MusicTrack.arel_table
+      @tracks = MusicTrack.where(tracks_table[:artist_name].matches("%#{params[:artist_name]}%").and(tracks_table[:name].matches("%#{params[:name]}%"))).limit(10)
+    end
+  end
+  
   def resource
     @track
   end

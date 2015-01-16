@@ -21,6 +21,9 @@ en:
       already_exist: Track already exists.       
       successfully_creation: Successfully created bonus track.
       scheduled_release_for_import: Successfully scheduled music release including the track for metadata import.   
+   
+    by_name:
+      title: Track search results       
       
   activerecord:
     models:
@@ -29,4 +32,5 @@ en:
       music_track:
         nr: Number
         duration: Duration
+        released_at: Released at
         

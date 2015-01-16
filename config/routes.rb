@@ -29,6 +29,7 @@ Rails.application.routes.draw do
         get :select_artist
         get :name
         get :name_confirmation
+        get 'by_name/:artist_name/:name', to: 'tracks#by_name'
       end
     end
     
