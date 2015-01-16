@@ -49,11 +49,7 @@ class MusicMetadataEnrichment::TracksController < ApplicationController
       redirect_to music_metadata_enrichment_track_path(track.id)
     else
       if @track.is_bonus_track? #internally sets release_name
-        @track.mbid = name_and_mbid.split(';').last
-        @track.release_id = MusicRelease.where(artist_id: @track.artist_id, name: '[Bonus tracks]').first.id
-        @track.save
-        @track.import_metadata!
-        
+        @track.create_bonus_track(name_and_mbid.split(';').last)
         flash[:notice] = I18n.t('music_tracks.create.successfully_creation')
         redirect_to music_metadata_enrichment_track_path(@track.id)
       else

@@ -69,6 +69,13 @@ class MusicTrack < ActiveRecord::Base
     end
   end
   
+  def create_bonus_track(working_mbid)
+    self.mbid = working_mbid
+    self.release_id = artist.bonus_tracks_release.id
+    self.save
+    self.import_metadata!
+  end
+  
   private
   
   def set_artist_name

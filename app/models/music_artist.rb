@@ -37,6 +37,10 @@ class MusicArtist < ActiveRecord::Base
     end
   end
   
+  def bonus_tracks_release
+    releases.where(name: '[Bonus tracks]').first
+  end
+  
   def musicbrainz_date_to_iso_date(date)
     return date if date.blank?
     
