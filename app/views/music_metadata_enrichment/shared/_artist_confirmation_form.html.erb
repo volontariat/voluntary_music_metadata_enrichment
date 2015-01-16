@@ -14,6 +14,7 @@
           <th><%= t("activerecord.attributes.music_artists.gender") %></th>
           <th><%= t("activerecord.attributes.music_artists.founded_at") %></th>
           <th><%= t("activerecord.attributes.music_artists.dissolved_at") %></th>
+          <th><%= t("attributes.tags") %></th>
         </tr>
       </thead>
       <tbody>
@@ -26,6 +27,7 @@
           <td><%= artist[:gender] %></td>
           <td><%= artist[:begin] %></td>
           <td><%= artist[:end] %></td>
+          <td><%= (artist[:tags] || []).map{|t| t[:name]}.join(', ')%>
         </tr>
       <% end %>
       </tbody>
