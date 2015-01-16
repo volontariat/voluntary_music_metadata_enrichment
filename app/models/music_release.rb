@@ -98,7 +98,7 @@ class MusicRelease < ActiveRecord::Base
   
   def groups
     musicbrainz_release_groups = MusicBrainz::ReleaseGroup.search(artist.mbid, name, extra_query: 'AND (type:album OR type:ep)')
-    musicbrainz_release_groups.select{|rg| rg[:releases].select{|r| r[:status] == 'Official'}.any? && (rg[:secondary_types].nil? || !rg[:secondary_types].include?('Live')) && rg[:artists].length == 1 }
+    musicbrainz_release_groups.select{|rg| rg[:releases].select{|r| r[:status] == 'Official'}.any? && (rg[:secondary_types].nil? || rg[:secondary_types].select{|st| ['Compilation', 'Live', 'Remix'].include?(st)}.none?) && rg[:artists].length == 1 }
   end
  
   def groups_without_limitation
@@ -161,8 +161,6 @@ class MusicRelease < ActiveRecord::Base
   def synchronize_release_name
     return unless name_changed?
     
-    [MusicTrack].each do |klass|
-      klass.where(['release_id = ?', id]).update_all ['release_name = ?', name]
-    end
+    tracks.update_all(release_name: name)
   end
 end
