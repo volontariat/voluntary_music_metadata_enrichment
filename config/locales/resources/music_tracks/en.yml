@@ -7,7 +7,20 @@ en:
       empty_collection: No music tracks available.
       
     new: 
-      title: New Music Track
+      title: "New Music Track: enter artist information"
+
+    name:
+      title: Enter a name for the track
+      
+    name_confirmation:
+      title: Track name confirmation
+      empty_collection: Track not found.
+      confirm: Confirm  
+           
+    create:
+      already_exist: Track already exists.       
+      successfully_creation: Successfully created bonus track.
+      scheduled_release_for_import: Successfully scheduled music release including the track for metadata import.   
       
   activerecord:
     models:

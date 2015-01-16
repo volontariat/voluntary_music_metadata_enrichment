@@ -49,6 +49,7 @@ class AddProductMusicMetadataEnrichment < ActiveRecord::Migration
       t.integer :duration
       t.integer :listeners
       t.integer :plays
+      t.datetime :released_at
       t.string :state
       t.timestamps
     end

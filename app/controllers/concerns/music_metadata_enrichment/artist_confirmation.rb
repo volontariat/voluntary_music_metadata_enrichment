@@ -12,19 +12,22 @@ module MusicMetadataEnrichment
           @artist.name = musicbrainz_artist.name
           artist = nil
           
-          if from == 'new_release' && (artist = MusicArtist.where(mbid: @artist.mbid).first) && artist.active?
-            redirect_to name_music_metadata_enrichment_releases_path(music_release: { artist_id: artist.id })
+          if ['new_release', 'new_track'].include?(from) && (artist = MusicArtist.where(mbid: @artist.mbid).first) && artist.active?
+            case from
+            when 'new_release' then redirect_to name_music_metadata_enrichment_releases_path(music_release: { artist_id: artist.id })
+            when 'new_track' then redirect_to name_music_metadata_enrichment_tracks_path(music_track: { artist_id: artist.id })
+            end
           elsif artist
             flash[:notice] = I18n.t('music_releases.select_artist.wait_until_artist_metadata_import_completed')
-            redirect_to music_metadata_enrichment_releases_path 
+            redirect_to music_metadata_enrichment_path 
           elsif @artist.save
             if from == 'new_artist'
               flash[:notice] = I18n.t('music_artists.name_confirmation.scheduled_metadata_import')
-              redirect_to music_metadata_enrichment_artists_path
-            elsif from == 'new_release'
+            elsif ['new_release', 'new_track'].include?(from)
               flash[:notice] = I18n.t('music_releases.artist_confirmation.artist_import_scheduled')
-              redirect_to music_metadata_enrichment_releases_path
             end
+            
+            redirect_to music_metadata_enrichment_path
           else
             render :new
           end
@@ -35,6 +38,8 @@ module MusicMetadataEnrichment
             redirect_to new_music_metadata_enrichment_artist_path
           elsif from == 'new_release'
             redirect_to new_music_metadata_enrichment_release_path
+          elsif from == 'new_track'
+            redirect_to new_music_metadata_enrichment_track_path
           end
         end
       elsif @artist.name.present?
@@ -50,11 +55,13 @@ module MusicMetadataEnrichment
       if @artist.valid?
         if from == 'new_artist'
           flash[:notice] = I18n.t('music_artists.create.scheduled_artist_for_import')
-          redirect_to music_metadata_enrichment_artists_path
         elsif from == 'new_release'
           flash[:notice] = I18n.t('music_releases.select_artist.scheduled_artist_for_import')
-          redirect_to music_metadata_enrichment_releases_path
+        elsif from == 'new_track'
+          flash[:notice] = I18n.t('music_releases.select_artist.scheduled_artist_for_import') 
         end
+        
+        redirect_to music_metadata_enrichment_path
       else
         params[:music_artist][:name] = @artist.name
         params[:music_artist][:mbid] = @artist.mbid

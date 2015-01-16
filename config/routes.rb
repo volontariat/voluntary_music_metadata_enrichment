@@ -23,7 +23,14 @@ Rails.application.routes.draw do
       end
     end
     
-    resources :tracks, only: [:show]
+    resources :tracks, only: [:index, :new, :create, :show] do
+      collection do
+        get :artist_confirmation
+        get :select_artist
+        get :name
+        get :name_confirmation
+      end
+    end
     
     namespace 'workflow' do
     end

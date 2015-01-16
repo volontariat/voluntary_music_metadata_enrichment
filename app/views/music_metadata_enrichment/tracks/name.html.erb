@@ -1,0 +1,8 @@
+<h3><%= t('music_tracks.name.title') %></h3>
+
+<%= simple_form_for(@track, url: name_confirmation_music_metadata_enrichment_tracks_path, method: :get, html: {class: 'form-horizontal'}) do |f| %>
+  <%= render partial: 'shared/form/error_messages', locals: { resource: @release } %>
+  <%= f.hidden_field :artist_id %>
+  <%= f.input :name %>
+  <%= f.submit 'Search Track' %>
+<% end %>
