@@ -23,9 +23,12 @@ class MusicTrack < ActiveRecord::Base
     before_transition :without_metadata => :active do |track, transition|
       lastfm = Lastfm.new(LastfmApiKey, LastfmApiSecret)
       lastfm_track = lastfm.track.get_info(artist: track.artist_name, track: track.name) rescue nil
-      attributes = { listeners: lastfm_track['listeners'], plays: lastfm_track['playcount'] }
-      attributes[:duration] = lastfm_track['duration'] if track.duration.blank?
-      track.update_attributes(attributes) if lastfm_track.present?
+      
+      if lastfm_track.present?
+        attributes = { listeners: lastfm_track['listeners'], plays: lastfm_track['playcount'] }
+        attributes[:duration] = lastfm_track['duration'] if track.duration.blank?
+        track.update_attributes(attributes)
+      end
     end
   end
   
@@ -49,10 +52,20 @@ class MusicTrack < ActiveRecord::Base
         r[:status] == 'Official' && !(r[:artists] || []).map{|a| a[:name]}.include?('Various Artists') && 
         ['Album', 'EP'].include?((r[:release_group] || {})[:primary_type]) &&
         (r[:release_group][:secondary_types] || []).select{|st| ['Compilation', 'Live', 'Remix'].include?(st)}.none?
-      end.map{|r| r[:title]}
-    end.flatten.uniq.each do |working_release_name|
-      release_group = musicbrainz_artist.release_groups.select{|rg| rg.title.downcase == working_release_name.downcase}.first
-  
+      end.map{|r| (r[:release_group] || {})[:id] }
+    end.flatten.uniq.each do |release_group_mbid|
+      next if release_group_mbid.nil?
+      
+      release_group = nil
+      
+      3.times do
+        release_group = MusicBrainz::ReleaseGroup.find(release_group_mbid)
+        
+        break unless release_group.nil?
+        
+        sleep 30
+      end
+          
       next if release_group.releases.select{|r| r.status == 'Official' && r.media.map(&:format).select{|m| ['DVD-Video', 'DVD'].select{|m2| m == m2 }.any?}.none? }
     
       self.release_name = working_release_name
