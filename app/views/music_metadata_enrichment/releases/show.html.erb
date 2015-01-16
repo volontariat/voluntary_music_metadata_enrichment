@@ -18,7 +18,10 @@
       <tr class="<%= cycle('odd', 'even') %>">
         <th><%= t("attributes.nr") %></th>
         <th><%= t("attributes.name") %></th>
-        <th><%= t("attributes.duration") %></th>
+        <th><%= t("activerecord.attributes.music_track.duration") %></th>
+  <% if @release.name == '[Bonus tracks]' %>
+        <th><%= t("activerecord.attributes.music_track.released_at") %></th>
+  <% end %>
         <th><%= t("attributes.listeners") %></th>
         <th><%= t("attributes.plays") %></th>
       </tr>
@@ -29,6 +32,9 @@
         <td><%= track.nr %></td>
         <td><%= link_to track.name, music_metadata_enrichment_track_path(track.id) %></td>
         <td><%= track.duration %></td>
+  <% if @release.name == '[Bonus tracks]' %>
+        <td><%= track.released_at.strftime('%d.%m.%Y') %>
+  <% end %>        
         <td><%= track.listeners %></td>
         <td><%= track.plays %></td>
       </tr>
