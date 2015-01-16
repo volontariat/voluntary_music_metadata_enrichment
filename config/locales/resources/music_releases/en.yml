@@ -21,6 +21,7 @@ en:
       title: Enter a name for the release  
 
     name_confirmation:
+      empty_collection: Release not found.
       title: Music release name confirmation
       confirm: Confirm
       release_not_found: Release not found. Not yet released yet then maybe you like to announce the release.
@@ -37,6 +38,9 @@ en:
     
     create_announcement:
       success: Successfully announced music release.
+    
+    by_name:
+      title: Release search results         
     
   activerecord:
     models:

@@ -20,6 +20,7 @@ Rails.application.routes.draw do
         get :name_confirmation
         get :announce
         post :create_announcement
+        get 'by_name/:artist_name/:name', to: 'releases#by_name'
       end
     end
     

@@ -114,6 +114,20 @@ class MusicMetadataEnrichment::ReleasesController < ApplicationController
     end
   end
   
+  def by_name
+    release = MusicRelease.where(
+      "LOWER(artist_name) = :artist_name AND LOWER(name) = :name", 
+      artist_name: params[:artist_name].downcase.strip, name: params[:name].downcase.strip
+    ).first
+    
+    if release
+      redirect_to music_metadata_enrichment_release_path(release.id)
+    else
+      releases_table = MusicRelease.arel_table
+      @releases = MusicRelease.where(releases_table[:artist_name].matches("%#{params[:artist_name]}%").and(releases_table[:name].matches("%#{params[:name]}%"))).limit(10)
+    end
+  end
+  
   def resource
     @release
   end

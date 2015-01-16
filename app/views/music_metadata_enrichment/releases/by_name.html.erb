@@ -1,0 +1,22 @@
+<h3><%= t('music_releases.by_name.title') %></h3>
+
+<% if @releases.none? %>
+<p><%= I18n.t("music_releases.name_confirmation.empty_collection")%></p>
+<% else %>
+  <table class="table table-striped">
+    <thead>
+      <tr class="<%= cycle('odd', 'even') %>">
+        <th><%= t("activerecord.models.music_artist") %></th>
+        <th><%= t("attributes.name") %></th>
+      </tr>
+    </thead>
+    <tbody>
+    <% @releases.each do |release| %>
+      <tr class="<%= cycle('odd', 'even') %>">
+        <td><%= link_to release.artist_name, music_metadata_enrichment_artist_path(release.artist_id) %></td>
+        <td><%= link_to release.name, music_metadata_enrichment_release_path(release.id) %></td>
+      </tr>
+    <% end %>
+    </tbody>
+  </table>  
+<% end %>
