@@ -98,7 +98,6 @@ class MusicMetadataEnrichment::ReleasesController < ApplicationController
       render :announce
     else
       artist = MusicArtist.find(params[:music_release][:artist_id])
-      @release.artist_name = artist.name
       @release.save!
       flash[:notice] = I18n.t('music_releases.create_announcement.success')
       redirect_to music_metadata_enrichment_releases_path

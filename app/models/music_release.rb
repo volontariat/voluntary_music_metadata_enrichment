@@ -9,6 +9,7 @@ class MusicRelease < ActiveRecord::Base
   validates :mbid, uniqueness: true, allow_blank: true
   validate :future_release_date_format
   
+  before_save :set_artist_name
   after_save :synchronize_release_name
   
   attr_accessible :mbid, :artist_id, :artist_name, :name, :future_release_date, :released_at, :listeners, :plays
@@ -96,7 +97,7 @@ class MusicRelease < ActiveRecord::Base
   end
   
   def groups
-    musicbrainz_release_groups = MusicBrainz::ReleaseGroup.search_by_artist_mbid(artist.mbid, name, 'AND (type:album OR type:ep)')
+    musicbrainz_release_groups = MusicBrainz::ReleaseGroup.search(artist.mbid, name, extra_query: 'AND (type:album OR type:ep)')
     musicbrainz_release_groups.select{|rg| rg[:releases].select{|r| r[:status] == 'Official'}.any? && (rg[:secondary_types].nil? || !rg[:secondary_types].include?('Live')) && rg[:artists].length == 1 }
   end
  
@@ -149,6 +150,12 @@ class MusicRelease < ActiveRecord::Base
     else
       errors[:future_release_date] << I18n.t('activerecord.errors.models.music_release.attributes.future_release_date.wrong_format')
     end
+  end
+  
+  def set_artist_name
+    return if artist_name.present?
+    
+    self.artist_name = artist.name
   end
   
   def synchronize_release_name
