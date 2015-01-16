@@ -106,7 +106,12 @@ class MusicMetadataEnrichment::ReleasesController < ApplicationController
   
   def show
     @release = MusicRelease.find(params[:id])
-    @tracks = @release.tracks.order('nr ASC')
+    
+    if @release.name == '[Bonus Tracks]'
+      @tracks = @release.tracks.order('released_at ASC')
+    else
+      @tracks = @release.tracks.order('nr ASC')
+    end
   end
   
   def resource
