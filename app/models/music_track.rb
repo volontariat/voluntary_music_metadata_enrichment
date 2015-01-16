@@ -1,3 +1,4 @@
+# -*- encoding : utf-8 -*-
 class MusicTrack < ActiveRecord::Base
   belongs_to :master_track, class_name: 'MusicTrack'
   
@@ -11,6 +12,7 @@ class MusicTrack < ActiveRecord::Base
   
   attr_accessible :mbid, :artist_id, :artist_name, :release_id, :release_name, :master_track_id, :nr, :name, :duration, :listeners, :plays
   
+  before_validation :gsub_name
   before_save :set_artist_name
   before_save :set_release_name
   before_create :set_released_at
@@ -43,9 +45,15 @@ class MusicTrack < ActiveRecord::Base
     results
   end
   
+  def self.format_name(value)
+    return value if value.nil?
+    
+    value.gsub(/’/, "'").gsub(/\(Album version\)|\(Single version\)/i, '').strip
+  end
+  
   def is_bonus_track?
     musicbrainz_artist = MusicBrainz::Artist.find(artist.mbid)
-    tracks = MusicBrainz::Recording.search(artist.mbid, name, limit: 100).select{|t| t[:title].downcase == name.downcase.strip }
+    tracks = MusicBrainz::Recording.search(artist.mbid, name, limit: 100).select{|t| MusicTrack.format_name(t[:title]).downcase == name.downcase.strip }
     
     tracks.map do |t| 
       (t[:releases] || []).select do |r| 
@@ -90,6 +98,10 @@ class MusicTrack < ActiveRecord::Base
   end
   
   private
+  
+  def gsub_name
+    self.name = MusicTrack.format_name(name)
+  end
   
   def set_artist_name
     return if artist_name.present?

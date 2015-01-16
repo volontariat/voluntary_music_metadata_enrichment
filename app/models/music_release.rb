@@ -1,3 +1,4 @@
+# -*- encoding : utf-8 -*-
 class MusicRelease < ActiveRecord::Base
   belongs_to :artist, class_name: 'MusicArtist'
   belongs_to :user
@@ -70,9 +71,9 @@ class MusicRelease < ActiveRecord::Base
       end
       
       recordings.each do |musicbrainz_recording|
-        track_name = musicbrainz_recording.title
+        track_name = MusicTrack.format_name(musicbrainz_recording.title)
         
-        if musicbrainz_recording.disambiguation.present? && !track_name.match('\(')
+        if musicbrainz_recording.disambiguation.present? && !track_name.match('\(') && !musicbrainz_recording.disambiguation.match(/Album version|Single version/i)
           # example: http://musicbrainz.org/release/e3f92095-5466-3a96-8dc3-f5c86c35a954
           track_name = "#{track_name} (#{musicbrainz_recording.disambiguation})"
         end

@@ -1,3 +1,4 @@
+# -*- encoding : utf-8 -*-
 class MusicMetadataEnrichment::TracksController < ApplicationController
   include ::MusicMetadataEnrichment::BaseController
   include Applicat::Mvc::Controller::Resource
@@ -42,7 +43,7 @@ class MusicMetadataEnrichment::TracksController < ApplicationController
   def create
     build_track
     name_and_mbid = params[:music_track].delete(:name_and_mbid)
-    @track.name = name_and_mbid.split(';').first
+    @track.name = MusicTrack.format_name(name_and_mbid.split(';').first)
     
     if track = MusicTrack.where("artist_id = :artist_id AND LOWER(name) = :name", artist_id: @track.artist_id, name: @track.name.downcase.strip).first
       flash[:alert] = I18n.t('music_tracks.create.already_exist')
@@ -93,7 +94,7 @@ class MusicMetadataEnrichment::TracksController < ApplicationController
   def build_track
     params[:music_track] ||= {}
     @track = MusicTrack.new
-    @track.name = params[:music_track][:name]
+    @track.name = MusicTrack.format_name(params[:music_track][:name]) if params[:music_track][:name].present?
     @track.artist_id = params[:music_track][:artist_id]
   end
 end
