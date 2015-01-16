@@ -10,7 +10,7 @@ en:
       title: "New Music Release: enter artist information"
       
     artist_confirmation:
-      title: Artist Confirmation  
+      title: "New Music Release: artist confirmation"
       artist_import_scheduled: Music artist has been scheduled for metadata import. After it you can add releases, tracks or videos to the artist.
       
     select_artist:

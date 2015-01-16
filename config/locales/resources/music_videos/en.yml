@@ -1,0 +1,51 @@
+en:
+  music_videos:
+    index:
+      title: Music Videos
+      short_title: Videos
+      name: Name
+      empty_collection: No music videos available.
+      
+    new: 
+      title: "New Music Video: enter artist information"
+
+    artist_confirmation:
+      title: "New Music Video: artist confirmation"  
+
+    track_name:
+      title: "New Music Video: enter a name for the track"
+      
+    track_confirmation:
+      empty_collection: Video not found.
+           
+    metadata:
+      title: "New music video: enter metadata"       
+      statuses:
+        official: Official
+        unofficial: Unofficial
+        life: Live
+        live: Live
+        
+    create:
+      already_exist: Video already exists.       
+      successful: Successfully created video.
+      scheduled_release_for_import: Successfully scheduled music release including the video for metadata import.        
+      
+  activerecord:
+    models:
+      music_video: Music Video
+    attributes:
+      music_video:
+        status: Status
+        location: Location
+        recorded_at: Recorded at
+        track_id: Track
+        
+    errors:
+      models:
+        music_video:
+          attributes:
+            status: 
+              one_live_or_official_video_per_track: There already exists 1 video of this status for the track. There only can multiple videos for a track if the status is Unofficial.
+            url:
+              wrong_format: It's not a proper URL.

@@ -1,0 +1,9 @@
+<h3><%= @video.name %></h3>
+
+<dl class="dl-horizontal">
+ <%= show_attribute :track_id, value: link_to(@video.track_name, music_metadata_enrichment_track_path(@video.track_id)) %>
+ <%= show_attribute(:location) if @video.status == 'Live' %>
+ <%= show_attribute(:recorded_at, value: @video.recorded_at.present? ? @video.recorded_at.strftime('%d.%m.%Y') : nil) if @video.status == 'Live' %>
+</dl>
+
+<%= markdown @video.url %>

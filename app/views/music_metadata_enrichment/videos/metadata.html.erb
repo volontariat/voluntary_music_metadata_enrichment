@@ -1,0 +1,24 @@
+<% content_for :javascript_includes do %>
+  <%= javascript_include_tag 'music_metadata_enrichment/music_videos/metadata' %>
+<% end %>
+
+<h3><%= t('music_videos.metadata.title') %></h3>
+
+<%= simple_form_for(@video, url: music_metadata_enrichment_videos_path, method: :post, html: {class: 'form-horizontal'}) do |f| %>
+  <%= render partial: 'shared/form/error_messages', locals: { resource: @video } %>
+  <%= f.hidden_field :track_id %>
+  <%= f.input :url %>
+  
+  <div class="control-group url optional music_video_status">
+    <label for="music_video_status" class="url optional control-label"><%= t('activerecord.attributes.music_video.status') %></label>
+    <div class="controls">
+      <%= f.select :status, MusicVideo::STATUSES.map{|status| [status, t("music_videos.metadata.statuses.#{status.tableize.singularize}")]} %>
+    </div>
+  </div>
+  
+  <div id="live_music_video_attributes" style="<%= @video.status == 'Live' ? '' : 'display:none' %>">
+    <%= f.input :location %>
+    <%= f.input :recorded_at, as: :string, input_html: { class: 'datepicker' } %>
+  </div>
+  <%= f.submit %>
+<% end %>

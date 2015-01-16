@@ -1,0 +1,28 @@
+<h3><%= title %></h3>
+
+<% if @tracks.none? %>
+<p><%= empty_collection_title %></p>
+<% else %>
+  <%= form_tag form_url, method: form_method do %>
+    <%= hidden_field_tag 'music_track[artist_id]', @track.artist_id %>
+    <table class="table table-striped">
+      <thead>
+        <tr class="<%= cycle('odd', 'even') %>">
+          <th/>
+          <th><%= t("attributes.name") %></th>
+        </tr>
+      </thead>
+      <tbody>
+      <% @tracks.each do |track| %>
+        <tr class="<%= cycle('odd', 'even') %>">
+          <td style="width:50px"><%= radio_button_tag 'music_track[name_and_mbid]', "#{track[:title]};#{track[:mbid]}" %></td>
+          <td><%= track[:title] %></td>
+        </tr>
+      <% end %>
+      </tbody>
+    </table>
+    <p>
+      <%= submit_tag t('music_releases.name_confirmation.confirm') %>
+    </p>
+  <% end %>
+<% end %>

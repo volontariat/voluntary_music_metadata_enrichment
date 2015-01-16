@@ -16,18 +16,7 @@ class MusicMetadataEnrichment::TracksController < ApplicationController
   end
   
   def select_artist
-    params[:music_artist] ||= {}
-    name_and_mbid = params[:music_artist].delete(:name_and_mbid)
-    artist = MusicArtist.where(mbid: name_and_mbid.split(';').last).first
-    
-    if artist && artist.active?
-      redirect_to name_music_metadata_enrichment_tracks_path(music_track: { artist_id: artist.id })
-    elsif artist
-      flash[:notice] = I18n.t('music_releases.select_artist.wait_until_artist_metadata_import_completed')
-      redirect_to music_metadata_enrichment_tracks_path 
-    else
-      create_artist('new_track', name_and_mbid)
-    end
+    artist_selection('new_track')
   end
   
   def name
@@ -42,33 +31,12 @@ class MusicMetadataEnrichment::TracksController < ApplicationController
   
   def create
     build_track
-    name_and_mbid = params[:music_track].delete(:name_and_mbid)
-    @track.name = MusicTrack.format_name(name_and_mbid.split(';').first)
-    
-    if track = MusicTrack.where("artist_id = :artist_id AND LOWER(name) = :name", artist_id: @track.artist_id, name: @track.name.downcase.strip).first
-      flash[:alert] = I18n.t('music_tracks.create.already_exist')
-      redirect_to music_metadata_enrichment_track_path(track.id)
-    else
-      if @track.is_bonus_track? #internally sets release_name
-        @track.create_bonus_track(name_and_mbid.split(';').last)
-        flash[:notice] = I18n.t('music_tracks.create.successfully_creation')
-        redirect_to music_metadata_enrichment_track_path(@track.id)
-      else
-        release = MusicRelease.create(artist_id: @track.artist_id, name: @track.release_name)
-        
-        if release.valid?
-          flash[:notice] = I18n.t('music_tracks.create.scheduled_release_for_import')
-          redirect_to music_metadata_enrichment_path
-        else
-          flash[:alert] = release.errors.full_messages.join('. ')
-          redirect_to music_metadata_enrichment_path
-        end
-      end
-    end
+    track_creation('new_track')
   end
   
   def show
     @track = MusicTrack.find(params[:id])
+    @videos = MusicVideo.order_by_status
   end
   
   def by_name
@@ -87,14 +55,5 @@ class MusicMetadataEnrichment::TracksController < ApplicationController
   
   def resource
     @track
-  end
-  
-  private
-  
-  def build_track
-    params[:music_track] ||= {}
-    @track = MusicTrack.new
-    @track.name = MusicTrack.format_name(params[:music_track][:name]) if params[:music_track][:name].present?
-    @track.artist_id = params[:music_track][:artist_id]
   end
 end

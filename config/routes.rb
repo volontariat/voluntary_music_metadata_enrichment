@@ -31,5 +31,16 @@ Rails.application.routes.draw do
         get 'by_name/:artist_name/:name', to: 'tracks#by_name'
       end
     end
+    
+    resources :videos, only: [:index, :new, :create, :show] do
+      collection do
+        get :artist_confirmation
+        get :select_artist
+        get :track_name
+        get :track_confirmation
+        get :create_track
+        get :metadata
+      end
+    end
   end
 end

@@ -16,6 +16,10 @@ module VoluntaryMusicMetadataEnrichment
           primary.item :music_metadata_enrichment_tracks, I18n.t('music_tracks.index.short_title'), music_metadata_enrichment_tracks_path do |tracks|
             tracks.item :new, I18n.t('general.new'), new_music_metadata_enrichment_track_path
           end
+
+          primary.item :music_metadata_enrichment_videos, I18n.t('music_videos.index.short_title'), music_metadata_enrichment_videos_path do |videos|
+            videos.item :new, I18n.t('general.new'), new_music_metadata_enrichment_video_path
+          end
           
           instance_exec primary, ::Voluntary::Navigation::Base.menu_options(:authentication), &::Voluntary::Navigation.menu_code(:authentication)
         end

@@ -57,7 +57,7 @@ class AddProductMusicMetadataEnrichment < ActiveRecord::Migration
     add_index :music_tracks, [:release_id, :name], unique: true
     
     create_table :music_videos do |t|
-      t.string :type
+      t.string :status
       t.integer :artist_id
       t.string :artist_name
       t.integer :track_id

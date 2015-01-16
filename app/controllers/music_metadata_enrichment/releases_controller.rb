@@ -16,18 +16,7 @@ class MusicMetadataEnrichment::ReleasesController < ApplicationController
   end
   
   def select_artist
-    params[:music_artist] ||= {}
-    name_and_mbid = params[:music_artist].delete(:name_and_mbid)
-    artist = MusicArtist.where(mbid: name_and_mbid.split(';').last).first
-    
-    if artist && artist.active?
-      redirect_to name_music_metadata_enrichment_releases_path(music_release: { artist_id: artist.id })
-    elsif artist
-      flash[:notice] = I18n.t('music_releases.select_artist.wait_until_artist_metadata_import_completed')
-      redirect_to music_metadata_enrichment_releases_path 
-    else
-      create_artist('new_release', name_and_mbid)
-    end
+    artist_selection('new_release')
   end
   
   def name
