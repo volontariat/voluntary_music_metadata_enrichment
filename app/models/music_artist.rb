@@ -6,6 +6,7 @@ class MusicArtist < ActiveRecord::Base
   validates :mbid, presence: true, uniqueness: true
   
   after_save :synchronize_artist_name
+  after_create :create_bonustracks_release
   
   attr_accessible :name, :mbid, :founded_at, :dissolved_at, :listeners, :plays
   
@@ -27,7 +28,7 @@ class MusicArtist < ActiveRecord::Base
       musicbrainz_artist.release_groups.select{|r| ['Album', 'EP'].include?(r.type) && !r.secondary_types.include?('Live') && r.artists.length == 1}.each do |musicbrainz_release_group|
         releases = musicbrainz_release_group.releases
         
-        next if releases.select{|r| r.status == 'Official' && !r.media.map(&:format).include?('DVD-Video')}.none?
+        next if releases.select{|r| r.status == 'Official' && !r.media.map(&:format).include?('DVD-Video') && !r.media.map(&:format).include?('DVD')}.none?
         
         release = MusicRelease.create(artist_id: artist.id, artist_name: artist.name, name: musicbrainz_release_group.title)
         release.releases = releases
@@ -51,6 +52,11 @@ class MusicArtist < ActiveRecord::Base
   end
   
   private
+  
+  def create_bonustracks_release
+    release = releases.create(name: '[Bonus tracks]')
+    release.update_attribute(:state, 'active')
+  end
   
   def synchronize_artist_name
     return unless name_changed?
