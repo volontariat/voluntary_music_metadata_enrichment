@@ -60,12 +60,14 @@ class MusicArtist < ActiveRecord::Base
       count = recordings.total_count
       
       recordings = recordings.select{|r| !['intro', 'outro'].include?(r.title.downcase) && !r.title.match(/\(/) && r.disambiguation.blank? }
-      voluntary_names = MusicTrack.where("artist_id = :artist_id AND LOWER(name) IN(:name)", artist_id: id, name: recordings.map(&:title).uniq.map(&:downcase)).map{|t| t.name.downcase }
+      recording_titles = recordings.map{|r| MusicTrack.format_name(r.title).downcase }.uniq
+      voluntary_names = MusicTrack.where("artist_id = :artist_id AND LOWER(name) IN(:name)", artist_id: id, name: recording_titles).map{|t| t.name.downcase }
       
       recordings.select{|r| !voluntary_names.include?(MusicTrack.format_name(r.title).downcase) }.each do |recording|
         next if bonus_track_names.map(&:downcase).include? MusicTrack.format_name(recording.title).downcase
         
         track = MusicTrack.new(artist_id: id, name: MusicTrack.format_name(recording.title))
+        track.artist_mbid = mbid
         
         if track.is_bonus_track?
           track.create_bonus_track(recording.id)
