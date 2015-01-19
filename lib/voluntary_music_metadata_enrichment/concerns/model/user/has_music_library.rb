@@ -16,9 +16,13 @@ module VoluntaryMusicMetadataEnrichment
               
               3.times do
                 begin
-                  lastfm_artists = lastfm.library.get_artists(user: lastfm_user_name, page: page)
-                  
-                  puts "USER #{lastfm_user_name}: LIBRARY PAGE ##{page}"
+                  begin
+                    lastfm_artists = lastfm.library.get_artists(user: lastfm_user_name, page: page)
+                    puts "USER #{lastfm_user_name}: LIBRARY PAGE ##{page}"
+                  rescue REXML::ParseException
+                    lastfm_artists = []
+                    puts "USER #{lastfm_user_name}: LIBRARY PAGE ##{page} COULD NOT BE PARSED"
+                  end
                   
                   break
                 rescue Lastfm::ApiError
