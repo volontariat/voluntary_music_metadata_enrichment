@@ -1,14 +1,4 @@
 GIT
-  remote: git://github.com/gawlista/ruby-lastfm.git
-  revision: 1f7b8b9f5b3e506ac9974d5d716ea64832662545
-  branch: group.get_members
-  specs:
-    lastfm (1.25.0)
-      activesupport (>= 3.2.0)
-      httparty
-      xml-simple
-
-GIT
   remote: git://github.com/mislav/will_paginate.git
   revision: 74a6cd0197072903cd8b83744133744ff4b4c046
   specs:
@@ -96,9 +86,10 @@ PATH
       mongoid (~> 4.0.0.alpha2)
       mongoid-history (~> 0.4.1)
       mongoid_slug (~> 3.2.0)
-      omniauth (~> 1.0.3)
-      omniauth-facebook (~> 1.6.0)
-      omniauth-tumblr (~> 1.1)
+      omniauth (~> 1.2.2)
+      omniauth-facebook (~> 2.0.0)
+      omniauth-google-oauth2 (~> 0.2.6)
+      omniauth-lastfm (~> 0.0.6)
       paper_trail (~> 3.0.0)
       pg (~> 0.17.1)
       protected_attributes (~> 1.0.5)
@@ -127,7 +118,7 @@ PATH
   remote: /Users/gawlim/workspace/voluntary/voluntary_music_metadata_enrichment
   specs:
     voluntary_music_metadata_enrichment (0.0.1)
-      lastfm (~> 1.25.0)
+      lastfm (~> 1.26.0)
       musicbrainz
       voluntary (~> 0.2.1)
 
@@ -334,7 +325,7 @@ GEM
       sprockets (>= 2.0.3)
       tilt
     has_scope (0.5.1)
-    hashie (1.2.0)
+    hashie (3.3.2)
     highline (1.6.21)
     hike (1.2.3)
     hodel_3000_compliant_logger (0.1.1)
@@ -342,7 +333,6 @@ GEM
     httparty (0.13.3)
       json (~> 1.8)
       multi_xml (>= 0.5.2)
-    httpauth (0.2.1)
     i18n (0.7.0)
     i18n-inflector (2.6.7)
       i18n (>= 0.4.1)
@@ -358,12 +348,15 @@ GEM
       bootstrap-sass-rails
       railties (>= 3.1.0)
     json (1.8.2)
-    jwt (0.1.13)
-      multi_json (>= 1.5)
+    jwt (1.2.0)
     koala (1.8.0)
       addressable
       faraday
       multi_json
+    lastfm (1.26.0)
+      activesupport (>= 3.2.0)
+      httparty
+      xml-simple
     launchy (2.1.2)
       addressable (~> 2.3)
     letter_opener (1.0.0)
@@ -415,31 +408,38 @@ GEM
     net-ssh (2.9.2)
     net-ssh-gateway (1.2.0)
       net-ssh (>= 2.6.5)
+    netrc (0.10.2)
     nokogiri (1.6.5)
       mini_portile (~> 0.6.0)
     oauth (0.4.7)
-    oauth2 (0.8.1)
-      faraday (~> 0.8)
-      httpauth (~> 0.1)
-      jwt (~> 0.1.4)
-      multi_json (~> 1.0)
+    oauth2 (1.0.0)
+      faraday (>= 0.8, < 0.10)
+      jwt (~> 1.0)
+      multi_json (~> 1.3)
+      multi_xml (~> 0.5)
       rack (~> 1.2)
     oink (0.10.1)
       activerecord
       hodel_3000_compliant_logger
-    omniauth (1.0.3)
-      hashie (~> 1.2)
-      rack
-    omniauth-facebook (1.6.0)
+    omniauth (1.2.2)
+      hashie (>= 1.2, < 4)
+      rack (~> 1.0)
+    omniauth-facebook (2.0.0)
+      omniauth-oauth2 (~> 1.2)
+    omniauth-google-oauth2 (0.2.6)
+      omniauth (> 1.0)
       omniauth-oauth2 (~> 1.1)
+    omniauth-lastfm (0.0.6)
+      omniauth-oauth (~> 1.0)
+      rest-client (>= 1.6.6, < 1.8)
     omniauth-oauth (1.0.1)
       oauth
       omniauth (~> 1.0)
-    omniauth-oauth2 (1.1.1)
-      oauth2 (~> 0.8.0)
-      omniauth (~> 1.0)
-    omniauth-tumblr (1.1)
-      omniauth-oauth (~> 1.0)
+    omniauth-oauth2 (1.2.0)
+      faraday (>= 0.8, < 0.10)
+      multi_json (~> 1.3)
+      oauth2 (~> 1.0)
+      omniauth (~> 1.2)
     optionable (0.2.0)
     origin (2.1.1)
     orm_adapter (0.5.0)
@@ -507,6 +507,9 @@ GEM
       redis (~> 3.0, >= 3.0.4)
     ref (1.0.5)
     remotipart (1.2.1)
+    rest-client (1.7.2)
+      mime-types (>= 1.16, < 3.0)
+      netrc (~> 0.7)
     rinku (1.5.1)
     roxml (3.3.1)
       activesupport (>= 2.3.0)
@@ -652,7 +655,6 @@ DEPENDENCIES
   guard-rspec (~> 3.0.2)
   guard-spork (~> 1.5.1)
   jasmine!
-  lastfm!
   launchy (~> 2.1.2)
   letter_opener (~> 1.0.0)
   linecache (= 0.46)

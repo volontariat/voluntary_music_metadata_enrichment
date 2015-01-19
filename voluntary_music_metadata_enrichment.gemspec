@@ -19,7 +19,7 @@ Gem::Specification.new do |s|
   s.add_dependency 'voluntary', '~> 0.2.1'
   
   s.add_dependency 'musicbrainz'
-  s.add_dependency 'lastfm', '~> 1.25.0'
+  s.add_dependency 'lastfm', '~> 1.26.0'
   
   # group :development
   s.add_development_dependency 'letter_opener', '~> 1.0.0'
