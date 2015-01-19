@@ -8,13 +8,22 @@ class MusicTrack < ActiveRecord::Base
   
   has_many :videos, foreign_key: 'track_id', class_name: 'MusicVideo'
   
+  scope :without_slaves, -> { where('music_tracks.master_track_id IS NULL') }
+  
+  scope :artist_and_name_like, ->(artist_name, name) do
+    tracks_table = MusicTrack.arel_table
+    where(tracks_table[:artist_name].matches("%#{artist_name}%").and(tracks_table[:name].matches("%#{name}%")))
+  end
+  
   validates :name, presence: true, uniqueness: { scope: :release_id }
   
   attr_accessible :mbid, :artist_id, :artist_name, :release_id, :release_name, :master_track_id, :nr, :name, :duration, :listeners, :plays
   
+  attr_accessor :artist_mbid
+  
   before_validation :gsub_name
-  before_save :set_artist_name
-  before_save :set_release_name
+  before_create :set_artist_name
+  before_create :set_release_name
   before_create :set_released_at
   before_create :set_master_track_id_if_available
   after_save :synchronize_track_name
@@ -48,12 +57,11 @@ class MusicTrack < ActiveRecord::Base
   def self.format_name(value)
     return value if value.nil?
     
-    value.gsub(/’/, "'").gsub(/\(Album version\)|\(Single version\)/i, '').strip
+    value.gsub(/’|´/, "'").gsub(/\(Album version\)|\(Single version\)|\(Remastered\)/i, '').strip
   end
   
   def is_bonus_track?
-    musicbrainz_artist = MusicBrainz::Artist.find(artist.mbid)
-    tracks = MusicBrainz::Recording.search(artist.mbid, name, limit: 100).select{|t| MusicTrack.format_name(t[:title]).downcase == name.downcase.strip }
+    tracks = MusicBrainz::Recording.search(artist_mbid ? artist_mbid : artist.mbid, name, limit: 100).select{|t| MusicTrack.format_name(t[:title]).downcase == name.downcase.strip }
     
     tracks.map do |t| 
       (t[:releases] || []).select do |r| 
