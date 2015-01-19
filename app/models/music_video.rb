@@ -16,8 +16,8 @@ class MusicVideo < ActiveRecord::Base
   
   attr_accessible :status, :track_id, :track_name, :url, :location, :recorded_at
   
-  before_save :set_artist
-  before_save :set_track_name
+  before_create :set_artist
+  before_create :set_track_name
   
   auto_html_for :url do
     youtube(width: 515, height: 300)
