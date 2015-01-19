@@ -21,35 +21,21 @@ class MusicRelease < ActiveRecord::Base
     event :import_metadata do transition :without_metadata => :active; end
     
     before_transition :without_metadata => :active do |release, transition|
-      musicbrainz_release = nil
-      highest_tracks_count = 0
-      earliest_release_date = Time.now
-      
       releases = if release.releases.nil?
         MusicBrainz::ReleaseGroup.find(release.groups.select{|r| r[:title] == release.name }.first[:id]).releases
       else
         release.releases
       end
       
-      releases.each do |working_musicbrainz_release|
-        next unless working_musicbrainz_release.status == 'Official'
-        
-        # TODO: handle case where count of tracks which are not on a dvd is still the highest and only import tracks which are not a DVD
-        next if working_musicbrainz_release.media.map(&:format).include?('DVD-Video')
-
-        working_tracks_count = working_musicbrainz_release.media.map{|m| m.tracks.total_count }.inject{|sum,x| sum + x }
-        
-        if working_tracks_count > highest_tracks_count
-          highest_tracks_count = working_tracks_count
-          musicbrainz_release = working_musicbrainz_release
-        end
-        
-        if working_musicbrainz_release.date != nil && working_musicbrainz_release.date < earliest_release_date
-          earliest_release_date = working_musicbrainz_release.date
-        end
+      releases = release.prefered_releases(releases)
+      
+      if releases.select{|r| r.media.map(&:format).include?('CD') }.any?
+        releases = releases.select{|r| r.media.map(&:format).include?('CD') }
       end
-
-      release.update_attributes(mbid: musicbrainz_release.id, released_at: earliest_release_date)
+      
+      releases = release.earliest_release(releases)
+      musicbrainz_release = release.release_with_highest_tracks_count(releases)
+      release.update_attributes(mbid: musicbrainz_release.id, released_at: musicbrainz_release.date)
       
       begin
         lastfm = Lastfm.new(LastfmApiKey, LastfmApiSecret)
@@ -60,7 +46,7 @@ class MusicRelease < ActiveRecord::Base
       end
       
       #musicbrainz_release = MusicBrainz::Release.find(mbid, [:recordings])
-      nr, recordings = 1, nil
+      recordings = nil
       
       3.times do
         recordings = MusicBrainz::Recording.by_release_id(musicbrainz_release.id)
@@ -70,6 +56,8 @@ class MusicRelease < ActiveRecord::Base
         sleep 60
       end
       
+      first_track_nr_of_disc = release.get_first_track_nr_of_disc(recordings)
+      
       recordings.each do |musicbrainz_recording|
         track_name = MusicTrack.format_name(musicbrainz_recording.title)
         
@@ -77,6 +65,9 @@ class MusicRelease < ActiveRecord::Base
           # example: http://musicbrainz.org/release/e3f92095-5466-3a96-8dc3-f5c86c35a954
           track_name = "#{track_name} (#{musicbrainz_recording.disambiguation})"
         end
+        
+        medium = musicbrainz_recording.releases.select{|r2| r2.id == musicbrainz_release.id}.first.media.first
+        nr = first_track_nr_of_disc[medium.position] + medium.tracks.first.number.to_i - 1
         
         track = nil
         
@@ -90,9 +81,9 @@ class MusicRelease < ActiveRecord::Base
         end
         
         # no bang because of releases like the following which includes the same track multiple times: http://musicbrainz.org/release/2b18f9eb-b171-4fd6-ab1f-9801c4adc992
-        track.import_metadata if track
-        
-        nr += 1
+        if track.try(:id)
+          track.import_metadata
+        end
       end
     end
   end
@@ -112,6 +103,86 @@ class MusicRelease < ActiveRecord::Base
     else nil
     end
   end
+  
+  def prefered_releases(working_releases)
+    list = []
+    
+    working_releases.each do |working_musicbrainz_release|
+      next unless working_musicbrainz_release.status == 'Official'
+      
+      # TODO: handle case where count of tracks which are not on a dvd is still the highest and only import tracks which are not a DVD
+      next if working_musicbrainz_release.media.map(&:format).select{|f| ['DVD', 'DVD-Video'].include?(f)}.any?
+      
+      list << working_musicbrainz_release
+    end    
+    
+    list
+  end
+  
+  def earliest_release(working_releases)
+    earliest_release_date, filtered_releases = nil, []
+    
+    working_releases.each do |working_musicbrainz_release|
+      if working_musicbrainz_release.date != nil && (earliest_release_date == nil || working_musicbrainz_release.date < earliest_release_date)
+        filtered_releases.clear
+        filtered_releases << working_musicbrainz_release
+        earliest_release_date = working_musicbrainz_release.date
+      elsif working_musicbrainz_release.date == earliest_release_date
+        filtered_releases << working_musicbrainz_release
+      end
+    end
+    
+    filtered_releases
+  end
+   
+  def release_with_highest_tracks_count(working_releases)
+    musicbrainz_release, highest_tracks_count = nil, 0
+    
+    working_releases.each do |working_musicbrainz_release|
+      working_tracks_count = working_musicbrainz_release.media.map{|m| m.tracks.total_count }.inject{|sum,x| sum + x }
+      
+      if working_tracks_count > highest_tracks_count
+        highest_tracks_count = working_tracks_count
+        musicbrainz_release = working_musicbrainz_release
+      end
+    end
+    
+    musicbrainz_release
+  end 
+   
+  def get_first_track_nr_of_disc(recordings)
+    tracks_count_by_disc = {}
+
+    recordings.each do |musicbrainz_recording|
+      medium = musicbrainz_recording.releases.select{|r2| r2.id == mbid}.first.media.first
+      tracks_count_by_disc[medium.position] = medium.tracks.total_count
+    end
+    
+    first_track_nr_of_disc = {}
+
+    recordings.each do |musicbrainz_recording|
+      medium = musicbrainz_recording.releases.select{|r2| r2.id == mbid}.first.media.first
+      
+      next if first_track_nr_of_disc.has_key? medium.position
+      
+      if medium.position.to_i == 1
+        first_track_nr_of_disc[medium.position] = 1
+        next
+      end
+      
+      nr = 0
+      
+      tracks_count_by_disc.each do |disc_nr,tracks_count|
+        break if disc_nr == medium.position
+        
+        nr += tracks_count
+      end
+      
+      first_track_nr_of_disc[medium.position] = nr + 1
+    end 
+    
+    first_track_nr_of_disc
+  end 
    
   private
   
