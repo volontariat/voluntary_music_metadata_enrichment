@@ -76,7 +76,6 @@ class AddProductMusicMetadataEnrichment < ActiveRecord::Migration
     add_index :music_videos, :url, unique: true
     add_index :music_videos, :track_id
     
-    add_column :users, :lastfm_user_name, :string
     add_column :users, :music_library_imported, :boolean, default: false
   end
   
@@ -86,7 +85,6 @@ class AddProductMusicMetadataEnrichment < ActiveRecord::Migration
     drop_table :music_tracks
     drop_table :music_videos
     
-    remove_column :users, :lastfm_user_name
     remove_column :users, :music_library_imported
   end
 end
