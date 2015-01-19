@@ -36,11 +36,11 @@ class MusicMetadataEnrichment::TracksController < ApplicationController
   
   def show
     @track = MusicTrack.find(params[:id])
-    @videos = MusicVideo.order_by_status
+    @videos = @track.videos.order_by_status
   end
   
   def by_name
-    track = MusicTrack.where(
+    track = MusicTrack.without_slaves.where(
       "LOWER(artist_name) = :artist_name AND LOWER(name) = :name", 
       artist_name: params[:artist_name].downcase.strip, name: params[:name].downcase.strip
     ).first
@@ -48,8 +48,7 @@ class MusicMetadataEnrichment::TracksController < ApplicationController
     if track
       redirect_to music_metadata_enrichment_track_path(track.id)
     else
-      tracks_table = MusicTrack.arel_table
-      @tracks = MusicTrack.where(tracks_table[:artist_name].matches("%#{params[:artist_name]}%").and(tracks_table[:name].matches("%#{params[:name]}%"))).limit(10)
+      @tracks = MusicTrack.without_slaves.artist_and_name_like(params[:artist_name], params[:name]).limit(10)
     end
   end
   
