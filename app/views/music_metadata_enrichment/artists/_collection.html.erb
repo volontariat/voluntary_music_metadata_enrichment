@@ -2,7 +2,7 @@
 <% with_top_tracks ||= false %>
 <% paginate ||= false %>
 <% if @artists.none? %>
-<p><%= I18n.t("music_metadata_enrichment_group_artist_connections.index.empty_collection")%></p>
+<p><%= title %></p>
 <% else %>
   <table class="table table-striped">
     <thead>
