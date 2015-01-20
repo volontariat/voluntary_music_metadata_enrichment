@@ -1,8 +1,14 @@
+GIT
+  remote: git://github.com/mislav/will_paginate.git
+  revision: 74a6cd0197072903cd8b83744133744ff4b4c046
+  specs:
+    will_paginate (3.0.4)
+
 PATH
   remote: .
   specs:
     voluntary_music_metadata_enrichment (0.0.1)
-      lastfm (~> 1.25.0)
+      lastfm (~> 1.26.0)
       musicbrainz
       voluntary (~> 0.2.1)
 
@@ -162,12 +168,8 @@ GEM
       dotenv (~> 1.0.2)
       thor (~> 0.19.1)
     formatador (0.2.5)
-    friendly_id (5.0.4)
+    friendly_id (5.0.5)
       activerecord (>= 4.0.0)
-    fuubar (1.1.1)
-      rspec (~> 2.0)
-      rspec-instafail (~> 0.2.0)
-      ruby-progressbar (~> 1.0)
     gherkin (2.11.8)
       multi_json (~> 1.3)
     gon (5.0.4)
@@ -224,7 +226,7 @@ GEM
       addressable
       faraday
       multi_json
-    lastfm (1.25.0)
+    lastfm (1.26.0)
       activesupport (>= 3.2.0)
       httparty
       xml-simple
@@ -367,8 +369,6 @@ GEM
     rspec-core (2.99.2)
     rspec-expectations (2.99.2)
       diff-lcs (>= 1.1.3, < 2.0)
-    rspec-instafail (0.2.6)
-      rspec
     rspec-mocks (2.99.3)
     rspec-rails (2.99.0)
       actionpack (>= 3.0)
@@ -380,7 +380,6 @@ GEM
       rspec-expectations (~> 2.99.0)
       rspec-mocks (~> 2.99.0)
     ruby-hmac (0.4.0)
-    ruby-progressbar (1.7.1)
     rubyzip (1.1.6)
     sass (3.2.19)
     sass-rails (4.0.5)
@@ -519,7 +518,6 @@ GEM
     websocket (1.2.1)
     wicked (1.0.3)
       rails (>= 3.0.7)
-    will_paginate (3.0.7)
     xml-simple (1.1.4)
     xpath (0.1.4)
       nokogiri (~> 1.3)
@@ -539,7 +537,6 @@ DEPENDENCIES
   database_cleaner (~> 0.7.1)
   factory_girl_rails (~> 1.7.0)
   fixture_builder (~> 0.3.3)
-  fuubar (~> 1.1.0)
   guard-cucumber (~> 1.4.0)
   guard-rspec (~> 3.0.2)
   guard-spork (~> 1.5.1)
@@ -551,3 +548,4 @@ DEPENDENCIES
   spork (~> 1.0rc2)
   timecop (~> 0.6.1)
   voluntary_music_metadata_enrichment!
+  will_paginate!
