@@ -5,5 +5,5 @@
   <%= render partial: 'shared/form/error_messages', locals: { resource: @artist } %>
   <%= f.input :name %>
   <%= f.input :mbid %>
-  <%= f.submit 'Search Artist' %>
+  <%= f.submit t('music_artists.new.submit') %>
 <% end %>
