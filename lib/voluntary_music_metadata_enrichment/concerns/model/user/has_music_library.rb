@@ -18,6 +18,7 @@ module VoluntaryMusicMetadataEnrichment
                 begin
                   begin
                     lastfm_artists = lastfm.library.get_artists(user: lastfm_user_name, page: page)
+                    
                     puts "USER #{lastfm_user_name}: LIBRARY PAGE ##{page}"
                   rescue REXML::ParseException
                     lastfm_artists = []
@@ -26,9 +27,20 @@ module VoluntaryMusicMetadataEnrichment
                   
                   break
                 rescue Lastfm::ApiError
+                  puts "USER #{lastfm_user_name}: LIBRARY PAGE ##{page} ... Lastfm::ApiError ... TRY AGAIN"
                   sleep 30
                 end
               end
+             
+              if lastfm_artists.first.nil?
+                puts "USER #{lastfm_user_name}: LIBRARY PAGE ##{page} IS EMPTY" 
+                over_last_page = true
+                break
+              end
+             
+              artist_mbids = lastfm_artists.map{|a| a['mbid']}.uniq
+              
+              voluntary_artist_mbids = MusicArtist.where('mbid IN(?)', artist_mbids).map(&:mbid)
               
               lastfm_artists.each do |lastfm_artist|
                 if artist_names.include?(lastfm_artist['name'])
@@ -41,7 +53,7 @@ module VoluntaryMusicMetadataEnrichment
                 
                 next if lastfm_artist['mbid'].blank?
                 
-                next if MusicArtist.where(mbid: lastfm_artist['mbid']).any?
+                next if voluntary_artist_mbids.include? lastfm_artist['mbid']
                 
                 if MusicBrainz::Artist.find(lastfm_artist['mbid'])
                   MusicArtist.create(name: lastfm_artist['name'], mbid: lastfm_artist['mbid'])
