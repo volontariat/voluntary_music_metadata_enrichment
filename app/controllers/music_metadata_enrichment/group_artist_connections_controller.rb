@@ -9,7 +9,7 @@ class MusicMetadataEnrichment::GroupArtistConnectionsController < ApplicationCon
     if request.xhr? 
       group = MusicMetadataEnrichment::Group.find(params[:group_id])
       @artists = group.artists.order('name ASC').paginate(per_page: 10, page: params[:page] || 1)
-      render partial: 'music_metadata_enrichment/artists/collection', layout: false, locals: { paginate: true }
+      render partial: 'music_metadata_enrichment/artists/collection', layout: false, locals: { title: I18n.t("music_metadata_enrichment_group_artist_connections.index.empty_collection"), paginate: true }
     end
   end
   
@@ -18,8 +18,16 @@ class MusicMetadataEnrichment::GroupArtistConnectionsController < ApplicationCon
     
     if params[:music_metadata_enrichment_group].present?
       @group.artist_connections_text = params[:music_metadata_enrichment_group][:artist_connections_text]
-      @group.import_artist_connections
-      flash[:notice] = I18n.t('music_metadata_enrichment_group_artist_connections.import.success')
+      artist_names_without_mbid = @group.import_artist_connections
+      
+      if artist_names_without_mbid.any?
+        flash[:notice] = I18n.t(
+          'music_metadata_enrichment_group_artist_connections.import.success_with_missing_artist_mbids', artist_names: artist_names_without_mbid.join(', ')
+        )
+      else
+        flash[:notice] = I18n.t('music_metadata_enrichment_group_artist_connections.import.success')
+      end
+      
       redirect_to music_metadata_enrichment_group_path(@group.id)
     end
   end

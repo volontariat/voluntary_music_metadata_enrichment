@@ -6,6 +6,7 @@ en:
     import:
       title: Import Artist Connections  
       success: Successfully imported artist connections.
+      success_with_missing_artist_mbids: "Successfully imported artist connections. But there are artists on last.fm which have no MusicBrainz ID and have to be imported manually: %{artist_names}"
     new: 
       title: "New Group Artist Connection: enter artist information"
       title_short: 'New group artist connection'

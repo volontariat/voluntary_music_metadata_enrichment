@@ -14,13 +14,18 @@ module MusicMetadataEnrichment
     attr_accessor :artist_connections_text
     
     def import_artist_connections
+      artist_names_without_mbid = []
       artist_names = artist_connections_text.split("\n").map(&:strip)
       
       artist_names.each do |artist_name|
         lastfm = Lastfm.new(LastfmApiKey, LastfmApiSecret)
         lastfm_artist = lastfm.artist.get_info(artist: artist_name)
         
-        next if lastfm_artist['mbid'].blank?
+        if lastfm_artist['mbid'].blank?
+          artist_names_without_mbid << lastfm_artist['name']
+          
+          next
+        end
         
         artist = MusicArtist.where(mbid: lastfm_artist['mbid']).first
         
@@ -34,6 +39,8 @@ module MusicMetadataEnrichment
           MusicMetadataEnrichment::GroupArtistConnection.create(group_id: id, artist_id: artist.id)
         end
       end
+      
+      artist_names_without_mbid
     end
     
     private
