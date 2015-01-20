@@ -13,6 +13,17 @@ class MusicMetadataEnrichment::GroupArtistConnectionsController < ApplicationCon
     end
   end
   
+  def import
+    @group = MusicMetadataEnrichment::Group.find(params[:group_id])
+    
+    if params[:music_metadata_enrichment_group].present?
+      @group.artist_connections_text = params[:music_metadata_enrichment_group][:artist_connections_text]
+      @group.import_artist_connections
+      flash[:notice] = I18n.t('music_metadata_enrichment_group_artist_connections.import.success')
+      redirect_to music_metadata_enrichment_group_path(@group.id)
+    end
+  end
+  
   def new
     build_artist
   end

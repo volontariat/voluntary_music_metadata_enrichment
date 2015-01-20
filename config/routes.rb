@@ -6,6 +6,7 @@ Rails.application.routes.draw do
     resources :groups, only: [:index, :new, :create, :show] do
       resources :artists, only: [:index, :new], controller: 'group_artist_connections' do
         collection do
+          get :import
           get :name_confirmation
           get :select_artist
           get :creation

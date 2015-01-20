@@ -3,6 +3,9 @@ en:
     index:
       empty_collection: No artist connections for the group.
       
+    import:
+      title: Import Artist Connections  
+      success: Successfully imported artist connections.
     new: 
       title: "New Group Artist Connection: enter artist information"
       title_short: 'New group artist connection'
