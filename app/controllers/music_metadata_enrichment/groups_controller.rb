@@ -2,6 +2,8 @@ class MusicMetadataEnrichment::GroupsController < ApplicationController
   include ::MusicMetadataEnrichment::BaseController
   include Applicat::Mvc::Controller::Resource
 
+  authorize_resource
+
   def index
   end
   

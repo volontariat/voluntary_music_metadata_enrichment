@@ -5,6 +5,8 @@ class MusicMetadataEnrichment::VideosController < ApplicationController
   include ::MusicMetadataEnrichment::ArtistConfirmation
   include ::MusicMetadataEnrichment::TrackConfirmation
     
+  authorize_resource class: 'MusicVideo'
+    
   def index
   end
   

@@ -4,6 +4,8 @@ class MusicMetadataEnrichment::ReleasesController < ApplicationController
   include Applicat::Mvc::Controller::Resource
   include ::MusicMetadataEnrichment::ArtistConfirmation
   
+  authorize_resource class: 'MusicRelease', except: [:by_name]
+  
   def index
   end
   
