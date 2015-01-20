@@ -1,3 +1,5 @@
+require 'voluntary'
+
 module VoluntaryMusicMetadataEnrichment
   class Engine < ::Rails::Engine
     config.autoload_paths << File.expand_path("../../../app/models/concerns", __FILE__)
