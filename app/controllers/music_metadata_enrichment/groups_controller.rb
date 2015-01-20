@@ -24,6 +24,8 @@ class MusicMetadataEnrichment::GroupsController < ApplicationController
   
   def show
     @group = MusicMetadataEnrichment::Group.find(params[:id])
+    @year = Time.now.strftime('%Y')
+    @releases = @group.releases.released_in_year(@year).order('released_at DESC')
   end
   
   def resource

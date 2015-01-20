@@ -5,6 +5,7 @@ en:
       short_title: Releases
       name: Name
       empty_collection: No music releases available.
+      year: Year
       
     new: 
       title: "New Music Release: enter artist information"

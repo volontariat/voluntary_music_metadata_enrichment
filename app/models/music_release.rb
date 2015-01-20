@@ -5,6 +5,10 @@ class MusicRelease < ActiveRecord::Base
   
   has_many :tracks, class_name: 'MusicTrack', foreign_key: 'release_id', dependent: :destroy
   
+  scope :released_in_year, ->(year) do
+    where("released_at >= :from AND released_at <= :to", from: Time.local(year,1,1,0,0,0), to: Time.local(year,12,31,23,59,59))
+  end
+  
   validates :artist_id, presence: true
   validates :name, presence: true
   validates :mbid, uniqueness: true, allow_blank: true

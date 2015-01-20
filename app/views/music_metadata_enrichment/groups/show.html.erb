@@ -1,1 +1,22 @@
+<% content_for :javascript_includes do %>
+  <%= javascript_include_tag 'music_metadata_enrichment/groups/show' %>
+<% end %>
+<% content_for :top_javascript do %>
+  var group_id = "<%= params[:id] %>";
+<% end %>
+
 <h3><%= @group.name %></h3>
+
+<div class="tabs">
+  <ul>
+    <li><a href="#releases"><%= t('music_releases.index.short_title') %></a></li>
+    <li>
+      <a href="<%= music_metadata_enrichment_group_artists_path(@group.id) %>">
+        <%= t('music_artists.index.short_title') %>
+      </a>
+    </li>
+  </ul>
+  <div id="releases">
+    <%= render partial: 'music_metadata_enrichment/releases/collection', locals: { paginate: false } %>
+  </div>
+</div>
