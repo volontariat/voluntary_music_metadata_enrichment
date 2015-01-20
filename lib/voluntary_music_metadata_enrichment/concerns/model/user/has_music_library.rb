@@ -6,6 +6,8 @@ module VoluntaryMusicMetadataEnrichment
           extend ActiveSupport::Concern
           
           included do
+            has_many :music_library_artists
+            
             scope :on_lastfm, -> { where('users.lastfm_user_name IS NOT NULL') }
           end
           
@@ -44,7 +46,7 @@ module VoluntaryMusicMetadataEnrichment
              
               artist_mbids = lastfm_artists.map{|a| a['mbid']}.uniq
               
-              voluntary_artist_mbids = MusicArtist.where('mbid IN(?)', artist_mbids).map(&:mbid)
+              voluntary_artists = MusicArtist.where('mbid IN(?)', artist_mbids).to_a
               
               lastfm_artists.each do |lastfm_artist|
                 if artist_names.include?(lastfm_artist['name'])
@@ -57,10 +59,16 @@ module VoluntaryMusicMetadataEnrichment
                 
                 next if lastfm_artist['mbid'].blank?
                 
-                next if voluntary_artist_mbids.include? lastfm_artist['mbid']
+                artist = nil
                 
-                if MusicBrainz::Artist.find(lastfm_artist['mbid'])
-                  MusicArtist.create(name: lastfm_artist['name'], mbid: lastfm_artist['mbid'])
+                unless artist = voluntary_artists.select{|a| a.mbid == lastfm_artist['mbid'] }.first
+                  if MusicBrainz::Artist.find(lastfm_artist['mbid'])
+                    artist = MusicArtist.create(name: lastfm_artist['name'], mbid: lastfm_artist['mbid'])
+                  end
+                end
+                
+                if artist
+                  music_library_artists.create(artist_id: artist.id, plays: lastfm_artist['playcount'])
                 end
               end
               
