@@ -130,5 +130,6 @@ class MusicMetadataEnrichment::ReleasesController < ApplicationController
     @release.mbid = params[:music_release][:mbid] unless ['announce', 'create_announcement'].include? action_name
     @release.artist_id = params[:music_release][:artist_id]
     @release.future_release_date = params[:music_release][:future_release_date] if ['announce', 'create_announcement'].include? action_name
+    @release.user_id = current_user.id
   end
 end
