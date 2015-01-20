@@ -62,5 +62,6 @@ class MusicMetadataEnrichment::VideosController < ApplicationController
   
   def build_video
     @video = MusicVideo.new(params[:music_video])
+    @video.user_id = current_user.id
   end
 end
