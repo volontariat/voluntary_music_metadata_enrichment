@@ -1,3 +1,5 @@
+<% with_artist ||= false %>
+<% paginate ||= false %>
 <% if @group.present? %>
 <form class="simple_form form-horizontal">
   <div class="control-group string required year">
@@ -14,7 +16,10 @@
   <table class="table table-striped">
     <thead>
       <tr class="<%= cycle('odd', 'even') %>">
-        <th><%= t("activerecord.attributes.music_releases.released_at") %></th>
+        <th><%= t("activerecord.attributes.music_release.released_at") %></th>
+  <% if with_artist %>      
+        <th><%= t("music_artists.model.short_name") %></th>
+  <% end %>        
         <th><%= t("attributes.name") %></th>
         <th><%= t("attributes.listeners") %></th>
         <th><%= t("attributes.plays") %></th>
@@ -24,6 +29,9 @@
     <% @releases.each do |release| %>
       <tr class="<%= cycle('odd', 'even') %>">
         <td><%= release.formatted_released_at_or_future_release_date %></td>
+      <% if with_artist %>
+        <td><%= link_to release.artist_name, music_metadata_enrichment_artist_path(release.artist_id) %></td>
+      <% end %>  
         <td><%= link_to release.name, music_metadata_enrichment_release_path(release.id) %></td>
         <td><%= release.listeners %></td>
         <td><%= release.plays %></td>

@@ -1,5 +1,8 @@
 en:
   music_artists:
+    model:
+      short_name: Artist
+      
     index:
       title: Music Artists
       short_title: Artists
@@ -9,6 +12,7 @@ en:
     new: 
       title: New Music Artist
       mbid_invalid: MBID is invalid.
+      submit: Search Artist
       
     name_confirmation: 
       title: Music artist name confirmation
