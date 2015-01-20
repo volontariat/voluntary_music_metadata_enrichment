@@ -5,6 +5,10 @@ module VoluntaryMusicMetadataEnrichment
         module HasMusicLibrary
           extend ActiveSupport::Concern
           
+          included do
+            scope :on_lastfm, -> { where('users.lastfm_user_name IS NOT NULL') }
+          end
+          
           def import_music_artists(lastfm)
             artist_names = []
             over_last_page = false
