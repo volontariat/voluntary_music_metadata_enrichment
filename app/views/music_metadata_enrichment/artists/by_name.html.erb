@@ -1,24 +1,3 @@
 <h3><%= t('music_artists.by_name.title') %></h3>
 
-<% if @artists.none? %>
-<p><%= I18n.t("music_artists.name_confirmation.empty_collection")%></p>
-<% else %>
-  <table class="table table-striped">
-    <thead>
-      <tr class="<%= cycle('odd', 'even') %>">
-        <th><%= t("attributes.name") %></th>
-        <th><%= t("activerecord.attributes.music_artist.founded_at") %></th>
-        <th><%= t("music_artists.by_name.top3_tracks") %></th>
-      </tr>
-    </thead>
-    <tbody>
-    <% @artists.each do |artist| %>
-      <tr class="<%= cycle('odd', 'even') %>">
-        <td><%= link_to artist.name, music_metadata_enrichment_artist_path(artist.id) %></td>
-        <td><%= artist.founded_at.present? ? artist.founded_at.strftime('%d.%m.%Y') : '' %></td>
-        <td><%= raw(artist.tracks.order('plays DESC').limit(3).map{|t| link_to(t.name, music_metadata_enrichment_track_path(t.id)) }.join(', '))%></td>
-      </tr>
-    <% end %>
-    </tbody>
-  </table>  
-<% end %>
+<%= render partial: 'music_metadata_enrichment/artists/collection', locals: { with_founded_at: true, with_top_tracks: true } %>

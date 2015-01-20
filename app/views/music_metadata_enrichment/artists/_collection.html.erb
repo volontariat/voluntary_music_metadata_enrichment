@@ -1,0 +1,41 @@
+<% with_founded_at ||= false %>
+<% with_top_tracks ||= false %>
+<% paginate ||= false %>
+<% if @artists.none? %>
+<p><%= I18n.t("music_metadata_enrichment_group_artist_connections.index.empty_collection")%></p>
+<% else %>
+  <table class="table table-striped">
+    <thead>
+      <tr class="<%= cycle('odd', 'even') %>">
+        <th><%= t("attributes.name") %></th>
+  <% if with_founded_at %>      
+        <th><%= t("activerecord.attributes.music_artist.founded_at") %></th>
+  <% end %>
+  <% if with_top_tracks %>        
+        <th><%= t("music_artists.by_name.top3_tracks") %></th>
+  <% end %>
+        <th><%= t("attributes.listeners") %></th>
+      </tr>
+    </thead>
+    <tbody>
+    <% @artists.each do |artist| %>
+      <tr class="<%= cycle('odd', 'even') %>">
+        <td><%= link_to artist.name, music_metadata_enrichment_artist_path(artist.id) %></td>
+      <% if with_founded_at %>
+        <td><%= artist.founded_at.present? ? artist.founded_at.strftime('%d.%m.%Y') : '' %></td>
+      <% end %>
+      <% if with_top_tracks %> 
+        <td><%= raw(artist.tracks.order('plays DESC').limit(3).map{|t| link_to(t.name, music_metadata_enrichment_track_path(t.id)) }.join(', '))%></td>
+      <% end %>
+        <td><%= artist.listeners %></td>
+      </tr>
+    <% end %>
+    </tbody>
+  </table>  
+<% end %>
+<%= will_paginate @artists if paginate %>
+<% if params[:group_id].present? %>
+<p>
+  <%= link_to t('music_metadata_enrichment_group_artist_connections.new.title_short'), new_music_metadata_enrichment_group_artist_path(params[:group_id]) %>
+</p>
+<% end %>
