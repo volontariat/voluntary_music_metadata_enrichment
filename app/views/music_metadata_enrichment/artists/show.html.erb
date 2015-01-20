@@ -10,27 +10,4 @@
 
 <h4><%= t('music_releases.index.short_title') %></h4>
 
-<% if @releases.none? %>
-<p><%= I18n.t("music_releases.index.empty_collection")%></p>
-<% else %>
-  <table class="table table-striped">
-    <thead>
-      <tr class="<%= cycle('odd', 'even') %>">
-        <th><%= t("activerecord.attributes.music_releases.released_at") %></th>
-        <th><%= t("attributes.name") %></th>
-        <th><%= t("attributes.listeners") %></th>
-        <th><%= t("attributes.plays") %></th>
-      </tr>
-    </thead>
-    <tbody>
-    <% @releases.each do |release| %>
-      <tr class="<%= cycle('odd', 'even') %>">
-        <td><%= release.formatted_released_at_or_future_release_date %></td>
-        <td><%= link_to release.name, music_metadata_enrichment_release_path(release.id) %></td>
-        <td><%= release.listeners %></td>
-        <td><%= release.plays %></td>
-      </tr>
-    <% end %>
-    </tbody>
-  </table>
-<% end %>
+<%= render partial: 'music_metadata_enrichment/releases/collection', locals: { paginate: false } %>
