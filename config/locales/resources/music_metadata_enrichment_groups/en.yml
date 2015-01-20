@@ -1,0 +1,23 @@
+en:
+  music_metadata_enrichment_groups:
+    index:
+      title: Groups
+      short_title: Groups
+      empty_collection: No groups available.
+      
+    new: 
+      title: New Group
+
+    create:
+      successful: Group successfully created.
+        
+  activerecord:
+    models:
+      music_metadata_enrichment_group: Group
+ 
+    errors:
+      models:
+        music_metadata_enrichment_group:
+          attributes:
+            name:
+              not_registered_on_lastfm: The group is not registered on last.fm yet.

@@ -3,6 +3,8 @@ Rails.application.routes.draw do
   get '/music_metadata_enrichment' => 'product/music_metadata_enrichment#index'
   
   namespace :music_metadata_enrichment do
+    resources :groups, only: [:index, :new, :create, :show]
+      
     resources :artists, only: [:index, :new, :create, :show] do
       collection do
         get :name_confirmation
