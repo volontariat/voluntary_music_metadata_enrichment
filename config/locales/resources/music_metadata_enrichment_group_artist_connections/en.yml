@@ -1,0 +1,15 @@
+en:
+  music_metadata_enrichment_group_artist_connections:
+    index:
+      empty_collection: No artist connections for the group.
+      
+    new: 
+      title: "New Group Artist Connection: enter artist information"
+      title_short: 'New group artist connection'
+      
+    name_confirmation:
+      title: "New Group Artist Connection: artist confirmation"  
+      
+    creation:
+      already_created: This group artist connection has been already created.
+      success: The group artist connection was successful.

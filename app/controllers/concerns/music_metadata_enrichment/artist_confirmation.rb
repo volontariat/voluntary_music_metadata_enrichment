@@ -18,6 +18,10 @@ module MusicMetadataEnrichment
             when 'new_track' then redirect_to name_music_metadata_enrichment_tracks_path(music_track: { artist_id: artist.id })
             when 'new_video' then redirect_to track_name_music_metadata_enrichment_tracks_path(music_track: { artist_id: artist.id })
             end
+          elsif artist && from == 'new_group_artist_connection'
+            redirect_to creation_music_metadata_enrichment_group_artists_path(
+              group_artist_connection: { group_id: params[:group_id], artist_id: artist.id }
+            )
           elsif artist
             flash[:notice] = I18n.t('music_releases.select_artist.wait_until_artist_metadata_import_completed')
             redirect_to music_metadata_enrichment_path 
@@ -28,7 +32,13 @@ module MusicMetadataEnrichment
               flash[:notice] = I18n.t('music_releases.artist_confirmation.artist_import_scheduled')
             end
             
-            redirect_to music_metadata_enrichment_path
+            if ['new_artist', 'new_release', 'new_track', 'new_video'].include?(from)
+              redirect_to music_metadata_enrichment_path
+            elsif from == 'new_group_artist_connection'
+              redirect_to creation_music_metadata_enrichment_group_artists_path(
+                group_artist_connection: { group_id: params[:group_id], artist_id: @artist.id }
+              )
+            end
           else
             render :new
           end
@@ -43,6 +53,8 @@ module MusicMetadataEnrichment
             redirect_to new_music_metadata_enrichment_track_path
           elsif from == 'new_video'
             redirect_to new_music_metadata_enrichment_video_path
+          elsif from == 'new_group_artist_connection'
+            redirect_to new_music_metadata_enrichment_group_artist_path
           end
         end
       elsif @artist.name.present?
@@ -62,7 +74,13 @@ module MusicMetadataEnrichment
           flash[:notice] = I18n.t('music_releases.select_artist.scheduled_artist_for_import')
         end
         
-        redirect_to music_metadata_enrichment_path
+        if ['new_artist', 'new_release', 'new_track', 'new_video'].include? from
+          redirect_to music_metadata_enrichment_path
+        elsif from == 'new_group_artist_connection'
+          redirect_to creation_music_metadata_enrichment_group_artists_path(
+            group_artist_connection: { group_id: params[:group_id], artist_id: @artist.id }
+          )
+        end
       else
         params[:music_artist][:name] = @artist.name
         params[:music_artist][:mbid] = @artist.mbid
@@ -74,8 +92,12 @@ module MusicMetadataEnrichment
       params[:music_artist] ||= {}
       name_and_mbid = params[:music_artist].delete(:name_and_mbid)
       artist = MusicArtist.where(mbid: name_and_mbid.split(';').last).first
-      
-      if artist && artist.active?
+   
+      if artist && from == 'new_group_artist_connection'
+        redirect_to creation_music_metadata_enrichment_group_artists_path(
+          group_artist_connection: { group_id: params[:group_id], artist_id: artist.id }
+        )
+      elsif artist && artist.active?
         if from == 'new_release'
           redirect_to name_music_metadata_enrichment_releases_path(music_release: { artist_id: artist.id })
         elsif from == 'new_track'
