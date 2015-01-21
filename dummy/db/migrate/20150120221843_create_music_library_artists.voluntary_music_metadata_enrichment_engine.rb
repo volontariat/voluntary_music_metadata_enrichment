@@ -7,5 +7,7 @@ class CreateMusicLibraryArtists < ActiveRecord::Migration
       t.integer :plays
       t.timestamps
     end
+    
+    add_index :music_library_artists, :user_id
   end
 end
