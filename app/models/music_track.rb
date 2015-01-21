@@ -7,6 +7,7 @@ class MusicTrack < ActiveRecord::Base
   belongs_to :release, class_name: 'MusicRelease', counter_cache: true, counter_cache: 'tracks_count'
   
   has_many :videos, foreign_key: 'track_id', class_name: 'MusicVideo'
+  has_many :user_music_track_rankings, dependent: :destroy
   
   scope :without_slaves, -> { where('music_tracks.master_track_id IS NULL') }
   
@@ -26,7 +27,9 @@ class MusicTrack < ActiveRecord::Base
   before_create :set_release_name
   before_create :set_released_at
   before_create :set_master_track_id_if_available
+  after_create :create_ranking_with_matches
   after_save :synchronize_track_name
+  after_destroy :destroy_user_music_track_matches
   
   state_machine :state, initial: :without_metadata do
     event :import_metadata do transition :without_metadata => :active; end
@@ -135,9 +138,23 @@ class MusicTrack < ActiveRecord::Base
     end  
   end
   
+  def create_ranking_with_matches
+    return if master_track_id.present?
+    
+    User.on_lastfm.find_each do |user|
+      next if user.music_artists.where(id: artist_id).none?
+      
+      user.create_music_track_matches_for_one_track(self)
+    end
+  end  
+  
   def synchronize_track_name
     return unless name_changed?
     
     MusicVideo.where(['track_id = ?', id]).update_all ['track_name = ?', name]
+  end
+  
+  def destroy_user_music_track_matches
+    UserMusicTrackMatch.for_track(id).destroy_all
   end
 end

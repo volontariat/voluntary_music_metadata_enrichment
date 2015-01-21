@@ -7,6 +7,12 @@ module VoluntaryMusicMetadataEnrichment
           
           included do
             has_many :music_library_artists
+            has_many :music_artists, through: :music_library_artists, source: 'artist'
+            has_many :music_releases, through: :music_artists, source: 'releases'
+            has_many :music_tracks, through: :music_artists, source: 'tracks'
+            
+            has_many :music_track_rankings, class_name: 'UserMusicTrackRanking'
+            has_many :music_track_matches, class_name: 'UserMusicTrackMatch'
             
             scope :on_lastfm, -> { where('users.lastfm_user_name IS NOT NULL') }
           end
@@ -76,6 +82,20 @@ module VoluntaryMusicMetadataEnrichment
             end
             
             update_attribute(:music_library_imported, true) unless new_record?
+          end
+          
+          def create_music_track_matches
+            music_tracks.where('master_track_id IS NULL').find_each do |track|
+              create_music_track_matches_for_one_track(track)
+            end
+          end
+          
+          def create_music_track_matches_for_one_track(track_left)
+            music_track_rankings.create(track_id: track_left.id)
+            
+            music_tracks.where('master_track_id IS NULL AND music_tracks.id <> ?', track_left.id).find_each do |track_right|
+              music_track_matches.create(left_id: track_left.id, right_id: track_right.id)
+            end
           end
         end
       end
