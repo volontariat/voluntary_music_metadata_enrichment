@@ -2,6 +2,7 @@
 class MusicArtist < ActiveRecord::Base
   has_many :releases, class_name: 'MusicRelease', foreign_key: 'artist_id', dependent: :destroy
   has_many :tracks, class_name: 'MusicTrack', foreign_key: 'artist_id'
+  has_many :videos, class_name: 'MusicVideo', foreign_key: 'artist_id'
   
   validates :name, presence: true
   validates :mbid, presence: true, uniqueness: true
@@ -47,6 +48,7 @@ class MusicArtist < ActiveRecord::Base
       end while offset < count  
       
       #artist.import_bonus_tracks
+      #artist.import_music_videos_from_tapetv
     end
   end
   
@@ -77,6 +79,39 @@ class MusicArtist < ActiveRecord::Base
       
       offset += 100
     end while offset < count  
+  end
+  
+  def import_music_videos_from_tapetv
+    tapetv_videos, page = [], 1
+    
+    begin
+      response = nil
+      
+      begin
+        response = JSON.parse(HTTParty.get("http://www.tape.tv/#{name.split(' ').join('-').downcase}/videos.json?page=#{page}&page_size=8").body)
+      rescue JSON::ParserError
+      end
+      
+      break if response.nil?
+      
+      tapetv_videos += response.select{|v| !v['title'].match(/\(/) && !v['title'].match(/live/i) }.map{|v| { name: v['title'].gsub(/\(Video\)/, '').strip, url: v['share_url'] } }
+      sleep 5
+      
+      break if response.length != 8
+      
+      page += 1
+    end while !response.nil? && response.length > 0
+    
+    return if tapetv_videos.empty?
+    
+    tracks.where('LOWER(name) IN(?)', tapetv_videos.map{|v| MusicTrack.format_name(v[:name]).downcase }).each do |track|
+      tapetv_video = tapetv_videos.select do |v| 
+        MusicTrack.format_name(v[:name]).downcase == track.name.downcase ||
+        MusicTrack.format_name(v[:name]).downcase.gsub('ß', 'ss') == track.name.downcase.gsub('ß', 'ss')
+      end.first
+      
+      MusicVideo.create(status: 'Official', track_id: track.id, url: tapetv_video[:url]) unless tapetv_video.nil?
+    end
   end
   
   def bonus_tracks_release
