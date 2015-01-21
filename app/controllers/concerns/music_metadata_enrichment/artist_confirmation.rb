@@ -58,7 +58,15 @@ module MusicMetadataEnrichment
           end
         end
       elsif @artist.name.present?
-        @artists = MusicBrainz::Artist.search(@artist.name)
+        3.times do
+          @artists = MusicBrainz::Artist.search(@artist.name)
+          
+          if @artists.nil?
+            sleep 5
+          else
+            break
+          end
+        end
       else
         render :new
       end
