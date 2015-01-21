@@ -1,0 +1,12 @@
+<% paginate ||= false %>
+<% if @videos.none? %>
+<p><%= I18n.t("music_videos.index.empty_collection")%></p>
+<% else %>
+
+  <% @videos.each do |video| %>
+<h5><%= link_to video.name, music_metadata_enrichment_video_path(video) %></h4>
+<p><%= video.url_html %></p>
+  <% end %>
+<% end %>
+
+<%= will_paginate @videos if paginate %>
