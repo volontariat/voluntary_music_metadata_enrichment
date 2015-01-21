@@ -8,6 +8,16 @@
  <%= show_attribute :plays %>
 </dl>
 
-<h4><%= t('music_releases.index.short_title') %></h4>
-
-<%= render partial: 'music_metadata_enrichment/releases/collection', locals: { paginate: false } %>
+<div class="tabs">
+  <ul>
+    <li><a href="#releases"><%= t('music_releases.index.short_title') %></a></li>
+    <li>
+      <a href="<%= music_metadata_enrichment_artist_videos_path(@artist.id) %>">
+        <%= t('music_videos.index.short_title') %>
+      </a>
+    </li>
+  </ul>
+  <div id="releases">
+    <%= render partial: 'music_metadata_enrichment/releases/collection', locals: { paginate: false } %>
+  </div>
+</div>

@@ -14,6 +14,7 @@ Rails.application.routes.draw do
       end
       
       resources :releases, only: [:index], controller: 'group_release_connections'
+      resources :videos, only: [:index]
     end
       
     resources :artists, only: [:index, :new, :create, :show] do
@@ -21,6 +22,8 @@ Rails.application.routes.draw do
         get :name_confirmation
         get 'by_name/:name', to: 'artists#by_name'
       end
+      
+      resources :videos, only: [:index]
     end
     
     resources :releases, only: [:index, :new, :create, :show] do

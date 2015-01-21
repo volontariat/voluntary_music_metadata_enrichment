@@ -11,6 +11,11 @@
   <ul>
     <li><a href="#releases"><%= t('music_releases.index.short_title') %></a></li>
     <li>
+      <a href="<%= music_metadata_enrichment_group_videos_path(@group.id) %>">
+        <%= t('music_videos.index.short_title') %>
+      </a>
+    </li>
+    <li>
       <a href="<%= music_metadata_enrichment_group_artists_path(@group.id) %>">
         <%= t('music_artists.index.short_title') %>
       </a>

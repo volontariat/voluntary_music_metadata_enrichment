@@ -5,6 +5,7 @@ module MusicMetadataEnrichment
     has_many :artist_connections, class_name: 'MusicMetadataEnrichment::GroupArtistConnection', foreign_key: 'group_id', dependent: :destroy
     has_many :artists, class_name: 'MusicArtist', through: :artist_connections
     has_many :releases, class_name: 'MusicRelease', through: :artists
+    has_many :videos, class_name: 'MusicVideo', through: :artists
     
     validates :name, presence: true, uniqueness: true
     validate :registered_on_lastfm

@@ -8,6 +8,15 @@ class MusicMetadataEnrichment::VideosController < ApplicationController
   authorize_resource class: 'MusicVideo'
     
   def index
+    if request.xhr? 
+      if params[:artist_id].present?
+        @videos = MusicVideo.where(artist_id: params[:artist_id]).order('created_at DESC').paginate(per_page: 5, page: params[:page] || 1)
+      elsif params[:group_id].present?
+        @videos = MusicMetadataEnrichment::Group.find(params[:group_id]).videos.order('created_at DESC').paginate(per_page: 5, page: params[:page] || 1)
+      end
+      
+      render partial: 'music_metadata_enrichment/videos/collection', locals: { paginate: true }
+    end
   end
   
   def new
