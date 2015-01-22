@@ -1,7 +1,7 @@
 <h3><%= @artist.name %></h3>
 
 <dl class="dl-horizontal">
- <%= show_attribute :mbid %>
+ <%= show_attribute :mbid, value: link_to(@artist.mbid, "http://musicbrainz.org/artist/#{@artist.mbid}") %>
  <%= show_attribute :founded_at, value: @artist.founded_at.present? ? @artist.founded_at.strftime('%d.%m.%Y') : nil %>
  <%= show_attribute :dissolved_at, value: @artist.dissolved_at.present? ? @artist.dissolved_at.strftime('%d.%m.%Y') : nil %>
  <%= show_attribute :listeners %>
