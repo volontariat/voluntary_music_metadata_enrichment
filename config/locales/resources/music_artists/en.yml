@@ -12,7 +12,7 @@ en:
     new: 
       title: New Music Artist
       mbid_invalid: MBID is invalid.
-      submit: Search Artist
+      submit: Search Artist on MusicBrainz.org
       
     name_confirmation: 
       title: Music artist name confirmation

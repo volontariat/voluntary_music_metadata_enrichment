@@ -5,5 +5,5 @@
   <%= hidden_field_tag :group_id, params[:group_id] if params[:group_id].present? %>
   <%= f.hidden_field :artist_id %>
   <%= f.input :name %>
-  <%= f.submit 'Search Release' %>
+  <%= f.submit t('music_releases.name.submit') %>
 <% end %>

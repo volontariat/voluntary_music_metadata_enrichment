@@ -11,7 +11,7 @@ en:
 
     name:
       title: Enter a name for the track
-      
+      submit: Search Track on MusicBrainz.org
     name_confirmation:
       title: Track name confirmation
       empty_collection: Track not found.

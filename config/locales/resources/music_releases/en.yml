@@ -21,7 +21,8 @@ en:
       
     name:
       title: Enter a name for the release  
-
+      submit: Search Release on MusicBrainz.org
+      
     name_confirmation:
       empty_collection: Release not found.
       title: Music release name confirmation
