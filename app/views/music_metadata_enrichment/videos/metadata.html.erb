@@ -4,7 +4,7 @@
 
 <h3><%= t('music_videos.metadata.title') %></h3>
 
-<%= simple_form_for(@video, url: music_metadata_enrichment_videos_path, method: :post, html: {class: 'form-horizontal'}) do |f| %>
+<%= simple_form_for(@video, url: music_videos_path, method: :post, html: {class: 'form-horizontal'}) do |f| %>
   <%= render partial: 'shared/form/error_messages', locals: { resource: @video } %>
   <%= hidden_field_tag :group_id, params[:group_id] if params[:group_id].present? %>
   <%= f.hidden_field :track_id %>

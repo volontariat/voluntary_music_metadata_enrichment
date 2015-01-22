@@ -1,7 +1,7 @@
 $(document).ready ->
   $(document.body).on "change", "select[name^=\"year\"]", ->
     $.ajax(
-      url: "/music_metadata_enrichment/groups/" + group_id + "/releases"
+      url: "/music/groups/" + group_id + "/releases"
       data:
         year: $(this).val()
       type: "GET"

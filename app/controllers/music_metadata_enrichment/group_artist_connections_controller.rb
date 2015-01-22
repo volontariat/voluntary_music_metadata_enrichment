@@ -28,7 +28,7 @@ class MusicMetadataEnrichment::GroupArtistConnectionsController < ApplicationCon
         flash[:notice] = I18n.t('music_metadata_enrichment_group_artist_connections.import.success')
       end
       
-      redirect_to music_metadata_enrichment_group_path(@group.id)
+      redirect_to music_group_path(@group.id)
     end
   end
   
@@ -49,7 +49,7 @@ class MusicMetadataEnrichment::GroupArtistConnectionsController < ApplicationCon
       group_id: params[:group_artist_connection][:group_id], artist_id: params[:group_artist_connection][:artist_id]
     ).any?
       flash[:alert] = I18n.t('music_metadata_enrichment_group_artist_connections.creation.already_created')
-      redirect_to music_metadata_enrichment_group_path(params[:group_artist_connection][:group_id])
+      redirect_to music_group_path(params[:group_artist_connection][:group_id])
     else
       @group_artist_connection = MusicMetadataEnrichment::GroupArtistConnection.new(
         group_id: params[:group_artist_connection][:group_id], artist_id: params[:group_artist_connection][:artist_id]
@@ -61,7 +61,7 @@ class MusicMetadataEnrichment::GroupArtistConnectionsController < ApplicationCon
         flash[:alert] = @group_artist_connection.errors.full_messages.join('. ')
       end
       
-      redirect_to music_metadata_enrichment_group_path(@group_artist_connection.group_id)
+      redirect_to music_group_path(@group_artist_connection.group_id)
     end
   end
   

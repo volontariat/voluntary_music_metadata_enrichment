@@ -11,9 +11,9 @@ module MusicMetadataEnrichment
       if track = MusicTrack.where("artist_id = :artist_id AND LOWER(name) = :name", artist_id: @track.artist_id, name: @track.name.downcase.strip).first
         if from == 'new_track'
           flash[:alert] = I18n.t('music_tracks.create.already_exist')
-          redirect_to music_metadata_enrichment_track_path(track.id)
+          redirect_to music_track_path(track.id)
         elsif from == 'new_video'
-          redirect_to metadata_music_metadata_enrichment_videos_path(
+          redirect_to metadata_music_videos_path(
             (params[:group_id].present? ? {group_id: params[:group_id]} : {}).merge(music_video: { track_id: track.id })
           ) 
         end
@@ -23,9 +23,9 @@ module MusicMetadataEnrichment
           flash[:notice] = I18n.t('music_tracks.create.successfully_creation')
           
           if from == 'new_track'
-            redirect_to music_metadata_enrichment_track_path(@track.id)
+            redirect_to music_track_path(@track.id)
           elsif from == 'new_video'
-            redirect_to metadata_music_metadata_enrichment_videos_path(
+            redirect_to metadata_music_videos_path(
               (params[:group_id].present? ? {group_id: params[:group_id]} : {}).merge(music_video: { track_id: @track.id })
             ) 
           end
@@ -39,9 +39,9 @@ module MusicMetadataEnrichment
           end
           
           if params[:group_id].present?
-            redirect_to music_metadata_enrichment_group_path(params[:group_id])
+            redirect_to music_group_path(params[:group_id])
           else
-            redirect_to music_metadata_enrichment_path
+            redirect_to music_path
           end
         end
       end

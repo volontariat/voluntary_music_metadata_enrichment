@@ -1,8 +1,11 @@
 Rails.application.routes.draw do
   get '/products/music-metadata-enrichment' => 'product/music_metadata_enrichment#index', as: 'music_metadata_enrichment_product'
-  get '/music_metadata_enrichment' => 'product/music_metadata_enrichment#index'
+  #get '/music_metadata_enrichment' => 'product/music_metadata_enrichment#index'
+  get '/music' => 'product/music_metadata_enrichment#index'
+  get '/music_metadata_enrichment', to: redirect('/music')
+  get '/music-metadata-enrichment', to: redirect('/music')
   
-  namespace :music_metadata_enrichment do
+  namespace :music, module: 'music_metadata_enrichment' do
     resources :groups, only: [:index, :new, :create, :show] do
       resources :artists, only: [:index, :new], controller: 'group_artist_connections' do
         collection do

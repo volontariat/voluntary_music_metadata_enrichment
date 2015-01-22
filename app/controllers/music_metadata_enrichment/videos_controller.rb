@@ -21,9 +21,9 @@ class MusicMetadataEnrichment::VideosController < ApplicationController
   
   def new
     if params[:artist_id].present?
-      redirect_to track_name_music_metadata_enrichment_videos_path(music_track: { artist_id: params[:artist_id]})
+      redirect_to track_name_music_videos_path(music_track: { artist_id: params[:artist_id]})
     elsif params[:track_id].present?
-      redirect_to metadata_music_metadata_enrichment_videos_path(music_video: { track_id: params[:track_id]})  
+      redirect_to metadata_music_videos_path(music_video: { track_id: params[:track_id]})  
     else
       build_artist
     end
@@ -63,9 +63,9 @@ class MusicMetadataEnrichment::VideosController < ApplicationController
       flash[:notice] = I18n.t('music_videos.create.successful')
       
       if params[:group_id].present?
-        redirect_to music_metadata_enrichment_group_path(params[:group_id])
+        redirect_to music_group_path(params[:group_id])
       else
-        redirect_to music_metadata_enrichment_video_path(@video)
+        redirect_to music_video_path(@video)
       end
     else
       render :metadata

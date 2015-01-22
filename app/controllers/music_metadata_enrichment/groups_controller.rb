@@ -16,7 +16,7 @@ class MusicMetadataEnrichment::GroupsController < ApplicationController
     
     if @group.save
       flash[:notice] = I18n.t('music_metadata_enrichment_groups.create.successful')
-      redirect_to music_metadata_enrichment_group_path(@group)
+      redirect_to music_group_path(@group)
     else
       render :new
     end

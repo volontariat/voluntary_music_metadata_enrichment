@@ -14,8 +14,8 @@
     <tbody>
     <% @tracks.each do |track| %>
       <tr class="<%= cycle('odd', 'even') %>">
-        <td><%= link_to track.artist_name, music_metadata_enrichment_artist_path(track.artist_id) %></td>
-        <td><%= link_to track.name, music_metadata_enrichment_track_path(track.id) %></td>
+        <td><%= link_to track.artist_name, music_artist_path(track.artist_id) %></td>
+        <td><%= link_to track.name, music_track_path(track.id) %></td>
         <td><%= render partial: 'music_metadata_enrichment/tracks/spotify_track_player', locals: { spotify_track_id: track.spotify_track_id } %></td>
       </tr>
     <% end %>
