@@ -6,7 +6,7 @@ class MusicRelease < ActiveRecord::Base
   has_many :tracks, class_name: 'MusicTrack', foreign_key: 'release_id', dependent: :destroy
   
   def self.find_by_artist_and_name(artist_name, name)
-    without_slaves.where(
+    where(
       "LOWER(artist_name) = :artist_name AND LOWER(name) = :name", 
       artist_name: artist_name.downcase.strip, name: name.downcase.strip
     ).first
@@ -23,7 +23,7 @@ class MusicRelease < ActiveRecord::Base
   
   validates :artist_id, presence: true
   validates :name, presence: true
-  validates :mbid, uniqueness: true, allow_blank: true
+  validates :mbid, uniqueness: true, allow_blank: true, length: { is: 36 }
   validate :future_release_date_format
   
   before_save :set_artist_name
