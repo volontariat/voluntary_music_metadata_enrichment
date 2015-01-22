@@ -5,7 +5,7 @@ class MusicMetadataEnrichment::VideosController < ApplicationController
   include ::MusicMetadataEnrichment::ArtistConfirmation
   include ::MusicMetadataEnrichment::TrackConfirmation
     
-  authorize_resource class: 'MusicVideo'
+  authorize_resource class: 'MusicVideo', except: [:by_name]
     
   def index
     if request.xhr? 
@@ -74,6 +74,34 @@ class MusicMetadataEnrichment::VideosController < ApplicationController
   
   def show
     @video = MusicVideo.find(params[:id])
+  end
+  
+  def by_name
+    status = if match = params[:name].match(/\(Live\)|\(Official\)|\(Unofficial\)/i)
+      match[0].gsub(/\(|\)/, '').titleize
+    else
+      nil
+    end
+    
+    name = params[:name].gsub(/\(Live\)|\(Official\)|\(Unofficial\)/i, '')
+    
+    unless params[:page].present?
+      @videos = MusicVideo.by_artist_and_name(params[:artist_name], name)
+      @videos = @videos.where(status: status) if status.present?
+      
+      @video = @videos.first if @videos.count == 1
+    end
+    
+    if @video
+      render :show
+    else
+      if @videos.count == 0
+        @videos = MusicVideo.artist_and_name_like(params[:artist_name], name)
+        @videos = @videos.where(status: status) if status.present?
+      end
+      
+      @videos = @videos.paginate(per_page: 10, page: params[:page] || 1)
+    end
   end
   
   def resource

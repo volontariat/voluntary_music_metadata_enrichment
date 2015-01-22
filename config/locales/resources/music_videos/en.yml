@@ -32,6 +32,9 @@ en:
       successful: Successfully created video.
       scheduled_release_for_import: Successfully scheduled music release including the video for metadata import.        
       
+    by_name:
+      title: Video search results         
+      
   activerecord:
     models:
       music_video: Music Video

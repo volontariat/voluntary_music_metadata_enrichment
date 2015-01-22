@@ -8,6 +8,18 @@ class MusicVideo < ActiveRecord::Base
   # cached associations
   belongs_to :artist, class_name: 'MusicArtist'
   
+  scope :by_artist_and_name, ->(artist_name, track_name) do
+    where(
+      "LOWER(artist_name) = :artist_name AND LOWER(track_name) = :track_name", 
+      artist_name: artist_name.downcase.strip, track_name: track_name.downcase.strip
+    )
+  end
+  
+  scope :artist_and_name_like, ->(artist_name, track_name) do
+    table = MusicVideo.arel_table
+    where(table[:artist_name].matches("%#{artist_name}%").and(table[:track_name].matches("%#{track_name}%")))
+  end  
+  
   validates :track_id, presence: true
   validates :url, presence: true, uniqueness: true
   validates :status, presence: true, inclusion: { in: STATUSES }

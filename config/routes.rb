@@ -63,6 +63,7 @@ Rails.application.routes.draw do
         get :track_confirmation
         get :create_track
         get :metadata
+        get 'by_name/:artist_name/:name', to: 'videos#by_name'
       end
     end
   end
