@@ -4,8 +4,12 @@ class MusicArtist < ActiveRecord::Base
   has_many :tracks, class_name: 'MusicTrack', foreign_key: 'artist_id'
   has_many :videos, class_name: 'MusicVideo', foreign_key: 'artist_id'
   
+  scope :name_like, ->(name) do
+    where(MusicArtist.arel_table[:name].matches("%#{name}%"))
+  end
+  
   validates :name, presence: true
-  validates :mbid, presence: true, uniqueness: true
+  validates :mbid, presence: true, uniqueness: true, length: { is: 36 }
   
   after_save :synchronize_artist_name
   after_create :create_bonustracks_release
