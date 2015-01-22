@@ -24,14 +24,15 @@ class MusicMetadataEnrichment::ArtistsController < ApplicationController
   
   def show
     @artist = MusicArtist.find(params[:id])
-    @releases = @artist.releases.order('released_at ASC')
+    get_variables_for_show
   end
   
   def by_name
-    artist = MusicArtist.where("LOWER(name) = ?", params[:name].downcase.strip).first
+    @artist = MusicArtist.where("LOWER(name) = ?", params[:name].downcase.strip).first
     
-    if artist
-      redirect_to music_metadata_enrichment_artist_path(artist.id)
+    if @artist
+      get_variables_for_show
+      render :show
     else
       artists_table = MusicArtist.arel_table
       @artists = MusicArtist.where(artists_table[:name].matches("%#{params[:name]}%")).limit(10)
@@ -40,5 +41,11 @@ class MusicMetadataEnrichment::ArtistsController < ApplicationController
   
   def resource
     @artist
+  end
+  
+  private
+  
+  def get_variables_for_show
+    @releases = @artist.releases.order('released_at ASC')
   end
 end
