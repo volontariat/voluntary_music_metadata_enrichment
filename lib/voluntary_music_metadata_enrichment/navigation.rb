@@ -5,6 +5,11 @@ module VoluntaryMusicMetadataEnrichment
         navigation.items do |primary|
           primary.dom_class = 'nav'
           
+          if user_signed_in?
+            primary.item :music_metadata_enrichment_library, I18n.t('music_library.index.short_title'), user_music_library_path(current_user) do |library|
+            end
+          end
+          
           primary.item :music_metadata_enrichment_groups, I18n.t('music_metadata_enrichment_groups.index.short_title'), music_groups_path do |groups|
             groups.item :new, I18n.t('general.new'), new_music_group_path
           end

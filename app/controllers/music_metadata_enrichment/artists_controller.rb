@@ -5,7 +5,20 @@ class MusicMetadataEnrichment::ArtistsController < ApplicationController
   
   authorize_resource class: 'MusicArtist', except: [:by_name]
   
+  before_action :delete_user_id_which_is_not_from_current_user
+  
   def index
+    if request.xhr? 
+      if request.original_url.match('/groups/') && params[:id]
+        @artists = MusicMetadataEnrichment::Group.find(params[:id]).artists
+      elsif params[:user_id].present?
+        @artists = User.find(params[:user_id]).music_artists
+      end
+      
+      @artists = @artists.order('name ASC').paginate(per_page: 10, page: params[:page] || 1)
+      
+      render partial: 'music_metadata_enrichment/artists/collection', layout: false, locals: { title: I18n.t("music_metadata_enrichment_group_artist_connections.index.empty_collection"), paginate: true }
+    end
   end
   
   def new
@@ -43,6 +56,10 @@ class MusicMetadataEnrichment::ArtistsController < ApplicationController
   end
   
   private
+  
+  def delete_user_id_which_is_not_from_current_user
+    params.delete(:user_id) if params[:user_id].present? && params[:user_id].to_i != current_user.id
+  end
   
   def get_variables_for_show
     @releases = @artist.releases.order('released_at ASC')

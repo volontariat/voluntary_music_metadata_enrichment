@@ -6,12 +6,15 @@ module VoluntaryMusicMetadataEnrichment
           extend ActiveSupport::Concern
           
           included do
-            has_many :music_library_artists
+            has_many :music_library_artists, dependent: :destroy
             has_many :music_artists, through: :music_library_artists, source: 'artist'
             has_many :music_releases, through: :music_artists, source: 'releases'
             has_many :music_tracks, through: :music_artists, source: 'tracks'
+            has_many :music_videos, through: :music_artists, source: 'videos'
                         
             scope :on_lastfm, -> { where('users.lastfm_user_name IS NOT NULL') }
+            
+            after_destroy :nullify_user_association_at_videos
           end
           
           def import_music_artists(lastfm, start_page = 1)
@@ -81,6 +84,12 @@ module VoluntaryMusicMetadataEnrichment
             end
             
             update_attribute(:music_library_imported, true) unless new_record?
+          end
+          
+          private
+          
+          def nullify_user_association_at_videos
+            MusicVideo.where(user_id: id).update_all("user_id = NULL")
           end
         end
       end

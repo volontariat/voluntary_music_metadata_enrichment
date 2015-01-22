@@ -9,11 +9,18 @@ class MusicMetadataEnrichment::VideosController < ApplicationController
     
   def index
     if request.xhr? 
+
       if params[:artist_id].present?
-        @videos = MusicVideo.where(artist_id: params[:artist_id]).order('created_at DESC').paginate(per_page: 5, page: params[:page] || 1)
+        @videos = MusicVideo.where(artist_id: params[:artist_id])
       elsif params[:group_id].present?
-        @videos = MusicMetadataEnrichment::Group.find(params[:group_id]).videos.order('created_at DESC').paginate(per_page: 5, page: params[:page] || 1)
+        @videos = MusicMetadataEnrichment::Group.find(params[:group_id]).videos
+      elsif params[:uploaded_by_the_user] == 'true'
+        @videos = MusicVideo.where(user_id: params[:user_id])
+      elsif params[:user_id].present?
+        @videos = User.find(params[:user_id]).music_videos
       end
+      
+      @videos = @videos.order('created_at DESC').paginate(per_page: 5, page: params[:page] || 1)
       
       render partial: 'music_metadata_enrichment/videos/collection', locals: { paginate: true }
     end

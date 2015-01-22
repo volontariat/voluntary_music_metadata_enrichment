@@ -7,6 +7,21 @@ class MusicMetadataEnrichment::ReleasesController < ApplicationController
   authorize_resource class: 'MusicRelease', except: [:by_name]
   
   def index
+    if request.xhr? 
+      @year = params[:year]
+      
+      if request.original_url.match('/groups/') && params[:id]
+        @group = MusicMetadataEnrichment::Group.find(params[:id])
+        @releases = @group.releases
+      elsif params[:user_id].present?
+        @user = User.find(params[:user_id])
+        @releases = @user.music_releases
+      end
+      
+      @releases = @releases.released_in_year(params[:year]).order('released_at DESC').paginate(per_page: 25, page: params[:page] || 1)
+      
+      render partial: 'music_metadata_enrichment/releases/collection', locals: { paginate: true, with_artist: true }, layout: false
+    end
   end
   
   def new

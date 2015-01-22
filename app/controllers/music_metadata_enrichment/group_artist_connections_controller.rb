@@ -5,14 +5,6 @@ class MusicMetadataEnrichment::GroupArtistConnectionsController < ApplicationCon
   
   authorize_resource class: 'MusicMetadataEnrichment::GroupArtistConnection'
   
-  def index
-    if request.xhr? 
-      group = MusicMetadataEnrichment::Group.find(params[:group_id])
-      @artists = group.artists.order('name ASC').paginate(per_page: 10, page: params[:page] || 1)
-      render partial: 'music_metadata_enrichment/artists/collection', layout: false, locals: { title: I18n.t("music_metadata_enrichment_group_artist_connections.index.empty_collection"), paginate: true }
-    end
-  end
-  
   def import
     @group = MusicMetadataEnrichment::Group.find(params[:group_id])
     

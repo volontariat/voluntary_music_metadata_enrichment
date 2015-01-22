@@ -7,7 +7,7 @@ Rails.application.routes.draw do
   
   namespace :music, module: 'music_metadata_enrichment' do
     resources :groups, only: [:index, :new, :create, :show] do
-      resources :artists, only: [:index, :new], controller: 'group_artist_connections' do
+      resources :artists, only: [:new], controller: 'group_artist_connections' do
         collection do
           get :import
           get :name_confirmation
@@ -17,7 +17,8 @@ Rails.application.routes.draw do
       end
       
       member do
-        get 'releases' => 'group_release_connections#index'
+        get 'artists' => 'artists#index'
+        get 'releases' => 'releases#index'
       end
       
       resources :releases, only: [:new]
@@ -70,4 +71,10 @@ Rails.application.routes.draw do
       end
     end
   end
+  
+  get 'users/:user_id/library/music' => 'library/music#index', as: :user_music_library
+  get 'users/:user_id/library/music/releases' => 'music_metadata_enrichment/releases#index', as: :user_music_library_releases
+  get 'users/:user_id/library/music/videos' => 'music_metadata_enrichment/videos#index', as: :user_music_library_videos
+  get 'users/:user_id/library/music/artists' => 'music_metadata_enrichment/artists#index', as: :user_music_library_artists
+  get 'users/:user_id/library/music/artists/new' => 'music_metadata_enrichment/artists#new', as: :new_user_music_library_artist
 end
