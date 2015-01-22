@@ -5,6 +5,7 @@ en:
       short_title: Videos
       name: Name
       empty_collection: No music videos available.
+      add: Add video
       
     new: 
       title: "New Music Video: enter artist information"

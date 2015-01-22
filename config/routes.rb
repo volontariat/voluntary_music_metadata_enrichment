@@ -13,8 +13,12 @@ Rails.application.routes.draw do
         end
       end
       
-      resources :releases, only: [:index], controller: 'group_release_connections'
-      resources :videos, only: [:index]
+      member do
+        get 'releases' => 'group_release_connections#index'
+      end
+      
+      resources :releases, only: [:new]
+      resources :videos, only: [:index, :new]
     end
       
     resources :artists, only: [:index, :new, :create, :show] do
@@ -23,7 +27,8 @@ Rails.application.routes.draw do
         get 'by_name/:name', to: 'artists#by_name'
       end
       
-      resources :videos, only: [:index]
+      resources :releases, only: [:new]
+      resources :videos, only: [:index, :new]
     end
     
     resources :releases, only: [:index, :new, :create, :show] do
@@ -46,6 +51,8 @@ Rails.application.routes.draw do
         get :name_confirmation
         get 'by_name/:artist_name/:name', to: 'tracks#by_name'
       end
+      
+      resources :videos, only: [:new]
     end
     
     resources :videos, only: [:index, :new, :create, :show] do

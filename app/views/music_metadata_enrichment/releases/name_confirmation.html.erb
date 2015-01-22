@@ -4,6 +4,7 @@
 <p><%= I18n.t("music_releases.name_confirmation.release_found_but_does_not_satisfy_criteria")%></p>
 <% else %>
   <%= form_tag music_metadata_enrichment_releases_path, method: :post do %>
+    <%= hidden_field_tag :group_id, params[:group_id] if params[:group_id].present? %>
     <%= hidden_field_tag 'music_release[artist_id]', @release.artist_id %>
     <table class="table table-striped">
       <thead>

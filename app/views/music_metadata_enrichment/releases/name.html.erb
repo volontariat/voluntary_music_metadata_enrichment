@@ -2,6 +2,7 @@
 
 <%= simple_form_for(@release, url: name_confirmation_music_metadata_enrichment_releases_path, method: :get, html: {class: 'form-horizontal'}) do |f| %>
   <%= render partial: 'shared/form/error_messages', locals: { resource: @release } %>
+  <%= hidden_field_tag :group_id, params[:group_id] if params[:group_id].present? %>
   <%= f.hidden_field :artist_id %>
   <%= f.input :name %>
   <%= f.submit 'Search Release' %>

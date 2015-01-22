@@ -6,6 +6,7 @@ en:
       name: Name
       empty_collection: No music releases available.
       year: Year
+      add: Add release
       
     new: 
       title: "New Music Release: enter artist information"

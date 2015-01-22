@@ -13,26 +13,34 @@ module MusicMetadataEnrichment
           flash[:alert] = I18n.t('music_tracks.create.already_exist')
           redirect_to music_metadata_enrichment_track_path(track.id)
         elsif from == 'new_video'
-          redirect_to metadata_music_metadata_enrichment_videos_path(music_video: { track_id: track.id }) 
+          redirect_to metadata_music_metadata_enrichment_videos_path(
+            (params[:group_id].present? ? {group_id: params[:group_id]} : {}).merge(music_video: { track_id: track.id })
+          ) 
         end
       else
-        if @track.is_bonus_track? #internally sets release_name
+        if @track.is_bonus_track?
           @track.create_bonus_track(name_and_mbid.split(';').last)
           flash[:notice] = I18n.t('music_tracks.create.successfully_creation')
           
           if from == 'new_track'
             redirect_to music_metadata_enrichment_track_path(@track.id)
           elsif from == 'new_video'
-            redirect_to metadata_music_metadata_enrichment_videos_path(music_video: { track_id: @track.id }) 
+            redirect_to metadata_music_metadata_enrichment_videos_path(
+              (params[:group_id].present? ? {group_id: params[:group_id]} : {}).merge(music_video: { track_id: @track.id })
+            ) 
           end
         else
           release = MusicRelease.create(artist_id: @track.artist_id, name: @track.release_name)
           
           if release.valid?
             flash[:notice] = I18n.t('music_tracks.create.scheduled_release_for_import')
-            redirect_to music_metadata_enrichment_path
           else
             flash[:alert] = release.errors.full_messages.join('. ')
+          end
+          
+          if params[:group_id].present?
+            redirect_to music_metadata_enrichment_group_path(params[:group_id])
+          else
             redirect_to music_metadata_enrichment_path
           end
         end

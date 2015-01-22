@@ -4,6 +4,7 @@
 <p><%= empty_collection_title %></p>
 <% else %>
   <%= form_tag form_url, method: form_method do %>
+    <%= hidden_field_tag :group_id, params[:group_id] if params[:group_id].present? %>
     <%= hidden_field_tag 'music_track[artist_id]', @track.artist_id %>
     <table class="table table-striped">
       <thead>

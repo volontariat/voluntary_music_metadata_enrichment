@@ -2,6 +2,7 @@
 
 <%= simple_form_for(@release, url: create_announcement_music_metadata_enrichment_releases_path, method: :post, html: {class: 'form-horizontal'}) do |f| %>
   <%= render partial: 'shared/form/error_messages', locals: { resource: @release } %>
+  <%= hidden_field_tag :group_id, params[:group_id] if params[:group_id].present? %>
   <%= f.hidden_field :artist_id %>
   <%= f.hidden_field :name %>
   <%= f.input :future_release_date, hint: I18n.t('music_releases.announce.future_release_date_format') %>

@@ -10,7 +10,11 @@ class MusicMetadataEnrichment::ReleasesController < ApplicationController
   end
   
   def new
-    build_artist
+    if params[:artist_id].present?
+      redirect_to name_music_metadata_enrichment_releases_path(music_release: { artist_id: params[:artist_id]})
+    else
+      build_artist
+    end
   end
   
   def artist_confirmation
@@ -31,7 +35,11 @@ class MusicMetadataEnrichment::ReleasesController < ApplicationController
 
     if @release_groups.none? && @release.groups_without_limitation.none?
       flash[:notice] = I18n.t('music_releases.name_confirmation.release_not_found')
-      redirect_to announce_music_metadata_enrichment_releases_path(music_release: { artist_id: params[:music_release][:artist_id], name: params[:music_release][:name] })
+      redirect_to announce_music_metadata_enrichment_releases_path(
+        (params[:group_id].present? ? {group_id: params[:group_id]} : {}).merge(
+          music_release: { artist_id: params[:music_release][:artist_id], name: params[:music_release][:name] }
+        )
+      )
     end
   end
   
@@ -43,7 +51,6 @@ class MusicMetadataEnrichment::ReleasesController < ApplicationController
     
     if release
       flash[:alert] = I18n.t('music_releases.create.release_already_imported')
-      redirect_to music_metadata_enrichment_releases_path 
     else
       release = MusicRelease.create(
         artist_id: params[:music_release][:artist_id], artist_name: artist.name, 
@@ -52,11 +59,15 @@ class MusicMetadataEnrichment::ReleasesController < ApplicationController
       
       if release.valid?
         flash[:notice] = I18n.t('music_releases.create.scheduled_release_for_import')
-        redirect_to music_metadata_enrichment_releases_path
       else
         flash[:alert] = release.errors.full_messages.join('. ')
-        redirect_to music_metadata_enrichment_releases_path
       end
+    end
+    
+    if params[:group_id].present?
+      redirect_to music_metadata_enrichment_group_path(params[:group_id])
+    else
+      redirect_to music_metadata_enrichment_path
     end
   end
   
@@ -65,10 +76,19 @@ class MusicMetadataEnrichment::ReleasesController < ApplicationController
     
     if MusicRelease.where(artist_id: @release.artist_id, name: @release.name).first
       flash[:alert] = I18n.t('music_releases.create.release_already_imported')
-      redirect_to music_metadata_enrichment_releases_path 
+      
+      if params[:group_id].present?
+        redirect_to music_metadata_enrichment_group_path(params[:group_id])
+      else
+        redirect_to music_metadata_enrichment_path 
+      end
     elsif @release.groups.any?
       flash[:notice] = I18n.t('music_releases.announce.please_select_existing_release')
-      redirect_to name_confirmation_music_metadata_enrichment_releases_path(music_release: { artist_id: params[:music_release][:artist_id], name: params[:music_release][:name] })
+      redirect_to name_confirmation_music_metadata_enrichment_releases_path(
+        (params[:group_id].present? ? {group_id: params[:group_id]} : {}).merge(
+          music_release: { artist_id: params[:music_release][:artist_id], name: params[:music_release][:name] }
+        )
+      )
     end
   end
   
@@ -77,10 +97,19 @@ class MusicMetadataEnrichment::ReleasesController < ApplicationController
     
     if MusicRelease.where(artist_id: @release.artist_id, name: @release.name).first
       flash[:alert] = I18n.t('music_releases.create.release_already_imported')
-      redirect_to music_metadata_enrichment_releases_path 
+      
+      if params[:group_id].present?
+        redirect_to music_metadata_enrichment_group_path(params[:group_id])
+      else
+        redirect_to music_metadata_enrichment_path 
+      end
     elsif @release.groups.any?
       flash[:notice] = I18n.t('music_releases.announce.please_select_existing_release')
-      redirect_to name_confirmation_music_metadata_enrichment_releases_path(music_release: { artist_id: params[:music_release][:artist_id], name: params[:music_release][:name] })
+      redirect_to name_confirmation_music_metadata_enrichment_releases_path(
+        (params[:group_id].present? ? {group_id: params[:group_id]} : {}).merge(
+          music_release: { artist_id: params[:music_release][:artist_id], name: params[:music_release][:name] }
+        )
+      )
     elsif @release.future_release_date.blank? || !@release.valid?
       if @release.future_release_date.blank?
         @release.errors[:future_release_date] << I18n.t('errors.messages.blank')
@@ -88,10 +117,14 @@ class MusicMetadataEnrichment::ReleasesController < ApplicationController
       
       render :announce
     else
-      artist = MusicArtist.find(params[:music_release][:artist_id])
       @release.save!
       flash[:notice] = I18n.t('music_releases.create_announcement.success')
-      redirect_to music_metadata_enrichment_releases_path
+      
+      if params[:group_id].present?
+        redirect_to music_metadata_enrichment_group_path(params[:group_id])
+      else
+        redirect_to music_metadata_enrichment_path 
+      end
     end
   end
   

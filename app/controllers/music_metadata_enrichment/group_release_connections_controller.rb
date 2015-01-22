@@ -5,7 +5,7 @@ class MusicMetadataEnrichment::GroupReleaseConnectionsController < ApplicationCo
   
   def index
     if request.xhr? 
-      @group = MusicMetadataEnrichment::Group.find(params[:group_id])
+      @group = MusicMetadataEnrichment::Group.find(params[:id])
       @year = params[:year]
       @releases = @group.releases.released_in_year(params[:year]).order('released_at DESC')
       render partial: 'music_metadata_enrichment/releases/collection', locals: { paginate: false, with_artist: true }, layout: false

@@ -42,3 +42,11 @@
 <% end %>
 
 <%= will_paginate @releases if paginate %>
+
+<% if ['groups', 'group_release_connections'].include?(controller_name) && params[:id] %>
+  <%= link_to t('music_releases.index.add'), new_music_metadata_enrichment_group_release_path(params[:id]) %>
+<% elsif controller_name == 'artists' && params[:id].present? %>
+  <%= link_to t('music_releases.index.add'), new_music_metadata_enrichment_artist_release_path(params[:id]) %>
+<% else %>
+  <%= link_to t('music_releases.index.add'), new_music_metadata_enrichment_release_path %>
+<% end %>
