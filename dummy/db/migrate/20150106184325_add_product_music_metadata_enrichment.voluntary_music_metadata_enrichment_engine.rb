@@ -9,6 +9,8 @@ class AddProductMusicMetadataEnrichment < ActiveRecord::Migration
     create_table :music_artists do |t|
       t.string :mbid, limit: 36
       t.string :name
+      t.string :country
+      t.string :disambiguation
       t.integer :listeners
       t.integer :plays
       t.datetime :founded_at

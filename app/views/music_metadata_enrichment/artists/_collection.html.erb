@@ -1,3 +1,4 @@
+<% with_disambiguation ||= false %>
 <% with_founded_at ||= false %>
 <% with_top_tracks ||= false %>
 <% paginate ||= false %>
@@ -8,6 +9,9 @@
     <thead>
       <tr class="<%= cycle('odd', 'even') %>">
         <th><%= t("attributes.name") %></th>
+  <% if with_disambiguation %>
+        <th><%= t("activerecord.attributes.music_artist.disambiguation") %></th>
+  <% end %>      
   <% if with_founded_at %>      
         <th><%= t("activerecord.attributes.music_artist.founded_at") %></th>
   <% end %>
@@ -21,6 +25,9 @@
     <% @artists.each do |artist| %>
       <tr class="<%= cycle('odd', 'even') %>">
         <td><%= link_to artist.name, music_metadata_enrichment_artist_path(artist.id) %></td>
+      <% if with_disambiguation %>
+        <td><%= artist.disambiguation %></td>
+      <% end %>
       <% if with_founded_at %>
         <td><%= artist.founded_at.present? ? artist.founded_at.strftime('%d.%m.%Y') : '' %></td>
       <% end %>

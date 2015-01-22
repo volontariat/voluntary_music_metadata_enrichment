@@ -14,7 +14,7 @@ class MusicArtist < ActiveRecord::Base
   after_save :synchronize_artist_name
   after_create :create_bonustracks_release
   
-  attr_accessible :name, :mbid, :founded_at, :dissolved_at, :listeners, :plays
+  attr_accessible :name, :mbid, :disambiguation, :founded_at, :dissolved_at, :listeners, :plays
   
   state_machine :state, initial: :without_metadata do
     event :import_metadata do transition :without_metadata => :active; end
@@ -23,6 +23,7 @@ class MusicArtist < ActiveRecord::Base
       musicbrainz_artist = MusicBrainz::Artist.find(artist.mbid)
   
       artist.update_attributes(
+        disambiguation: musicbrainz_artist.disambiguation,
         founded_at: artist.musicbrainz_date_to_iso_date(musicbrainz_artist.begin), 
         dissolved_at: artist.musicbrainz_date_to_iso_date(musicbrainz_artist.end)
       )
@@ -38,7 +39,7 @@ class MusicArtist < ActiveRecord::Base
         release_groups = musicbrainz_artist.release_groups(offset: offset)
         count = release_groups.total_count
         
-        release_groups.select{|r| ['Album', 'EP'].include?(r.type) && r.secondary_types.select{|st| ['Compilation', 'Live', 'Remix'].include?(st)}.none? && r.artists.length == 1}.each do |musicbrainz_release_group|
+        release_groups.select{|r| ['Album', 'EP'].include?(r.type) && r.secondary_types.select{|st| ['Audiobook', 'Compilation', 'Live', 'Remix'].include?(st)}.none? && r.artists.length == 1}.each do |musicbrainz_release_group|
           releases = musicbrainz_release_group.releases
           
           next if releases.select{|r| r.status == 'Official' && !r.media.map(&:format).include?('DVD-Video') && !r.media.map(&:format).include?('DVD')}.none?
