@@ -8,6 +8,7 @@
       <tr class="<%= cycle('odd', 'even') %>">
         <th><%= t("activerecord.models.music_artist") %></th>
         <th><%= t("attributes.name") %></th>
+        <th></th>
       </tr>
     </thead>
     <tbody>
@@ -15,8 +16,11 @@
       <tr class="<%= cycle('odd', 'even') %>">
         <td><%= link_to track.artist_name, music_metadata_enrichment_artist_path(track.artist_id) %></td>
         <td><%= link_to track.name, music_metadata_enrichment_track_path(track.id) %></td>
+        <td><%= render partial: 'music_metadata_enrichment/tracks/spotify_track_player', locals: { spotify_track_id: track.spotify_track_id } %></td>
       </tr>
     <% end %>
     </tbody>
   </table>  
 <% end %>
+
+<%= will_paginate @tracks %>
