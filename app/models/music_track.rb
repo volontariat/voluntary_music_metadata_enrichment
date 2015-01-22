@@ -23,6 +23,7 @@ class MusicTrack < ActiveRecord::Base
   end
   
   validates :name, presence: true, uniqueness: { scope: :release_id }
+  validates :mbid, presence: true, uniqueness: true, length: { is: 36 }
   
   attr_accessible :mbid, :artist_id, :artist_name, :release_id, :release_name, :master_track_id, :nr, :name, :duration, :listeners, :plays
   
@@ -47,6 +48,8 @@ class MusicTrack < ActiveRecord::Base
         attributes[:duration] = lastfm_track['duration'] if track.duration.blank?
         track.update_attributes(attributes)
       end
+      
+      set_spotify_track_id
     end
   end
   
@@ -64,7 +67,42 @@ class MusicTrack < ActiveRecord::Base
   def self.format_name(value)
     return value if value.nil?
     
-    value.gsub(/’|´/, "'").gsub(/\(Album version\)|\(Single version\)|\(Remastered\)/i, '').strip
+    value.gsub(/’|´/, "'").gsub(/\(Album version\)|\(Single version\)|\(Remastered\)|\(clean\)/i, '').strip
+  end
+  
+  def set_spotify_track_id
+    return if spotify_track_id.present?
+    
+    response = nil
+    
+    begin
+      response = JSON.parse(
+        HTTParty.get("https://api.spotify.com/v1/search?q=track%3A%22#{URI.encode(name, /\W/)}%22+artist%3A%22#{URI.encode(artist_name, /\W/)}%22&type=track").body
+      )
+    rescue JSON::ParserError
+    end
+    
+    return if response.nil?
+    
+    response['tracks']['items'].each do |item|
+      artist_found = false
+      
+      item['artists'].each do |working_artist|
+        if working_artist['name'].downcase == artist_name.downcase
+          artist_found = true
+          
+          break
+        end
+      end
+      
+      next unless artist_found
+      
+      next unless item['name'].downcase == name.downcase
+      
+      update_attribute(:spotify_track_id, item['id'])
+      
+      break
+    end
   end
   
   def is_bonus_track?
