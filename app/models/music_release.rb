@@ -5,6 +5,18 @@ class MusicRelease < ActiveRecord::Base
   
   has_many :tracks, class_name: 'MusicTrack', foreign_key: 'release_id', dependent: :destroy
   
+  def self.find_by_artist_and_name(artist_name, name)
+    without_slaves.where(
+      "LOWER(artist_name) = :artist_name AND LOWER(name) = :name", 
+      artist_name: artist_name.downcase.strip, name: name.downcase.strip
+    ).first
+  end
+  
+  scope :artist_and_name_like, ->(artist_name, name) do
+    table = MusicRelease.arel_table
+    where(table[:artist_name].matches("%#{artist_name}%").and(table[:name].matches("%#{name}%")))
+  end
+  
   scope :released_in_year, ->(year) do
     where("released_at >= :from AND released_at <= :to", from: Time.local(year,1,1,0,0,0), to: Time.local(year,12,31,23,59,59))
   end

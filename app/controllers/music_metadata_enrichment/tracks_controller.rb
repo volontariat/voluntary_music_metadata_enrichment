@@ -38,17 +38,15 @@ class MusicMetadataEnrichment::TracksController < ApplicationController
   
   def show
     @track = MusicTrack.find(params[:id])
-    @videos = @track.videos.order_by_status
+    get_variables_for_show
   end
   
   def by_name
-    track = MusicTrack.without_slaves.where(
-      "LOWER(artist_name) = :artist_name AND LOWER(name) = :name", 
-      artist_name: params[:artist_name].downcase.strip, name: params[:name].downcase.strip
-    ).first
-    
-    if track
-      redirect_to music_metadata_enrichment_track_path(track.id)
+    @track = MusicTrack.find_by_artist_and_name(params[:artist_name], params[:name])
+ 
+    if @track
+      get_variables_for_show
+      render :show
     else
       @tracks = MusicTrack.without_slaves.artist_and_name_like(params[:artist_name], params[:name]).limit(10)
     end
@@ -56,5 +54,11 @@ class MusicMetadataEnrichment::TracksController < ApplicationController
   
   def resource
     @track
+  end
+  
+  private
+  
+  def get_variables_for_show
+    @videos = @track.videos.order_by_status
   end
 end

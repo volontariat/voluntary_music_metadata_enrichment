@@ -130,25 +130,18 @@ class MusicMetadataEnrichment::ReleasesController < ApplicationController
   
   def show
     @release = MusicRelease.find(params[:id])
-    
-    if @release.name == '[Bonus Tracks]'
-      @tracks = @release.tracks.order('released_at ASC')
-    else
-      @tracks = @release.tracks.order('nr ASC')
-    end
+    get_variables_for_show
   end
   
   def by_name
-    release = MusicRelease.where(
-      "LOWER(artist_name) = :artist_name AND LOWER(name) = :name", 
-      artist_name: params[:artist_name].downcase.strip, name: params[:name].downcase.strip
-    ).first
+    @release = MusicRelease.find_by_artist_and_name(params[:artist_name], params[:name])
     
-    if release
-      redirect_to music_metadata_enrichment_release_path(release.id)
+    if @release
+      get_variables_for_show
+      render :show
     else
       releases_table = MusicRelease.arel_table
-      @releases = MusicRelease.where(releases_table[:artist_name].matches("%#{params[:artist_name]}%").and(releases_table[:name].matches("%#{params[:name]}%"))).limit(10)
+      @releases = MusicRelease.artist_and_name_like(params[:artist_name], params[:name]).limit(10)
     end
   end
   
@@ -166,5 +159,13 @@ class MusicMetadataEnrichment::ReleasesController < ApplicationController
     @release.artist_id = params[:music_release][:artist_id]
     @release.future_release_date = params[:music_release][:future_release_date] if ['announce', 'create_announcement'].include? action_name
     @release.user_id = current_user.id
+  end
+  
+  def get_variables_for_show
+    if @release.name == '[Bonus Tracks]'
+      @tracks = @release.tracks.order('released_at ASC')
+    else
+      @tracks = @release.tracks.order('nr ASC')
+    end
   end
 end

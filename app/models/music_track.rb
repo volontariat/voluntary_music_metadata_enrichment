@@ -10,9 +10,16 @@ class MusicTrack < ActiveRecord::Base
   
   scope :without_slaves, -> { where('music_tracks.master_track_id IS NULL') }
   
+  def self.find_by_artist_and_name(artist_name, name)
+    without_slaves.where(
+      "LOWER(artist_name) = :artist_name AND LOWER(name) = :name", 
+      artist_name: artist_name.downcase.strip, name: name.downcase.strip
+    ).first
+  end
+  
   scope :artist_and_name_like, ->(artist_name, name) do
-    tracks_table = MusicTrack.arel_table
-    where(tracks_table[:artist_name].matches("%#{artist_name}%").and(tracks_table[:name].matches("%#{name}%")))
+    table = MusicTrack.arel_table
+    where(table[:artist_name].matches("%#{artist_name}%").and(table[:name].matches("%#{name}%")))
   end
   
   validates :name, presence: true, uniqueness: { scope: :release_id }
