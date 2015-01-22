@@ -37,7 +37,7 @@
   <% end %>
         <td><%= link_to track.name, music_metadata_enrichment_track_path(track.id) %></td>
         <td><%= render partial: 'music_metadata_enrichment/tracks/spotify_track_player', locals: { spotify_track_id: track.spotify_track_id } %></td>
-        <td><%= track.duration %></td>
+        <td><%= track.formatted_duration %></td>
   <% if @release.name == '[Bonus Tracks]' %>
         <td><%= track.released_at.strftime('%d.%m.%Y') %>
   <% end %>        
