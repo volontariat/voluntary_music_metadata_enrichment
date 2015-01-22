@@ -20,6 +20,8 @@ module MusicMetadataEnrichment
             if params[:group_id].present?
               MusicMetadataEnrichment::GroupArtistConnection.create(group_id: params[:group_id], artist_id: artist.id)
               working_params[:group_id] = params[:group_id]
+            elsif params[:user_id].present?
+              MusicLibraryArtist.create(user_id: params[:user_id], artist_id: artist.id)
             end
               
             case from
@@ -38,6 +40,9 @@ module MusicMetadataEnrichment
             if params[:group_id].present?
               MusicMetadataEnrichment::GroupArtistConnection.create(group_id: params[:group_id], artist_id: artist.id)
               redirect_to music_group_path(params[:group_id])
+            elsif params[:user_id].present?
+              MusicLibraryArtist.create(user_id: params[:user_id], artist_id: artist.id)
+              redirect_to user_music_library_path(params[:user_id])
             else
               redirect_to music_path 
             end
@@ -51,6 +56,9 @@ module MusicMetadataEnrichment
             if params[:group_id].present?
               MusicMetadataEnrichment::GroupArtistConnection.create(group_id: params[:group_id], artist_id: @artist.id)
               redirect_to music_group_path(params[:group_id])
+            elsif params[:user_id].present?
+              MusicLibraryArtist.create(user_id: params[:user_id], artist_id: @artist.id)
+              redirect_to user_music_library_path(params[:user_id])  
             elsif ['new_artist', 'new_release', 'new_track', 'new_video'].include?(from)
               redirect_to music_path
             elsif from == 'new_group_artist_connection'
@@ -65,7 +73,11 @@ module MusicMetadataEnrichment
           flash[:alert] = I18n.t('music_artists.new.mbid_invalid')
           
           if from == 'new_artist'
-            redirect_to new_music_artist_path
+            if params[:user_id].present?
+              redirect new_user_music_library_artist_path(params[:user_id])
+            else
+              redirect_to new_music_artist_path
+            end
           elsif from == 'new_release'
             if params[:group_id].present?
               redirect_to new_music_group_release_path(params[:group_id])
@@ -100,31 +112,48 @@ module MusicMetadataEnrichment
     end
   
     def create_artist(from, name_and_mbid)
-      @artist = MusicArtist.create(name: name_and_mbid.split(';').first, mbid: name_and_mbid.split(';').last)
+      @artist = MusicArtist.where(mbid: name_and_mbid.split(';').last).first
       
-      if @artist.valid?
-        if from == 'new_artist'
-          flash[:notice] = I18n.t('music_artists.create.scheduled_artist_for_import')
-        elsif ['new_release', 'new_track', 'new_video'].include? from
-          flash[:notice] = I18n.t('music_releases.select_artist.scheduled_artist_for_import')
-        end
-        
-        if ['new_artist', 'new_release', 'new_track', 'new_video'].include? from
-          if params[:group_id].present?
-            MusicMetadataEnrichment::GroupArtistConnection.create(group_id: params[:group_id], artist_id: @artist.id)
-            redirect_to music_group_path(params[:group_id])
-          else
-            redirect_to music_path
-          end
-        elsif from == 'new_group_artist_connection'
-          redirect_to creation_music_group_artists_path(
-            group_artist_connection: { group_id: params[:group_id], artist_id: @artist.id }
-          )
+      if @artist
+        if params[:group_id].present?
+          flash[:notice] = I18n.t('music_artists.create.group_connection_successful')
+          MusicMetadataEnrichment::GroupArtistConnection.create(group_id: params[:group_id], artist_id: @artist.id)
+          redirect_to music_group_path(params[:group_id])
+        elsif params[:user_id].present?
+          flash[:notice] = I18n.t('music_artists.create.library_addition_successful')
+          MusicLibraryArtist.create(user_id: params[:user_id], artist_id: @artist.id)
+          redirect_to user_music_library_path(params[:user_id])  
+        else
+          flash[:notice] = I18n.t('music_artists.create.already_created')
+          redirect_to music_artist_path(@artist.id)
         end
       else
-        params[:music_artist][:name] = @artist.name
-        params[:music_artist][:mbid] = @artist.mbid
-        render :new
+        @artist = MusicArtist.create(name: name_and_mbid.split(';').first, mbid: name_and_mbid.split(';').last)
+        
+        if @artist.valid?
+          if from == 'new_artist'
+            flash[:notice] = I18n.t('music_artists.create.scheduled_artist_for_import')
+          elsif ['new_release', 'new_track', 'new_video'].include? from
+            flash[:notice] = I18n.t('music_releases.select_artist.scheduled_artist_for_import')
+          end
+          
+          if ['new_artist', 'new_release', 'new_track', 'new_video'].include? from
+            if params[:group_id].present?
+              MusicMetadataEnrichment::GroupArtistConnection.create(group_id: params[:group_id], artist_id: @artist.id)
+              redirect_to music_group_path(params[:group_id])
+            else
+              redirect_to music_path
+            end
+          elsif from == 'new_group_artist_connection'
+            redirect_to creation_music_group_artists_path(
+              group_artist_connection: { group_id: params[:group_id], artist_id: @artist.id }
+            )
+          end
+        else
+          params[:music_artist][:name] = @artist.name
+          params[:music_artist][:mbid] = @artist.mbid
+          render :new
+        end
       end
     end
     

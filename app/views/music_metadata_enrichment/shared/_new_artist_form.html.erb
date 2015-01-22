@@ -2,6 +2,7 @@
 
 <%= simple_form_for(@artist, url: form_url, method: :get, html: {class: 'form-horizontal'}) do |f| %>
   <%= hidden_field_tag :group_id, params[:group_id] if params[:group_id].present? %>
+  <%= hidden_field_tag :user_id, params[:user_id] if params[:user_id].present? %>
   <%= render partial: 'shared/form/error_messages', locals: { resource: @artist } %>
   <%= f.input :name %>
   <%= f.input :mbid %>

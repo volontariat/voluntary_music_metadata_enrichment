@@ -45,4 +45,8 @@
 <p>
   <%= link_to t('music_metadata_enrichment_group_artist_connections.new.title_short'), new_music_group_artist_path(params[:group_id]) %>
 </p>
+<% elsif params[:user_id].present? %>
+<p>
+  <%= link_to t('music_library.index.add_artist'), new_user_music_library_artist_path(params[:user_id]) %>
+</p>
 <% end %>
