@@ -28,14 +28,13 @@ class MusicMetadataEnrichment::ArtistsController < ApplicationController
   end
   
   def by_name
-    @artist = MusicArtist.where("LOWER(name) = ?", params[:name].downcase.strip).first
+    @artist = MusicArtist.where("LOWER(name) = ?", params[:name].downcase.strip).first unless params[:page].present?
     
     if @artist
       get_variables_for_show
       render :show
     else
-      artists_table = MusicArtist.arel_table
-      @artists = MusicArtist.where(artists_table[:name].matches("%#{params[:name]}%")).limit(10)
+      @artists = MusicArtist.name_like(params[:name]).paginate(per_page: 10, page: params[:page] || 1)
     end
   end
   
