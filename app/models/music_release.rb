@@ -98,7 +98,7 @@ class MusicRelease < ActiveRecord::Base
   end
  
   def groups_without_limitation
-    MusicBrainz::ReleaseGroup.search_by_artist_mbid(artist.mbid, name)
+    MusicBrainz::ReleaseGroup.search(artist.mbid, name)
   end
    
   def formatted_released_at_or_future_release_date 
