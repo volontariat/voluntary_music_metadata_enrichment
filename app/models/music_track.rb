@@ -49,7 +49,7 @@ class MusicTrack < ActiveRecord::Base
         track.update_attributes(attributes)
       end
       
-      set_spotify_track_id
+      track.set_spotify_track_id
     end
   end
   
@@ -112,7 +112,7 @@ class MusicTrack < ActiveRecord::Base
       (t[:releases] || []).select do |r| 
         r[:status] == 'Official' && !(r[:artists] || []).map{|a| a[:name]}.include?('Various Artists') && 
         ['Album', 'EP'].include?((r[:release_group] || {})[:primary_type]) &&
-        (r[:release_group][:secondary_types] || []).select{|st| ['Compilation', 'Live', 'Remix'].include?(st)}.none?
+        (r[:release_group][:secondary_types] || []).select{|st| ['Audiobook', 'Compilation', 'Live', 'Remix'].include?(st)}.none?
       end.map{|r| (r[:release_group] || {})[:id] }
     end.flatten.uniq.each do |release_group_mbid|
       next if release_group_mbid.nil?
@@ -148,6 +148,10 @@ class MusicTrack < ActiveRecord::Base
     self.release_id = artist.bonus_tracks_release.id
     self.save
     self.import_metadata!
+  end
+  
+  def formatted_duration
+    Time.at(duration / 1000).strftime('%M:%S')
   end
   
   private
