@@ -7,7 +7,7 @@ class AddProductMusicMetadataEnrichment < ActiveRecord::Migration
     end
     
     create_table :music_artists do |t|
-      t.string :mbid
+      t.string :mbid, limit: 36
       t.string :name
       t.integer :listeners
       t.integer :plays
@@ -20,7 +20,7 @@ class AddProductMusicMetadataEnrichment < ActiveRecord::Migration
     add_index :music_artists, :mbid, unique: true
     
     create_table :music_releases do |t|
-      t.string :mbid
+      t.string :mbid, limit: 36
       t.integer :artist_id
       t.string :artist_name
       t.string :name
@@ -38,7 +38,8 @@ class AddProductMusicMetadataEnrichment < ActiveRecord::Migration
     add_index :music_releases, :mbid, unique: true
     
     create_table :music_tracks do |t|
-      t.string :mbid
+      t.string :mbid, limit: 36
+      t.string :spotify_track_id, limit: 22
       t.integer :artist_id
       t.string :artist_name
       t.integer :release_id
