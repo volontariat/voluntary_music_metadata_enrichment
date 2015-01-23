@@ -7,6 +7,7 @@
   <thead>
     <tr class="<%= cycle('odd', 'even') %>">
       <th style="width: 50px;"><%= t("attributes.position") %></th>
+      <th style="width: 200px;"><%= t("music_artists.model.short_name") %></th>
       <th><%= t("attributes.name") %></th>
     </tr>
   </thead>
@@ -17,6 +18,7 @@
     <table class="table">
       <tr class="<%= cycle('odd', 'even') %>">
         <td class="list-element-striped" id="year_in_review_music_release_position_<%= year_in_review_release.id %>" style="width: 50px; text-align:right"><%= year_in_review_release.position %></td>
+        <td class="list-element-striped" style="width: 200px;"><%= link_to year_in_review_release.artist_name, music_artist_path(year_in_review_release.artist_id) %></td>
         <td class="list-element-striped"><%= link_to year_in_review_release.release_name, music_release_path(year_in_review_release.release_id) %></td>
       </tr>
     </table>  
@@ -30,6 +32,6 @@
   class: 'remote_modal_link'
 ) %> | 
 <%= link_to(
-  t('year_in_review_music_releases.index.add_multiple_from_year', year: params[:year]), multiple_new_user_music_year_in_review_top_release_path(params[:user_id], params[:year]), 
+  t('year_in_review_music_releases.index.add_multiple_from_year_long', year: params[:year]), multiple_new_user_music_year_in_review_top_releases_path(params[:year]), 
   class: 'remote_modal_link'
 ) %>

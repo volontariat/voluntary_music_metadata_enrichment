@@ -11,7 +11,9 @@ module VoluntaryMusicMetadataEnrichment
           ability.can([:create, :name_confirmation, :select_artist, :creation], MusicMetadataEnrichment::GroupArtistConnection)
           ability.can(:create, YearInReviewMusic)
           ability.can([:create, :move], YearInReviewMusicRelease) {|year_in_review_music_release| year_in_review_music_release.year_in_review_music.user_id == user.id }
+          ability.can(:multiple_new, YearInReviewMusicRelease)
           ability.can([:create, :move], YearInReviewMusicTrack) {|year_in_review_music_track| year_in_review_music_track.year_in_review_music.user_id == user.id }
+          ability.can(:multiple_new, YearInReviewMusicTrack)
           ability.can([:create, :name_confirmation], MusicArtist)
           ability.can([:create, :artist_confirmation, :select_artist, :name, :name_confirmation, :announce, :create_announcement], MusicRelease)
           ability.can([:create, :artist_confirmation, :select_artist, :name, :name_confirmation], MusicTrack)

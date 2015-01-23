@@ -19,6 +19,35 @@ class Library::Music::YearInReviewReleasesController < ApplicationController
     render layout: false
   end
   
+  def multiple_new
+    @page = params[:page].present? ? (params[:page].to_i + 1) : 1
+    @releases = current_user.music_releases.released_in_year(params[:year]).order('released_at DESC').paginate(per_page: 10, page: @page || 1)
+    
+    if params[:year_in_review_music_releases].present?
+      @user = current_user
+      find_year_in_review
+      
+      params[:year_in_review_music_releases].each do |release_id, checked|
+        next unless checked == '1'
+        
+        @year_in_review_release = @year_in_review.releases.create(release_id: release_id)
+        
+        next unless @year_in_review_release.persisted?
+        
+        MusicLibraryArtist.create(user_id: current_user.id, artist_id: @year_in_review_release.artist_id)
+      end
+    end
+    
+    if @releases.none?
+      @user = current_user
+      find_year_in_review
+      get_year_in_review_releases
+      params[:user_id] = current_user.id 
+    end
+    
+    render layout: false
+  end
+  
   def create
     build_resource
     

@@ -8,5 +8,9 @@ en:
       add_single: Add single release
       add_single_long: Add release to year in review %{year}
       add_multiple_from_year: Add multiple releases from %{year}
+      add_multiple_from_year_long: Add multiple releases from %{year} which belong to artists in your library
     create:
       successful: Successfully added a release to your year in review.
+    multiple_new:
+      title: "Add multiple releases from %{year}: "
+      submit: Add releases if selected and jump to next page if available else stop.
