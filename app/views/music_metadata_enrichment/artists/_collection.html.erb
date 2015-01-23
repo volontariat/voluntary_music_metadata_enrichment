@@ -32,7 +32,7 @@
         <td><%= artist.founded_at.present? ? artist.founded_at.strftime('%d.%m.%Y') : '' %></td>
       <% end %>
       <% if with_top_tracks %> 
-        <td><%= raw(artist.tracks.order('plays DESC').limit(3).map{|t| link_to(t.name, music_track_path(t.id)) }.join(', '))%></td>
+        <td><%= raw(artist.tracks.without_slaves.order('plays DESC').limit(3).map{|t| link_to(t.name, music_track_path(t.id)) }.join(', '))%></td>
       <% end %>
         <td><%= artist.listeners %></td>
       </tr>
