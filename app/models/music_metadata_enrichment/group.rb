@@ -7,7 +7,7 @@ module MusicMetadataEnrichment
     has_many :releases, class_name: 'MusicRelease', through: :artists
     has_many :videos, class_name: 'MusicVideo', through: :artists
     
-    validates :name, presence: true, uniqueness: true
+    validates :name, presence: true, uniqueness: { case_sensitive: false }
     validate :registered_on_lastfm
     
     attr_accessible :name, :artist_connections_text
