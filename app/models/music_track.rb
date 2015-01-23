@@ -24,7 +24,7 @@ class MusicTrack < ActiveRecord::Base
   
   validates :name, presence: true, uniqueness: { scope: :release_id, case_sensitive: false }
   validates :mbid, presence: true, uniqueness: true, length: { is: 36 }
-  validates :spotify_track_id, length: { is: 22 }
+  validates :spotify_track_id, length: { is: 22 }, allow_blank: true
   
   attr_accessible :mbid, :artist_id, :artist_name, :release_id, :release_name, :master_track_id, :nr, :name, :duration, :listeners, :plays
   
@@ -195,8 +195,14 @@ class MusicTrack < ActiveRecord::Base
   def sync_year_in_review_music_tracks
     year_in_review_music_tracks_attributes = {}
     
-    [:artist_name, :release_name, :track_id, :spotify_track_id, :track_name].each do |attribute|
-      year_in_review_music_tracks_attributes[attribute] = send(attribute) if send("#{attribute}_changed?")
+    [:artist_name, :release_name, :id, :spotify_track_id, :name].each do |attribute|
+      year_in_review_music_tracks_attribute = case attribute
+      when :id then :track_id
+      when :name then :track_name
+      else attribute
+      end
+      
+      year_in_review_music_tracks_attributes[year_in_review_music_tracks_attribute] = send(attribute) if send("#{attribute}_changed?")
     end
     
     return if year_in_review_music_tracks_attributes.empty?
