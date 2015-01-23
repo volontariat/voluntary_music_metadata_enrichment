@@ -1,0 +1,5 @@
+$('#years_in_review').html('<%= escape_javascript render(partial: 'library/music/years_in_review/collection') %>');
+
+<% if @notice.present? %>
+alert('<%= @notice %>');
+<% end %>

@@ -28,6 +28,11 @@
         <%= t('music_artists.index.short_title') %>
       </a>
     </li>
+   <li>
+      <a href="<%= user_music_years_in_review_path(params[:user_id]) %>">
+        <%= t('years_in_review_music.index.short_title') %>
+      </a>
+    </li>    
   </ul>
   <div id="releases">
     <%= render partial: 'music_metadata_enrichment/releases/collection', locals: { paginate: false, with_artist: true } %>

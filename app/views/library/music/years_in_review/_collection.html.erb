@@ -1,0 +1,38 @@
+<% content_for(:title) do %>
+  <%= t('years_in_review_music.index.title', user: @user.lastfm_user_name) %>
+<% end %>
+
+<h3><%= t('years_in_review_music.index.short_title') %></h3>
+
+<% if @years_in_review.none? %>
+<p><%= t('years_in_review_music.index.empty_collection') %></p>
+<% else %>
+  <table class="table table-striped">
+    <thead>
+      <tr class="<%= cycle('odd', 'even') %>">
+        <th><%= t("activerecord.attributes.year_in_review.year") %></th>
+        <th></th>
+        <th></th>
+      </tr>
+    </thead>
+    <tbody>
+    <% @years_in_review.each do |year_in_review| %>
+      <tr class="<%= cycle('odd', 'even') %>">
+        <td><%= link_to year_in_review.year, user_music_year_in_review_path(year_in_review.user_id, year_in_review.year) %></td>
+        <td><%= link_to t('year_in_review_music_releases.index.shortest_title'), user_music_year_in_review_top_releases_path(year_in_review.user_id, year_in_review.year) %></td>
+        <td><%= link_to t('year_in_review_music_tracks.index.shortest_title'), user_music_year_in_review_top_tracks_path(year_in_review.user_id, year_in_review.year) %></td>
+      </tr>
+    <% end %>
+    </tbody>
+  </table>  
+<% end %>
+
+<%= will_paginate @years_in_review %>
+
+<%= form_tag(create_user_music_year_in_review_path(params[:user_id]), method: :post, class: 'form-search', remote: true) do %>
+  <%= hidden_field_tag :authenticity_token, form_authenticity_token %>
+  <%= render partial: 'shared/form/error_messages', locals: { resource: @year_in_review } %>
+  <label for="year_in_review_music_year" class="integer required control-label"><abbr title="required">*</abbr> Year</label>
+  <%= text_field_tag 'year_in_review[year]', @year_in_review.year, class: 'input-medium search-query' %>
+  <button type="submit" class="btn"><%= t('years_in_review_music.index.add') %></button>
+<% end %>

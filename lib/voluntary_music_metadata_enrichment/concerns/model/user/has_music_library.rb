@@ -6,6 +6,7 @@ module VoluntaryMusicMetadataEnrichment
           extend ActiveSupport::Concern
           
           included do
+            has_many :years_in_review_music, class_name: 'YearInReviewMusic', dependent: :destroy
             has_many :music_library_artists, dependent: :destroy
             has_many :music_artists, through: :music_library_artists, source: 'artist'
             has_many :music_releases, through: :music_artists, source: 'releases'
