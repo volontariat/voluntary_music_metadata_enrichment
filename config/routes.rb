@@ -73,6 +73,11 @@ Rails.application.routes.draw do
   end
   
   get 'users/:user_id/library/music' => 'library/music#index', as: :user_music_library
+  get 'users/:user_id/library/music/years_in_review' => 'library/music/years_in_review#index', as: :user_music_years_in_review
+  post 'users/:user_id/library/music/years_in_review' => 'library/music/years_in_review#create', as: :create_user_music_year_in_review
+  get 'users/:user_id/library/music/years_in_review/:year' => 'library/music/years_in_review#show', as: :user_music_year_in_review
+  get 'users/:user_id/library/music/years_in_review/:year/top_releases' => 'library/music/years_in_review_music_releases#index', as: :user_music_year_in_review_top_releases
+  get 'users/:user_id/library/music/years_in_review/:year/top_tracks' => 'library/music/years_in_review_music_tracks#index', as: :user_music_year_in_review_top_tracks
   get 'users/:user_id/library/music/releases' => 'music_metadata_enrichment/releases#index', as: :user_music_library_releases
   get 'users/:user_id/library/music/videos' => 'music_metadata_enrichment/videos#index', as: :user_music_library_videos
   get 'users/:user_id/library/music/artists' => 'music_metadata_enrichment/artists#index', as: :user_music_library_artists
