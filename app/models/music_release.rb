@@ -27,7 +27,8 @@ class MusicRelease < ActiveRecord::Base
   validate :future_release_date_format
   
   before_save :set_artist_name
-  after_save :synchronize_release_name
+  after_update :synchronize_release_name
+  after_update :sync_year_in_review_music_releases
   
   attr_accessible :mbid, :artist_id, :artist_name, :name, :future_release_date, :released_at, :listeners, :plays
   
@@ -250,5 +251,17 @@ class MusicRelease < ActiveRecord::Base
     return unless name_changed?
     
     tracks.update_all(release_name: name)
+  end
+  
+  def sync_year_in_review_music_releases
+    year_in_review_music_releases_attributes = {}
+    
+    [:artist_name, :release_name].each do |attribute|
+      year_in_review_music_releases_attributes[attribute] = send(attribute) if send("#{attribute}_changed?")
+    end
+    
+    return if year_in_review_music_releases_attributes.empty?
+    
+    YearInReviewMusicRelease.where(release_id: id).update_all year_in_review_music_releases_attributes
   end
 end
