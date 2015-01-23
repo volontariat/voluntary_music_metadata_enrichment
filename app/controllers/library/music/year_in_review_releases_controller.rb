@@ -2,7 +2,7 @@ class Library::Music::YearInReviewReleasesController < ApplicationController
   include ::MusicMetadataEnrichment::BaseController
   include Applicat::Mvc::Controller::Resource
 
-  authorize_resource class: 'YearInReviewMusicRelease'
+  authorize_resource class: 'YearInReviewMusicRelease', except: [:move]
   
   def index
     @user = User.find(params[:user_id])
@@ -28,6 +28,16 @@ class Library::Music::YearInReviewReleasesController < ApplicationController
     end
     
     render layout: false
+  end
+  
+  def move
+    @year_in_review_release = YearInReviewMusicRelease.find(params[:id])
+    
+    authorize! :move, @year_in_review_release
+    
+    @year_in_review_release.insert_at(params[:position].to_i)
+    
+    render nothing: true
   end
   
   private

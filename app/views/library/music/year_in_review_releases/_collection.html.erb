@@ -3,22 +3,26 @@
 <% if @year_in_review_releases.none? %>
 <p><%= t('year_in_review_music_releases.index.empty_collection') %></p>
 <% else %>
-  <table class="table table-striped">
-    <thead>
+<table class="table" style="margin-bottom: 0px">
+  <thead>
+    <tr class="<%= cycle('odd', 'even') %>">
+      <th style="width: 50px;"><%= t("attributes.position") %></th>
+      <th><%= t("attributes.name") %></th>
+    </tr>
+  </thead>
+</table>      
+<ul class="nav nav-tabs nav-stacked list-striped" id="year_in_review_music_releases">
+  <% @year_in_review_releases.each do |year_in_review_release| %>
+  <li data-id="<%= year_in_review_release.id %>" data-position="<%= year_in_review_release.position %>">
+    <table class="table">
       <tr class="<%= cycle('odd', 'even') %>">
-        <th style="width: 50px;"><%= t("attributes.position") %></th>
-        <th><%= t("attributes.name") %></th>
+        <td class="list-element-striped" id="year_in_review_music_release_position_<%= year_in_review_release.id %>" style="width: 50px; text-align:right"><%= year_in_review_release.position %></td>
+        <td class="list-element-striped"><%= link_to year_in_review_release.release_name, music_release_path(year_in_review_release.release_id) %></td>
       </tr>
-    </thead>
-    <tbody>
-    <% @year_in_review_releases.each do |year_in_review_release| %>
-      <tr class="<%= cycle('odd', 'even') %>">
-        <td style="text-align:right"><%= year_in_review_release.position %></td>
-        <td><%= link_to year_in_review_release.release_name, music_release_path(year_in_review_release.release_id) %></td>
-      </tr>
-    <% end %>
-    </tbody>
-  </table>  
+    </table>  
+  </li>  
+  <% end %>
+</ul>
 <% end %>
 
 <%= link_to(
