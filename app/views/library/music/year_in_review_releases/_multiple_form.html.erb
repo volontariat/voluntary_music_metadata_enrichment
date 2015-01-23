@@ -1,6 +1,5 @@
 <% if @releases.none? %>
 <div class="modal-header">
-  <button type="button" id="close_bootstrap_modal_button" class="close" data-dismiss="modal" aria-hidden="true">&times;</button>
   <h3><%= t('year_in_review_music_releases.index.add_multiple_from_year', year: params[:year])%></h3>
 </div>
 <div class="modal-body" style="overflow-y:none;">
@@ -39,7 +38,7 @@
       </table>
     </div>
     <div class="modal-footer">
-      <%= submit_tag t('year_in_review_music_releases.multiple_new.submit') %>
+      <%= submit_tag t('general.close') %> <%= submit_tag t('year_in_review_music_releases.multiple_new.submit') %>
     </div>
   <% end %>
 <% end %>

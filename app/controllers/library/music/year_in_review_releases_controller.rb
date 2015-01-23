@@ -23,7 +23,7 @@ class Library::Music::YearInReviewReleasesController < ApplicationController
     @page = params[:page].present? ? (params[:page].to_i + 1) : 1
     @releases = current_user.music_releases.released_in_year(params[:year]).order('released_at DESC').paginate(per_page: 10, page: @page || 1)
     
-    if params[:year_in_review_music_releases].present?
+    if params[:commit] != I18n.t('general.close') && params[:year_in_review_music_releases].present?
       @user = current_user
       find_year_in_review
       
@@ -38,7 +38,7 @@ class Library::Music::YearInReviewReleasesController < ApplicationController
       end
     end
     
-    if @releases.none?
+    if params[:commit] == I18n.t('general.close') || @releases.none?
       @user = current_user
       find_year_in_review
       get_year_in_review_releases

@@ -1,4 +1,4 @@
-<% if @releases.none? %>
+<% if params[:commit] == I18n.t('general.close') || @releases.none? %>
   $('#years_in_review').html('<%= escape_javascript render(partial: 'library/music/year_in_review_releases/collection') %>');
   window.make_year_in_review_music_releases_sortable();
   $('#bootstrap_modal').modal('hide')
