@@ -93,14 +93,14 @@ Rails.application.routes.draw do
   get 'users/:user_id/library/music/years_in_review/:year/top_releases' => 'library/music/year_in_review_releases#index', as: :user_music_year_in_review_top_releases
   get 'users/:user_id/library/music/years_in_review/:year/top_releases/new' => 'library/music/year_in_review_releases#new', as: :new_user_music_year_in_review_top_release
   post 'users/:user_id/library/music/years_in_review/:year/top_releases' => 'library/music/year_in_review_releases#create', as: :create_user_music_year_in_review_top_release
-  get 'users/:user_id/library/music/years_in_review/:year/top_releases/multiple_new' => 'library/music/year_in_review_releases#multiple_new', as: :multiple_new_user_music_year_in_review_top_release
+  get 'users/current/library/music/years_in_review/:year/top_releases/multiple_new' => 'library/music/year_in_review_releases#multiple_new', as: :multiple_new_user_music_year_in_review_top_releases
   post 'users/:user_id/library/music/years_in_review/:year/top_releases/create_multiple' => 'library/music/year_in_review_releases#create_multiple', as: :create_multiple_user_music_year_in_review_top_releases
   put 'users/current/library/music/year_in_review_music_releases/:id/move' => 'library/music/year_in_review_releases#move', as: :move_music_year_in_review_top_release
   
   get 'users/:user_id/library/music/years_in_review/:year/top_tracks' => 'library/music/year_in_review_tracks#index', as: :user_music_year_in_review_top_tracks
   get 'users/:user_id/library/music/years_in_review/:year/top_tracks/new' => 'library/music/year_in_review_tracks#new', as: :new_user_music_year_in_review_top_track
   post 'users/:user_id/library/music/years_in_review/:year/top_tracks' => 'library/music/year_in_review_tracks#create', as: :create_user_music_year_in_review_top_track
-  get 'users/:user_id/library/music/years_in_review/:year/top_tracks/multiple_new' => 'library/music/year_in_review_tracks#multiple_new', as: :multiple_new_user_music_year_in_review_top_track
+  get 'users/current/library/music/years_in_review/:year/top_tracks/multiple_new' => 'library/music/year_in_review_tracks#multiple_new', as: :multiple_new_user_music_year_in_review_top_tracks
   post 'users/:user_id/library/music/years_in_review/:year/top_tracks/create_multiple' => 'library/music/year_in_review_tracks#create_multiple', as: :create_multiple_user_music_year_in_review_top_tracks
   put 'users/current/library/music/year_in_review_music_tracks/:id/move' => 'library/music/year_in_review_tracks#move', as: :move_music_year_in_review_top_track
   
