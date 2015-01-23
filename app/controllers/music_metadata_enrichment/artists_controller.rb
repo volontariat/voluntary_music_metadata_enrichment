@@ -21,6 +21,12 @@ class MusicMetadataEnrichment::ArtistsController < ApplicationController
     end
   end
   
+  def autocomplete
+    render json: (
+      MusicArtist.select('id, name').where("name LIKE ?", "#{params[:term]}%").order(:name).limit(10).map{|a| { id: a.id, value: a.name } }
+    ), root: false
+  end
+  
   def new
     build_artist
   end
@@ -41,13 +47,15 @@ class MusicMetadataEnrichment::ArtistsController < ApplicationController
   end
   
   def by_name
-    @artist = MusicArtist.where("LOWER(name) = ?", params[:name].downcase.strip).first unless params[:page].present?
+     @artists = MusicArtist.where("LOWER(name) = ?", params[:name].downcase.strip)
+     @artist = @artists.first if params[:page].blank? && @artists.count == 1
     
     if @artist
       get_variables_for_show
       render :show
     else
-      @artists = MusicArtist.name_like(params[:name]).paginate(per_page: 10, page: params[:page] || 1)
+      @artists ||= MusicArtist.name_like(params[:name])
+      @artists = @artists.paginate(per_page: 10, page: params[:page] || 1)
     end
   end
   
