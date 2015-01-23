@@ -37,6 +37,13 @@ Rails.application.routes.draw do
           get :autocomplete
         end
       end
+      
+      resources :tracks, only: [] do
+        collection do
+          get :autocomplete
+        end
+      end
+      
       resources :videos, only: [:index, :new]
     end
     

@@ -4,3 +4,9 @@ en:
       title: Top Tracks %{year} for %{user}
       short_title: Top Tracks %{year}
       shortest_title: Top Tracks
+      empty_collection: No tracks added to this year in review yet.
+      add_single: Add single track
+      add_single_long: Add track to year in review %{year}
+      add_multiple_from_year: Add multiple tracks from %{year}
+    create:
+      successful: Successfully added a track to your year in review.

@@ -1,0 +1,39 @@
+<h3><%= t('year_in_review_music_tracks.index.short_title', year: params[:year]) %></h3>
+
+<% if @year_in_review_tracks.none? %>
+<p><%= t('year_in_review_music_tracks.index.empty_collection') %></p>
+<% else %>
+<table class="table" style="margin-bottom: 0px">
+  <thead>
+    <tr class="<%= cycle('odd', 'even') %>">
+      <th style="width: 50px;"><%= t("attributes.position") %></th>
+      <th style="width: 200px;"><%= t("music_artists.model.short_name") %></th>
+      <th style="width: 200px"><%= t("attributes.name") %></th>
+      <th></th>
+    </tr>
+  </thead>
+</table>      
+<ul class="nav nav-tabs nav-stacked list-striped" id="year_in_review_music_tracks">
+  <% @year_in_review_tracks.each do |year_in_review_track| %>
+  <li data-id="<%= year_in_review_track.id %>" data-position="<%= year_in_review_track.position %>">
+    <table class="table" style="margin-bottom: 0px">
+      <tr class="<%= cycle('odd', 'even') %>">
+        <td class="list-element-striped" id="year_in_review_music_track_position_<%= year_in_review_track.id %>" style="width: 50px; text-align:right"><%= year_in_review_track.position %></td>
+        <td class="list-element-striped" style="width: 200px;"><%= link_to year_in_review_track.artist_name, music_artist_path(year_in_review_track.artist_id) %></td>
+        <td class="list-element-striped" style="width: 200px"><%= link_to year_in_review_track.track_name, music_track_path(year_in_review_track.track_id) %></td>
+        <td><%= render partial: 'music_metadata_enrichment/tracks/spotify_track_player', locals: { spotify_track_id: year_in_review_track.spotify_track_id } %></td>
+      </tr>
+    </table>  
+  </li>  
+  <% end %>
+</ul>
+<% end %>
+
+<%= link_to(
+  t('year_in_review_music_tracks.index.add_single'), new_user_music_year_in_review_top_track_path(params[:user_id], params[:year]), 
+  class: 'remote_modal_link'
+) %> | 
+<%= link_to(
+  t('year_in_review_music_tracks.index.add_multiple_from_year', year: params[:year]), multiple_new_user_music_year_in_review_top_track_path(params[:user_id], params[:year]), 
+  class: 'remote_modal_link'
+) %>
