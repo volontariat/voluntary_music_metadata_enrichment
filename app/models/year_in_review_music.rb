@@ -3,8 +3,8 @@ class YearInReviewMusic < ActiveRecord::Base
   
   belongs_to :user
   
-  has_many :year_in_review_music_releases, dependent: :destroy
-  has_many :year_in_review_music_tracks, dependent: :destroy
+  has_many :releases, class_name: 'YearInReviewMusicRelease', dependent: :destroy
+  has_many :tracks, class_name: 'YearInReviewMusicTrack', dependent: :destroy
   
   validates :user_id, presence: true
   validates :year, presence: true, numericality: { only_integer: true }, uniqueness: { scope: :user_id }
