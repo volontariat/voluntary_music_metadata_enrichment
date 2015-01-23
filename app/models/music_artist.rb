@@ -32,8 +32,7 @@ class MusicArtist < ActiveRecord::Base
       lastfm_artist = lastfm.artist.get_info(mbid: artist.mbid)
       artist.update_attributes(listeners: lastfm_artist['stats']['listeners'], plays: lastfm_artist['stats']['playcount'])
       
-      offset = 0
-      count = 100
+      offset, count = 0, 100
       
       begin
         release_groups = musicbrainz_artist.release_groups(offset: offset)
@@ -42,7 +41,7 @@ class MusicArtist < ActiveRecord::Base
         release_groups.select{|r| ['Album', 'EP'].include?(r.type) && r.secondary_types.select{|st| ['Audiobook', 'Compilation', 'Live', 'Remix'].include?(st)}.none? && r.artists.length == 1}.each do |musicbrainz_release_group|
           releases = musicbrainz_release_group.releases
           
-          next if releases.select{|r| r.status == 'Official' && !r.media.map(&:format).include?('DVD-Video') && !r.media.map(&:format).include?('DVD')}.none?
+          next if releases.select{|r| r.status == 'Official' && r.media.map(&:format).select{|f| !['DVD-Video', 'DVD'].include?(f) }.any? }.none?
           
           release = MusicRelease.create(artist_id: artist.id, artist_name: artist.name, name: musicbrainz_release_group.title)
           

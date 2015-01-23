@@ -6,6 +6,7 @@ class MusicRelease < ActiveRecord::Base
   has_many :tracks, class_name: 'MusicTrack', foreign_key: 'release_id', dependent: :destroy
   
   def self.find_by_artist_and_name(artist_name, name)
+    # TODO: monitor if there are artists with multiple releases with the same name
     where(
       "LOWER(artist_name) = :artist_name AND LOWER(name) = :name", 
       artist_name: artist_name.downcase.strip, name: name.downcase.strip
@@ -45,13 +46,13 @@ class MusicRelease < ActiveRecord::Base
       end
       
       releases = release.prefered_releases(releases)
-      
+     
       if releases.select{|r| r.media.map(&:format).include?('CD') }.any?
         releases = releases.select{|r| r.media.map(&:format).include?('CD') }
       end
       
       releases = release.earliest_release(releases)
-      musicbrainz_release = release.release_with_highest_tracks_count(releases)
+      musicbrainz_release, dvd_recording_mbids = release.release_with_highest_tracks_count(releases)
       release.update_attributes(mbid: musicbrainz_release.id, released_at: musicbrainz_release.date)
       
       begin
@@ -76,6 +77,8 @@ class MusicRelease < ActiveRecord::Base
       first_track_nr_of_disc = release.get_first_track_nr_of_disc(recordings)
       
       recordings.each do |musicbrainz_recording|
+        next if dvd_recording_mbids.include? musicbrainz_recording.id
+        
         track_name = MusicTrack.format_name(musicbrainz_recording.title)
         
         if musicbrainz_recording.disambiguation.present? && !track_name.match('\(') && !musicbrainz_recording.disambiguation.match(/Album version|Single version/i)
@@ -127,8 +130,7 @@ class MusicRelease < ActiveRecord::Base
     working_releases.each do |working_musicbrainz_release|
       next unless working_musicbrainz_release.status == 'Official'
       
-      # TODO: handle case where count of tracks which are not on a dvd is still the highest and only import tracks which are not a DVD
-      next if working_musicbrainz_release.media.map(&:format).select{|f| ['DVD', 'DVD-Video'].include?(f)}.any?
+      next if working_musicbrainz_release.media.map(&:format).select{|f| !['DVD-Video', 'DVD'].include?(f) }.none?
       
       list << working_musicbrainz_release
     end    
@@ -156,7 +158,7 @@ class MusicRelease < ActiveRecord::Base
     musicbrainz_release, highest_tracks_count = nil, 0
     
     working_releases.each do |working_musicbrainz_release|
-      working_tracks_count = working_musicbrainz_release.media.map{|m| m.tracks.total_count }.inject{|sum,x| sum + x }
+      working_tracks_count = working_musicbrainz_release.media.select{|m| !['DVD-Video', 'DVD'].include?(m.format) }.map{|m| m.tracks.total_count }.inject{|sum,x| sum + x }
       
       if working_tracks_count > highest_tracks_count
         highest_tracks_count = working_tracks_count
@@ -164,7 +166,9 @@ class MusicRelease < ActiveRecord::Base
       end
     end
     
-    musicbrainz_release
+    dvd_recording_mbids = musicbrainz_release.media.select{|m| ['DVD-Video', 'DVD'].include?(m.format) }.map{|m| m.tracks.map{|t| t.recording.id }}.flatten.inspect
+ 
+    [musicbrainz_release, dvd_recording_mbids]
   end 
    
   def get_first_track_nr_of_disc(recordings)
@@ -256,8 +260,9 @@ class MusicRelease < ActiveRecord::Base
   def sync_year_in_review_music_releases
     year_in_review_music_releases_attributes = {}
     
-    [:artist_name, :release_name].each do |attribute|
-      year_in_review_music_releases_attributes[attribute] = send(attribute) if send("#{attribute}_changed?")
+    [:artist_name, :name].each do |attribute|
+      year_in_review_music_releases_attribute = attribute == :name ? :release_name : attribute
+      year_in_review_music_releases_attributes[year_in_review_music_releases_attribute] = send(attribute) if send("#{attribute}_changed?")
     end
     
     return if year_in_review_music_releases_attributes.empty?
