@@ -21,7 +21,7 @@ class MusicVideo < ActiveRecord::Base
   end  
   
   validates :track_id, presence: true
-  validates :url, presence: true, uniqueness: true
+  validates :url, presence: true, uniqueness: { case_sensitive: false }
   validates :status, presence: true, inclusion: { in: STATUSES }
   validate :one_live_or_official_video_per_track
   validate :url_format
