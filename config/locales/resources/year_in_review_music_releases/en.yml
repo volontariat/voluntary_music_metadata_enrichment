@@ -4,3 +4,9 @@ en:
       title: Top Releases %{year} for %{user}
       short_title: Top Releases %{year}
       shortest_title: Top Releases
+      empty_collection: No releases added to this year in review yet.
+      add_single: Add single release
+      add_single_long: Add release to year in review %{year}
+      add_multiple_from_year: Add multiple release from %{year}
+    create:
+      successful: Successfully added a release to your year in review.

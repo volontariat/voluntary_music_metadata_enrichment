@@ -10,3 +10,36 @@ $(document).ready ->
       $("#releases").empty()
       $("#releases").append data
       return
+
+  $(document.body).on "ajax:beforeSend", "#new_music_year_in_review_form", ->
+    $("#years_in_review_spinner").show()
+  
+  $(document.body).on "ajax:complete", "#new_music_year_in_review_form", ->
+    $("#years_in_review_spinner").hide()
+    
+  $(document.body).on "keyup.autocomplete", "#year_in_review_music_release_artist_name", ->  
+    $(this).autocomplete
+      source: $(this).data('source')
+      minLength: 2
+      appendTo: '#year_in_review_music_release_artist_name_suggestions'
+      select: (event, ui) ->
+        $(this).val(ui.item.value)
+        $('#year_in_review_music_release_artist_id').val(ui.item.id)
+        
+        return false;
+
+  $(document.body).on "keyup.autocomplete", "#year_in_review_music_release_release_name", (event) ->  
+    if $('#year_in_review_music_release_artist_id').val()
+      $(this).autocomplete
+        source: '/music/artists/' + $('#year_in_review_music_release_artist_id').val() + '/releases/autocomplete'
+        minLength: 2
+        appendTo: '#year_in_review_music_release_release_name_suggestions'
+        select: (event, ui) ->
+          $(this).val(ui.item.value)
+          $('#year_in_review_music_release_release_id').val(ui.item.id)
+          
+          return false;
+    else
+      alert 'Please select an artist!'
+      event.preventDefault()
+      return false

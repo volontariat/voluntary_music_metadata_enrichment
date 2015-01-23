@@ -1,0 +1,31 @@
+<h3><%= t('year_in_review_music_releases.index.short_title', year: params[:year]) %></h3>
+
+<% if @year_in_review_releases.none? %>
+<p><%= t('year_in_review_music_releases.index.empty_collection') %></p>
+<% else %>
+  <table class="table table-striped">
+    <thead>
+      <tr class="<%= cycle('odd', 'even') %>">
+        <th style="width: 50px;"><%= t("attributes.position") %></th>
+        <th><%= t("attributes.name") %></th>
+      </tr>
+    </thead>
+    <tbody>
+    <% @year_in_review_releases.each do |year_in_review_release| %>
+      <tr class="<%= cycle('odd', 'even') %>">
+        <td style="text-align:right"><%= year_in_review_release.position %></td>
+        <td><%= link_to year_in_review_release.release_name, music_release_path(year_in_review_release.release_id) %></td>
+      </tr>
+    <% end %>
+    </tbody>
+  </table>  
+<% end %>
+
+<%= link_to(
+  t('year_in_review_music_releases.index.add_single'), new_user_music_year_in_review_top_release_path(params[:user_id], params[:year]), 
+  class: 'remote_modal_link'
+) %> | 
+<%= link_to(
+  t('year_in_review_music_releases.index.add_multiple'), multiple_new_user_music_year_in_review_top_release_path(params[:user_id], params[:year]), 
+  class: 'remote_modal_link'
+) %>
