@@ -22,8 +22,9 @@ class MusicTrack < ActiveRecord::Base
     where(table[:artist_name].matches("%#{artist_name}%").and(table[:name].matches("%#{name}%")))
   end
   
-  validates :name, presence: true, uniqueness: { scope: :release_id }
+  validates :name, presence: true, uniqueness: { scope: :release_id, case_sensitive: false }
   validates :mbid, presence: true, uniqueness: true, length: { is: 36 }
+  validates :spotify_track_id, length: { is: 22 }
   
   attr_accessible :mbid, :artist_id, :artist_name, :release_id, :release_name, :master_track_id, :nr, :name, :duration, :listeners, :plays
   
@@ -34,7 +35,8 @@ class MusicTrack < ActiveRecord::Base
   before_create :set_release_name
   before_create :set_released_at
   before_create :set_master_track_id_if_available
-  after_save :synchronize_track_name
+  after_update :sync_video_track_name
+  after_update :sync_year_in_review_music_tracks
   
   state_machine :state, initial: :without_metadata do
     event :import_metadata do transition :without_metadata => :active; end
@@ -184,9 +186,21 @@ class MusicTrack < ActiveRecord::Base
     end  
   end
   
-  def synchronize_track_name
+  def sync_video_track_name
     return unless name_changed?
     
     MusicVideo.where(['track_id = ?', id]).update_all ['track_name = ?', name]
+  end
+  
+  def sync_year_in_review_music_tracks
+    year_in_review_music_tracks_attributes = {}
+    
+    [:artist_name, :release_name, :track_id, :spotify_track_id, :track_name].each do |attribute|
+      year_in_review_music_tracks_attributes[attribute] = send(attribute) if send("#{attribute}_changed?")
+    end
+    
+    return if year_in_review_music_tracks_attributes.empty?
+    
+    YearInReviewMusicTrack.where(track_id: id).update_all year_in_review_music_tracks_attributes
   end
 end
