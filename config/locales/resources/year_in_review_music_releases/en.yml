@@ -1,0 +1,6 @@
+en:
+  year_in_review_music_releases:
+    index:
+      title: Top Releases %{year} for %{user}
+      short_title: Top Releases %{year}
+      shortest_title: Top Releases

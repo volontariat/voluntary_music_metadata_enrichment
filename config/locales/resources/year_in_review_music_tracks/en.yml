@@ -1,0 +1,6 @@
+en:
+  year_in_review_music_tracks:
+    index:
+      title: Top Tracks %{year} for %{user}
+      short_title: Top Tracks %{year}
+      shortest_title: Top Tracks
