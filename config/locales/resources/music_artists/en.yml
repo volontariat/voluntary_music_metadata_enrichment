@@ -23,6 +23,8 @@ en:
       scheduled_artist_for_import: Successfully scheduled music artist for metadata import.
       already_created: The artist already exists.
       group_connection_successful: The artist has been successfully connected with group.
+      library_addition_successful: The artist has been successfully added to your library.
+      
     by_name:
       title: Artist search results
       top3_tracks: Top 3 Tracks
