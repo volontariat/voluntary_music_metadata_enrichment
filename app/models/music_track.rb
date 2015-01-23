@@ -10,6 +10,10 @@ class MusicTrack < ActiveRecord::Base
   
   scope :without_slaves, -> { where('music_tracks.master_track_id IS NULL') }
   
+  scope :released_in_year, ->(year) do
+    where("released_at >= :from AND released_at <= :to", from: Time.local(year,1,1,0,0,0), to: Time.local(year,12,31,23,59,59))
+  end
+  
   def self.find_by_artist_and_name(artist_name, name)
     without_slaves.where(
       "LOWER(artist_name) = :artist_name AND LOWER(name) = :name", 
