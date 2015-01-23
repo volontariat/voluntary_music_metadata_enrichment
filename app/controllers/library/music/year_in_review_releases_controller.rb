@@ -23,6 +23,7 @@ class Library::Music::YearInReviewReleasesController < ApplicationController
     build_resource
     
     if @year_in_review_release.save
+      MusicLibraryArtist.create(user_id: current_user.id, artist_id: @year_in_review_release.artist_id)
       @notice = I18n.t('year_in_review_music_releases.create.successful') 
       get_year_in_review_releases
     end
