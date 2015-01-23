@@ -1,5 +1,8 @@
 en:
   music_releases:
+    model:
+      short_name: Release
+      
     index:
       title: Music Releases
       short_title: Releases
