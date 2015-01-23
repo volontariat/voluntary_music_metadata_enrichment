@@ -45,6 +45,9 @@ class MusicArtist < ActiveRecord::Base
           next if releases.select{|r| r.status == 'Official' && !r.media.map(&:format).include?('DVD-Video') && !r.media.map(&:format).include?('DVD')}.none?
           
           release = MusicRelease.create(artist_id: artist.id, artist_name: artist.name, name: musicbrainz_release_group.title)
+          
+          next unless release.persisted?
+            
           release.releases = releases
           release.import_metadata!
         end
