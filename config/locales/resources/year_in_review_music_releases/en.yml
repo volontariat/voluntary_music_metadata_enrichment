@@ -7,6 +7,6 @@ en:
       empty_collection: No releases added to this year in review yet.
       add_single: Add single release
       add_single_long: Add release to year in review %{year}
-      add_multiple_from_year: Add multiple release from %{year}
+      add_multiple_from_year: Add multiple releases from %{year}
     create:
       successful: Successfully added a release to your year in review.
