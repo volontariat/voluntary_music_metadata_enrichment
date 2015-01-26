@@ -20,7 +20,6 @@ module VoluntaryMusicMetadataEnrichment
           
           def import_music_artists(lastfm, start_page = 1)
             artist_names = []
-            over_last_page = false
             
             1000.times do |page|
               page +=1
@@ -49,7 +48,6 @@ module VoluntaryMusicMetadataEnrichment
              
               if lastfm_artists.nil? || lastfm_artists.first.nil?
                 puts "USER #{lastfm_user_name}: LIBRARY PAGE ##{page} IS EMPTY" 
-                over_last_page = true
                 break
               end
              
@@ -57,11 +55,14 @@ module VoluntaryMusicMetadataEnrichment
               
               voluntary_artists = MusicArtist.where('mbid IN(?)', artist_mbids).to_a
               
+              if lastfm_artists.select{|a| !artist_names.include?(a['name'])}.none?
+                # over last page
+                break
+              end
+  
               lastfm_artists.each do |lastfm_artist|
                 if artist_names.include?(lastfm_artist['name'])
-                  over_last_page = true
-                  
-                  break  
+                  next
                 else
                   artist_names << lastfm_artist['name']
                 end
@@ -80,8 +81,6 @@ module VoluntaryMusicMetadataEnrichment
                   music_library_artists.create(artist_id: artist.id, plays: lastfm_artist['playcount']) unless new_record?
                 end
               end
-              
-              break if over_last_page
             end
             
             update_attribute(:music_library_imported, true) unless new_record?
