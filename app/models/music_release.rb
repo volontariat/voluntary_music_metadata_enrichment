@@ -22,6 +22,10 @@ class MusicRelease < ActiveRecord::Base
     where("released_at >= :from AND released_at <= :to", from: Time.local(year,1,1,0,0,0), to: Time.local(year,12,31,23,59,59))
   end
   
+  scope :for_year_in_review, ->(year_in_review) do
+    released_in_year(year_in_review.year).where('music_releases.id NOT IN(?)', year_in_review.releases.map(&:release_id))
+  end
+  
   validates :artist_id, presence: true
   validates :name, presence: true
   validates :mbid, uniqueness: true, allow_blank: true, length: { is: 36 }

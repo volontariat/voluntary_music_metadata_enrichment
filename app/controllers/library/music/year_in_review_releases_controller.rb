@@ -20,13 +20,15 @@ class Library::Music::YearInReviewReleasesController < ApplicationController
   end
   
   def multiple_new
-    @page = params[:page].present? ? (params[:page].to_i + 1) : 1
-    @releases = current_user.music_releases.released_in_year(params[:year]).order('released_at DESC').paginate(per_page: 10, page: @page || 1)
-    
+    @user = current_user
+    find_year_in_review
+    @releases = current_user.music_releases.for_year_in_review(@year_in_review)
+    @releases = @releases.where('music_releases.id > ?', params[:last_id]) if params[:last_id].present?
+    @releases_left = @releases.count
+    @releases = @releases.order('music_releases.id ASC').limit(10)
+    params[:last_id] = params[:commit] == I18n.t('general.close') || @releases.none? ? nil : @releases.last.id
+
     if params[:commit] != I18n.t('general.close') && params[:year_in_review_music_releases].present?
-      @user = current_user
-      find_year_in_review
-      
       params[:year_in_review_music_releases].each do |release_id, checked|
         next unless checked == '1'
         
@@ -39,8 +41,6 @@ class Library::Music::YearInReviewReleasesController < ApplicationController
     end
     
     if params[:commit] == I18n.t('general.close') || @releases.none?
-      @user = current_user
-      find_year_in_review
       get_year_in_review_releases
       params[:user_id] = current_user.id 
     end

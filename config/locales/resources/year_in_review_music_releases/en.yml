@@ -14,3 +14,4 @@ en:
     multiple_new:
       title: "Add multiple releases from %{year}: "
       submit: Add releases if selected and jump to next page if available else stop.
+      releases_left: "%{count} releases left."

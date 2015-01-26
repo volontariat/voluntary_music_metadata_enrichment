@@ -1,44 +1,44 @@
-<% if @releases.none? %>
-<div class="modal-header">
-  <h3><%= t('year_in_review_music_releases.index.add_multiple_from_year', year: params[:year])%></h3>
-</div>
-<div class="modal-body" style="overflow-y:none;">
-  <%= t('music_releases.index.empty_collection')%>
-</div>
-<div class="modal-footer">
-</div>
-<% else %>
-  <%= form_tag multiple_new_user_music_year_in_review_top_releases_path(params[:year]), method: :get, remote: true, class: 'form-horizontal' do %>
-    <div class="modal-header">
-      <button type="button" id="close_bootstrap_modal_button" class="close" data-dismiss="modal" aria-hidden="true">&times;</button>
-      <h3><%= t('year_in_review_music_releases.multiple_new.title', year: params[:year])%> <%= page_entries_info @releases %></h3>
-    </div>
-    <div class="modal-body" style="overflow-y:none;">
-      <%= hidden_field_tag :year, params[:year] %>
-      <%= hidden_field_tag :page, @page %>
-      
-      <table class="table" style="margin-bottom: 0px">
-        <thead>
-          <tr class="<%= cycle('odd', 'even') %>">
-            <th style="width: 15px;"></th>
-            <th style="width: 75px"><%= t("activerecord.attributes.music_release.released_at") %></th>
-            <th style="width: 200px;"><%= t("music_artists.model.short_name") %></th>
-            <th><%= t("attributes.name") %></th>
-          </tr>
-        </thead>
-        <tbody>
-          <% @releases.each do |release| %>
-          <tr>
-            <td><%= check_box_tag "year_in_review_music_releases[#{release.id}]", 1 %></td>
-            <td><%= release.formatted_released_at_or_future_release_date %></td>
-            <td><%= link_to release.artist_name, music_artist_path(release.artist_id) %></td> 
-            <td><%= link_to release.name, music_release_path(release.id) %></td>
-          <% end %>
-        </tbody>
-      </table>
-    </div>
-    <div class="modal-footer">
-      <%= submit_tag t('general.close') %> <%= submit_tag t('year_in_review_music_releases.multiple_new.submit') %>
-    </div>
+<%= form_tag multiple_new_user_music_year_in_review_top_releases_path(params[:year]), method: :get, remote: true, class: 'form-horizontal' do %>
+  <% if @releases.none? %>
+  <div class="modal-header">
+    <h3><%= t('year_in_review_music_releases.index.add_multiple_from_year', year: params[:year])%></h3>
+  </div>
+  <div class="modal-body" style="overflow-y:none;">
+    <%= t('music_releases.index.empty_collection')%>
+  </div>
+  <div class="modal-footer">
+    <%= submit_tag t('general.close') %>
+  </div>
+  <% else %>
+  <div class="modal-header">
+    <h3><%= t('year_in_review_music_releases.multiple_new.title', year: params[:year])%> <%= t('year_in_review_music_releases.multiple_new.releases_left', count: @releases_left) %></h3>
+  </div>
+  <div class="modal-body" style="overflow-y:none;">
+    <%= hidden_field_tag :year, params[:year] %>
+    <%= hidden_field_tag :last_id, params[:last_id] %>
+    
+    <table class="table" style="margin-bottom: 0px">
+      <thead>
+        <tr class="<%= cycle('odd', 'even') %>">
+          <th style="width: 15px;"></th>
+          <th style="width: 75px"><%= t("activerecord.attributes.music_release.released_at") %></th>
+          <th style="width: 200px;"><%= t("music_artists.model.short_name") %></th>
+          <th><%= t("attributes.name") %></th>
+        </tr>
+      </thead>
+      <tbody>
+        <% @releases.each do |release| %>
+        <tr>
+          <td><%= check_box_tag "year_in_review_music_releases[#{release.id}]", 1 %></td>
+          <td><%= release.formatted_released_at_or_future_release_date %></td>
+          <td><%= link_to release.artist_name, music_artist_path(release.artist_id) %></td> 
+          <td><%= link_to release.name, music_release_path(release.id) %></td>
+        <% end %>
+      </tbody>
+    </table>
+  </div>
+  <div class="modal-footer">
+    <%= submit_tag t('general.close') %> <%= submit_tag t('year_in_review_music_releases.multiple_new.submit') %>
+  </div>
   <% end %>
 <% end %>
