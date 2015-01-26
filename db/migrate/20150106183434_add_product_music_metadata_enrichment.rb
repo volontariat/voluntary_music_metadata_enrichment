@@ -37,6 +37,7 @@ class AddProductMusicMetadataEnrichment < ActiveRecord::Migration
     
     add_index :music_releases, :artist_id
     add_index :music_releases, :mbid, unique: true
+    add_index :music_releases, :released_at
     
     create_table :music_tracks do |t|
       t.string :mbid, limit: 36
@@ -59,6 +60,7 @@ class AddProductMusicMetadataEnrichment < ActiveRecord::Migration
     add_index :music_tracks, :artist_id
     add_index :music_tracks, :master_track_id
     add_index :music_tracks, [:release_id, :name], unique: true
+    add_index :music_tracks, :released_at
     
     create_table :music_videos do |t|
       t.string :status
