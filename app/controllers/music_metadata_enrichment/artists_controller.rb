@@ -54,7 +54,7 @@ class MusicMetadataEnrichment::ArtistsController < ApplicationController
       get_variables_for_show
       render :show
     else
-      @artists ||= MusicArtist.name_like(params[:name])
+      @artists = MusicArtist.name_like(params[:name]) if @artists.nil? || @artists.count == 0
       @artists = @artists.paginate(per_page: 10, page: params[:page] || 1)
     end
   end
