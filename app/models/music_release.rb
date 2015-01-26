@@ -67,46 +67,39 @@ class MusicRelease < ActiveRecord::Base
         # rescue from album not found
       end
       
-      #musicbrainz_release = MusicBrainz::Release.find(mbid, [:recordings])
-      recordings = nil
+      musicbrainz_release = MusicBrainz::Release.find(release.mbid, [:recordings])
+      first_track_nr_of_disc = release.get_first_track_nr_of_disc(musicbrainz_release)
       
-      3.times do
-        recordings = MusicBrainz::Recording.by_release_id(musicbrainz_release.id)
-        
-        break if recordings.respond_to? :each
-        
-        sleep 60
-      end
-      
-      first_track_nr_of_disc = release.get_first_track_nr_of_disc(recordings)
-      
-      recordings.each do |musicbrainz_recording|
-        next if dvd_recording_mbids.include? musicbrainz_recording.id
-        
-        track_name = MusicTrack.format_name(musicbrainz_recording.title)
-        
-        if musicbrainz_recording.disambiguation.present? && !track_name.match('\(') && !musicbrainz_recording.disambiguation.match(/Album version|Single version/i)
-          # example: http://musicbrainz.org/release/e3f92095-5466-3a96-8dc3-f5c86c35a954
-          track_name = "#{track_name} (#{musicbrainz_recording.disambiguation})"
-        end
-        
-        medium = musicbrainz_recording.releases.select{|r2| r2.id == musicbrainz_release.id}.first.media.first
-        nr = first_track_nr_of_disc[medium.position] + medium.tracks.first.number.to_i - 1
-        
-        track = nil
-        
-        begin
-          track = MusicTrack.create(
-            mbid: musicbrainz_recording.id, artist_id: release.artist_id, artist_name: release.artist_name, 
-            release_id: release.id, release_name: release.name, nr: nr, name: track_name, 
-            duration: musicbrainz_recording.length
-          )
-        rescue ActiveRecord::RecordNotUnique
-        end
-        
-        # no bang because of releases like the following which includes the same track multiple times: http://musicbrainz.org/release/2b18f9eb-b171-4fd6-ab1f-9801c4adc992
-        if track.try(:id)
-          track.import_metadata
+      musicbrainz_release.media.each do |medium|
+        medium.tracks.each do |track|
+          musicbrainz_recording = track.recording
+          
+          next if dvd_recording_mbids.include? musicbrainz_recording.id
+          
+          track_name = MusicTrack.format_name(musicbrainz_recording.title)
+          
+          if musicbrainz_recording.disambiguation.present? && !track_name.match('\(') && !musicbrainz_recording.disambiguation.match(/Album version|Single version/i)
+            # example: http://musicbrainz.org/release/e3f92095-5466-3a96-8dc3-f5c86c35a954
+            track_name = "#{track_name} (#{musicbrainz_recording.disambiguation})"
+          end
+          
+          nr = first_track_nr_of_disc[medium.position] + track.number.to_i - 1
+          
+          track = nil
+          
+          begin
+            track = MusicTrack.create(
+              mbid: musicbrainz_recording.id, artist_id: release.artist_id, artist_name: release.artist_name, 
+              release_id: release.id, release_name: release.name, nr: nr, name: track_name, 
+              duration: musicbrainz_recording.length
+            )
+          rescue ActiveRecord::RecordNotUnique
+          end
+          
+          # no bang because of releases like the following which includes the same track multiple times: http://musicbrainz.org/release/2b18f9eb-b171-4fd6-ab1f-9801c4adc992
+          if track.try(:id)
+            track.import_metadata
+          end
         end
       end
     end
@@ -181,36 +174,34 @@ class MusicRelease < ActiveRecord::Base
     [musicbrainz_release, dvd_recording_mbids]
   end 
    
-  def get_first_track_nr_of_disc(recordings)
+  def get_first_track_nr_of_disc(musicbrainz_release)
     tracks_count_by_disc = {}
-
-    recordings.each do |musicbrainz_recording|
-      medium = musicbrainz_recording.releases.select{|r2| r2.id == mbid}.first.media.first
+     
+    musicbrainz_release.media.each do |medium|
       tracks_count_by_disc[medium.position] = medium.tracks.total_count
     end
     
     first_track_nr_of_disc = {}
 
-    recordings.each do |musicbrainz_recording|
-      medium = musicbrainz_recording.releases.select{|r2| r2.id == mbid}.first.media.first
-      
-      next if first_track_nr_of_disc.has_key? medium.position
-      
+    musicbrainz_release.media.each do |medium|
       if medium.position.to_i == 1
         first_track_nr_of_disc[medium.position] = 1
+        
         next
       end
       
       nr = 0
       
-      tracks_count_by_disc.each do |disc_nr,tracks_count|
+      tracks_count_by_disc.keys.sort.each do |disc_nr|
+        tracks_count = tracks_count_by_disc[disc_nr]
+        
         break if disc_nr == medium.position
         
         nr += tracks_count
       end
       
       first_track_nr_of_disc[medium.position] = nr + 1
-    end 
+    end
     
     first_track_nr_of_disc
   end 
