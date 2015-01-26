@@ -11,7 +11,7 @@ class MusicArtist < ActiveRecord::Base
   validates :name, presence: true
   validates :mbid, presence: true, uniqueness: true, length: { is: 36 }
   
-  after_save :synchronize_artist_name
+  after_update :synchronize_artist_name
   after_create :create_bonustracks_release
   
   attr_accessible :name, :mbid, :disambiguation, :founded_at, :dissolved_at, :listeners, :plays
