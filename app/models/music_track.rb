@@ -18,11 +18,11 @@ class MusicTrack < ActiveRecord::Base
     released_in_year(year_in_review.year).where('music_tracks.id NOT IN(?)', year_in_review.tracks.map(&:track_id))
   end
   
-  def self.find_by_artist_and_name(artist_name, name)
+  def self.by_artist_and_name(artist_name, name)
     without_slaves.where(
       "LOWER(artist_name) = :artist_name AND LOWER(name) = :name", 
       artist_name: artist_name.downcase.strip, name: name.downcase.strip
-    ).first
+    )
   end
   
   scope :artist_and_name_like, ->(artist_name, name) do
@@ -203,7 +203,7 @@ class MusicTrack < ActiveRecord::Base
   def sync_year_in_review_music_tracks
     year_in_review_music_tracks_attributes = {}
     
-    [:artist_name, :release_name, :id, :spotify_track_id, :name].each do |attribute|
+    [:artist_name, :release_name, :id, :spotify_track_id, :name, :released_at].each do |attribute|
       year_in_review_music_tracks_attribute = case attribute
       when :id then :track_id
       when :name then :track_name

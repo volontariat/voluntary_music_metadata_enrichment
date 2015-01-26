@@ -49,13 +49,15 @@ class MusicMetadataEnrichment::TracksController < ApplicationController
   end
   
   def by_name
-    @track = MusicTrack.find_by_artist_and_name(params[:artist_name], params[:name]) unless params[:page].present?
+    @tracks = MusicTrack.by_artist_and_name(params[:artist_name], params[:name])
+    @track = @tracks.first if params[:page].blank? && @tracks.count == 1
  
     if @track
       get_variables_for_show
       render :show
     else
-      @tracks = MusicTrack.without_slaves.artist_and_name_like(params[:artist_name], params[:name]).paginate(per_page: 10, page: params[:page] || 1)
+      @tracks = MusicTrack.without_slaves.artist_and_name_like(params[:artist_name], params[:name]) if @tracks.nil? || @tracks.count == 0
+      @tracks = @tracks.paginate(per_page: 10, page: params[:page] || 1)
     end
   end
   
