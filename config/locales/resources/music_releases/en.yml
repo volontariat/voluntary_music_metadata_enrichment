@@ -30,7 +30,7 @@ en:
       empty_collection: Release not found.
       title: Music release name confirmation
       confirm: Confirm
-      release_not_found: Release not found. Not yet released yet then maybe you like to announce the release.
+      release_not_found: Release not found. Not yet released yet then maybe you like to announce the release. Otherwise create the release on MusicBrainz.org and try again.
       release_found_but_does_not_satisfy_criteria: "Release found on MusicBrainz but it's not matching release criteria which are: official album or EP, no live album and no multiple artists per release like compilations and split EPs."
         
     create:
