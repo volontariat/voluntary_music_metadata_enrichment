@@ -8,6 +8,7 @@ en:
       short_title: Artists
       name: Name
       empty_collection: No music artists available.
+      search_placeholder: Artist name
       
     new: 
       title: New Music Artist
@@ -26,6 +27,7 @@ en:
       library_addition_successful: The artist has been successfully added to your library.
       
     by_name:
+      name_blank: Name can't be blank.
       title: Artist search results
       top3_tracks: Top 3 Tracks
           

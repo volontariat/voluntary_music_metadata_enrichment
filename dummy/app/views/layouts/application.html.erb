@@ -21,14 +21,24 @@
     </div>
 <% end %>    
     <div class="row-fluid">
+<% if sidenav(@sidenav_links_count).present? || content_for?(:search) %>
       <div class="span9">
         <%= breadcrumbs %>
         
         <%= yield %>
       </div>      
       <div class="span3">
-        <%= sidenav %>
+        <%= yield :search %>
+        
+        <%= sidenav(@sidenav_links_count) %>
       </div>
+<% else %>
+      <div class="span12">
+        <%= breadcrumbs %>
+        
+        <%= yield %>
+      </div>      
+<% end %>
     </div>
   </div>
   <div class="container-fluid">

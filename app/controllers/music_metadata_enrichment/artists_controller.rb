@@ -47,6 +47,11 @@ class MusicMetadataEnrichment::ArtistsController < ApplicationController
   end
   
   def by_name
+     if params[:name].blank?
+       flash[:alert] = I18n.t('music_artists.by_name.name_blank')
+       redirect_to music_artists_path and return
+     end
+     
      @artists = MusicArtist.where("LOWER(name) = ?", params[:name].downcase.strip)
      @artist = @artists.first if params[:page].blank? && @artists.count == 1
     

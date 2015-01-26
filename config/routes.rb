@@ -29,6 +29,7 @@ Rails.application.routes.draw do
       collection do
         get :name_confirmation
         get 'by_name/:name', to: 'artists#by_name'
+        get :by_name, as: :by_name
         get :autocomplete
       end
       
@@ -56,6 +57,7 @@ Rails.application.routes.draw do
         get :announce
         post :create_announcement
         get 'by_name/:artist_name/:name', to: 'releases#by_name'
+        get :by_name, as: :by_name
       end
     end
     
@@ -66,6 +68,7 @@ Rails.application.routes.draw do
         get :name
         get :name_confirmation
         get 'by_name/:artist_name/:name', to: 'tracks#by_name'
+        get :by_name, as: :by_name
       end
       
       resources :videos, only: [:new]
@@ -80,6 +83,7 @@ Rails.application.routes.draw do
         get :create_track
         get :metadata
         get 'by_name/:artist_name/:name', to: 'videos#by_name'
+        get :by_name, as: :by_name
       end
     end
   end

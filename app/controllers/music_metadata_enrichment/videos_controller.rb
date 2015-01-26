@@ -84,6 +84,11 @@ class MusicMetadataEnrichment::VideosController < ApplicationController
   end
   
   def by_name
+    if params[:artist_name].blank? || params[:name].blank?
+      flash[:alert] = I18n.t('music_videos.by_name.artist_name_or_name_blank')
+      redirect_to music_videos_path(artist_name: params[:artist_name], name: params[:name]) and return
+    end
+     
     status = if match = params[:name].match(/\(Live\)|\(Official\)|\(Unofficial\)/i)
       match[0].gsub(/\(|\)/, '').titleize
     else

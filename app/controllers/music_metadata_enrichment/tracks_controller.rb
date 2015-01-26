@@ -49,6 +49,11 @@ class MusicMetadataEnrichment::TracksController < ApplicationController
   end
   
   def by_name
+     if params[:artist_name].blank? || params[:name].blank?
+       flash[:alert] = I18n.t('music_tracks.by_name.artist_name_or_name_blank')
+       redirect_to music_tracks_path(artist_name: params[:artist_name], name: params[:name]) and return
+     end
+    
     @tracks = MusicTrack.by_artist_and_name(params[:artist_name], params[:name])
     @track = @tracks.first if params[:page].blank? && @tracks.count == 1
  

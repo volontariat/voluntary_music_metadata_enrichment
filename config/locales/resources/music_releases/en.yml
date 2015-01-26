@@ -10,6 +10,8 @@ en:
       empty_collection: No music releases available.
       year: Year
       add: Add release
+      artist_search_placeholder: Artist name
+      name_search_placeholder: Release name
       
     new: 
       title: "New Music Release: enter artist information"
@@ -46,7 +48,8 @@ en:
       success: Successfully announced music release.
     
     by_name:
-      title: Release search results         
+      title: Release search results    
+      artist_name_or_name_blank: Artist name and release name can't be blank.     
     
   activerecord:
     models:

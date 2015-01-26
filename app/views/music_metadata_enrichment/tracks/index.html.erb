@@ -1,0 +1,8 @@
+<% content_for :search do %>
+  <%= form_tag by_name_music_tracks_path, method: :get, class: 'form-search' do %>
+    <%= hidden_field_tag :authenticity_token, form_authenticity_token %>
+    <%= text_field_tag 'artist_name', params[:artist_name], class: 'input-small search-query', placeholder: t('music_releases.index.artist_search_placeholder') %>
+    <%= text_field_tag 'name', params[:name], class: 'input-small search-query', placeholder: t('music_tracks.index.name_search_placeholder') %>
+    <button type="submit" class="btn"><%= t('general.search') %></button>
+  <% end %>
+<% end %>
