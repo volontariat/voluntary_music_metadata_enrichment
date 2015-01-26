@@ -18,6 +18,7 @@ class YearInReviewMusicEntries < ActiveRecord::Migration
       t.string :artist_name
       t.integer :release_id
       t.string :release_name
+      t.datetime :released_at
       t.timestamps
     end
     
@@ -36,6 +37,7 @@ class YearInReviewMusicEntries < ActiveRecord::Migration
       t.integer :track_id
       t.string :spotify_track_id, limit: 22
       t.string :track_name
+      t.datetime :released_at
       t.timestamps
     end
     

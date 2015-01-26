@@ -8,7 +8,8 @@
     <tr class="<%= cycle('odd', 'even') %>">
       <th style="width: 50px;"><%= t("attributes.position") %></th>
       <th style="width: 200px;"><%= t("music_artists.model.short_name") %></th>
-      <th><%= t("attributes.name") %></th>
+      <th style="width: 200px;"><%= t("attributes.name") %></th>
+      <th style="width: 70px;"><%= t("activerecord.attributes.music_release.released_at") %></th>
       <th></th>
     </tr>
   </thead>
@@ -20,8 +21,9 @@
       <tr class="<%= cycle('odd', 'even') %>">
         <td class="list-element-striped" id="year_in_review_music_track_position_<%= year_in_review_track.id %>" style="width: 50px; text-align:right"><%= year_in_review_track.position %></td>
         <td class="list-element-striped" style="width: 200px;"><%= link_to year_in_review_track.artist_name, music_artist_path(year_in_review_track.artist_id) %></td>
-        <td class="list-element-striped"><%= link_to year_in_review_track.track_name, music_track_path(year_in_review_track.track_id) %></td>
-        <td><%= render partial: 'music_metadata_enrichment/tracks/spotify_track_player', locals: { spotify_track_id: year_in_review_track.spotify_track_id } %></td>
+        <td class="list-element-striped" style="width: 200px;"><%= link_to year_in_review_track.track_name, music_track_path(year_in_review_track.track_id) %></td>
+        <td class="list-element-striped" style="width: 70px;"><%= year_in_review_track.released_at.present? ? year_in_review_track.released_at.strftime('%d.%m.%Y') : '' %></td>
+        <td class="list-element-striped"><%= render partial: 'music_metadata_enrichment/tracks/spotify_track_player', locals: { spotify_track_id: year_in_review_track.spotify_track_id } %></td>
       </tr>
     </table>  
   </li>  

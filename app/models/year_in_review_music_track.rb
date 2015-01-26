@@ -23,5 +23,6 @@ class YearInReviewMusicTrack < ActiveRecord::Base
     self.release_name = track.release_name unless release_name.present?
     self.track_name = track.name unless track_name.present?
     self.spotify_track_id = track.spotify_track_id unless spotify_track_id.present?
+    self.released_at = track.released_at unless released_at.present?
   end
 end

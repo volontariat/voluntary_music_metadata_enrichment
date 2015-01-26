@@ -19,5 +19,6 @@ class YearInReviewMusicRelease < ActiveRecord::Base
     self.artist_id = release.artist_id unless artist_id.present?
     self.artist_name = release.artist_name unless artist_name.present?
     self.release_name = release.name unless release_name.present?
+    self.released_at = release.released_at unless released_at.present?
   end
 end
