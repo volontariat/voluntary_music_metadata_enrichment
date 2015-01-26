@@ -5,12 +5,12 @@ class MusicRelease < ActiveRecord::Base
   
   has_many :tracks, class_name: 'MusicTrack', foreign_key: 'release_id', dependent: :destroy
   
-  def self.find_by_artist_and_name(artist_name, name)
+  def self.by_artist_and_name(artist_name, name)
     # TODO: monitor if there are artists with multiple releases with the same name
     where(
       "LOWER(artist_name) = :artist_name AND LOWER(name) = :name", 
       artist_name: artist_name.downcase.strip, name: name.downcase.strip
-    ).first
+    )
   end
   
   scope :artist_and_name_like, ->(artist_name, name) do
@@ -32,7 +32,7 @@ class MusicRelease < ActiveRecord::Base
   validate :future_release_date_format
   
   before_save :set_artist_name
-  after_update :synchronize_release_name
+  after_update :sync_tracks
   after_update :sync_year_in_review_music_releases
   
   attr_accessible :mbid, :artist_id, :artist_name, :name, :future_release_date, :released_at, :listeners, :plays
@@ -110,6 +110,12 @@ class MusicRelease < ActiveRecord::Base
         end
       end
     end
+  end
+  
+  def self.format_lastfm_name(name)
+    return name if name.nil?
+    
+    name.gsub(/\(Deluxe Edition\)|\(Deluxe\)|\(Deluxe Version\)|\(Deluxe Package\)|\(Bonus Version\)|\(Legacy Edition\)|\(Standard Version\)|\(Remastered Version\)|\(Remastered\)/i, '').strip
   end
   
   def groups
@@ -255,16 +261,21 @@ class MusicRelease < ActiveRecord::Base
     self.artist_name = artist.name
   end
   
-  def synchronize_release_name
-    return unless name_changed?
+  def sync_tracks
+    track_attributes = {}
     
-    tracks.update_all(release_name: name)
+    track_attributes[:release_name] = name if name_changed?
+    track_attributes[:released_at] = released_at if released_at_changed?
+    
+    return if track_attributes.empty?
+    
+    tracks.update_all track_attributes
   end
   
   def sync_year_in_review_music_releases
     year_in_review_music_releases_attributes = {}
     
-    [:artist_name, :name].each do |attribute|
+    [:artist_name, :name, :released_at].each do |attribute|
       year_in_review_music_releases_attribute = attribute == :name ? :release_name : attribute
       year_in_review_music_releases_attributes[year_in_review_music_releases_attribute] = send(attribute) if send("#{attribute}_changed?")
     end

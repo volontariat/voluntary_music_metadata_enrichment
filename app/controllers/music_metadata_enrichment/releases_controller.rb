@@ -156,14 +156,15 @@ class MusicMetadataEnrichment::ReleasesController < ApplicationController
   end
   
   def by_name
-    @release = MusicRelease.find_by_artist_and_name(params[:artist_name], params[:name]) unless params[:page].present?
+    @releases = MusicRelease.by_artist_and_name(params[:artist_name], params[:name])
+    @release = @releases.first if params[:page].blank? && @releases.count == 1
     
     if @release
       get_variables_for_show
       render :show
     else
-      releases_table = MusicRelease.arel_table
-      @releases = MusicRelease.artist_and_name_like(params[:artist_name], params[:name]).paginate(per_page: 10, page: params[:page] || 1)
+      @releases = MusicRelease.artist_and_name_like(params[:artist_name], params[:name]) if @releases.nil? || @releases.count == 0
+      @releases = @releases.paginate(per_page: 10, page: params[:page] || 1)
     end
   end
   
