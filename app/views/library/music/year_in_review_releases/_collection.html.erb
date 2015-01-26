@@ -15,7 +15,7 @@
 <ul class="nav nav-tabs nav-stacked list-striped" id="year_in_review_music_releases">
   <% @year_in_review_releases.each do |year_in_review_release| %>
   <li data-id="<%= year_in_review_release.id %>" data-position="<%= year_in_review_release.position %>">
-    <table class="table">
+    <table class="table" style="margin-bottom: 0px">
       <tr class="<%= cycle('odd', 'even') %>">
         <td class="list-element-striped" id="year_in_review_music_release_position_<%= year_in_review_release.id %>" style="width: 50px; text-align:right"><%= year_in_review_release.position %></td>
         <td class="list-element-striped" style="width: 200px;"><%= link_to year_in_review_release.artist_name, music_artist_path(year_in_review_release.artist_id) %></td>
