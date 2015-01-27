@@ -73,6 +73,8 @@ class AddProductMusicMetadataEnrichment < ActiveRecord::Migration
       t.string :location
       t.datetime :recorded_at
       t.integer :user_id
+      t.integer :likes_count, default: 0
+      t.integer :dislikes_count, default: 0
       t.string :state
       t.timestamps
     end

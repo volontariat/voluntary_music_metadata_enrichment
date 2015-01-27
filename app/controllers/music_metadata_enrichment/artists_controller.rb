@@ -10,12 +10,19 @@ class MusicMetadataEnrichment::ArtistsController < ApplicationController
   def index
     if request.xhr? 
       if request.original_url.match('/groups/') && params[:id]
-        @artists = MusicMetadataEnrichment::Group.find(params[:id]).artists
+        @group = MusicMetadataEnrichment::Group.find(params[:id])
+        @artists = @group.artists
       elsif params[:user_id].present?
         @artists = User.find(params[:user_id]).music_artists
       end
       
       @artists = @artists.order('name ASC').paginate(per_page: 10, page: params[:page] || 1)
+      
+      if request.original_url.match('/groups/') && params[:id] && @artists.any?
+        @group_artist_connections = @group.artist_connections.where('music_metadata_enrichment_group_artist_connections.artist_id IN(?)', @artists.map(&:id))
+        @group_artist_connection_likes = current_user.likes_or_dislikes.for_targets('MusicMetadataEnrichment::GroupArtistConnection', @group_artist_connections.map(&:id)).index_by(&:target_id)
+        @group_artist_connections = @group_artist_connections.index_by(&:artist_id)
+      end
       
       render partial: 'music_metadata_enrichment/artists/collection', layout: false, locals: { title: I18n.t("music_metadata_enrichment_group_artist_connections.index.empty_collection"), paginate: true }
     end

@@ -1,5 +1,7 @@
 # -*- encoding : utf-8 -*-
 class MusicVideo < ActiveRecord::Base
+  include Likeable
+  
   STATUSES = %w(Official Unofficial Live)
   
   belongs_to :track, class_name: 'MusicTrack'

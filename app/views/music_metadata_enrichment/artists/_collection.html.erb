@@ -8,17 +8,20 @@
   <table class="table table-striped">
     <thead>
       <tr class="<%= cycle('odd', 'even') %>">
-        <th><%= t("attributes.name") %></th>
+        <th style="width: 200px"><%= t("attributes.name") %></th>
   <% if with_disambiguation %>
-        <th><%= t("activerecord.attributes.music_artist.disambiguation") %></th>
+        <th style="width: 200px"><%= t("activerecord.attributes.music_artist.disambiguation") %></th>
   <% end %>      
   <% if with_founded_at %>      
-        <th><%= t("activerecord.attributes.music_artist.founded_at") %></th>
+        <th style="width: 75px"><%= t("activerecord.attributes.music_artist.founded_at") %></th>
   <% end %>
   <% if with_top_tracks %>        
-        <th><%= t("music_artists.by_name.top3_tracks") %></th>
+        <th style="width: 100px"><%= t("music_artists.by_name.top3_tracks") %></th>
   <% end %>
-        <th><%= t("attributes.listeners") %></th>
+        <th style="width: 75px"><%= t("attributes.listeners") %></th>
+  <% if @group.present? %>
+        <th></th>
+  <% end %>
       </tr>
     </thead>
     <tbody>
@@ -35,6 +38,9 @@
         <td><%= raw(artist.tracks.without_slaves.order('plays DESC').limit(3).map{|t| link_to(t.name, music_track_path(t.id)) }.join(', '))%></td>
       <% end %>
         <td><%= artist.listeners %></td>
+      <% if @group.present? %>
+        <td style="padding: 0px"><%= render partial: 'shared/likes_and_dislikes', locals: { target: @group_artist_connections[artist.id], likes: @group_artist_connection_likes } %></td>
+      <% end %>
       </tr>
     <% end %>
     </tbody>

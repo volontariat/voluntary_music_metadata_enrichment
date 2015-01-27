@@ -13,6 +13,8 @@ class CreateMusicMetadataEnrichmentGroups < ActiveRecord::Migration
     create_table :music_metadata_enrichment_group_artist_connections do |t|
       t.integer :group_id
       t.integer :artist_id
+      t.integer :likes_count, default: 0
+      t.integer :dislikes_count, default: 0
       t.timestamps
     end
     

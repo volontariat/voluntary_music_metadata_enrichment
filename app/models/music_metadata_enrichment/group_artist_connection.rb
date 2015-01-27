@@ -1,5 +1,7 @@
 module MusicMetadataEnrichment
   class GroupArtistConnection < ActiveRecord::Base
+    include Likeable
+    
     self.table_name = 'music_metadata_enrichment_group_artist_connections'
     
     belongs_to :group, class_name: 'MusicMetadataEnrichment::Group'

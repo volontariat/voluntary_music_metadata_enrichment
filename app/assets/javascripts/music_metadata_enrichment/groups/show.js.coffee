@@ -10,3 +10,5 @@ $(document).ready ->
       $("#releases").empty()
       $("#releases").append data
       return
+
+  new window.Likes.List()

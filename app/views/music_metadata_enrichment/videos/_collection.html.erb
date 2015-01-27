@@ -6,6 +6,7 @@
   <% @videos.each do |video| %>
 <h5><%= link_to video.name, music_video_path(video) %></h4>
 <p><%= video.url_html %></p>
+<%= render partial: 'shared/likes_and_dislikes', locals: { target: video, likes: @video_likes } %>
   <% end %>
 <% end %>
 

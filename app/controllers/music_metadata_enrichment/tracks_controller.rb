@@ -49,10 +49,10 @@ class MusicMetadataEnrichment::TracksController < ApplicationController
   end
   
   def by_name
-     if params[:artist_name].blank? || params[:name].blank?
-       flash[:alert] = I18n.t('music_tracks.by_name.artist_name_or_name_blank')
-       redirect_to music_tracks_path(artist_name: params[:artist_name], name: params[:name]) and return
-     end
+    if params[:artist_name].blank? || params[:name].blank?
+      flash[:alert] = I18n.t('music_tracks.by_name.artist_name_or_name_blank')
+      redirect_to music_tracks_path(artist_name: params[:artist_name], name: params[:name]) and return
+    end
     
     @tracks = MusicTrack.by_artist_and_name(params[:artist_name], params[:name])
     @track = @tracks.first if params[:page].blank? && @tracks.count == 1
@@ -74,5 +74,9 @@ class MusicMetadataEnrichment::TracksController < ApplicationController
   
   def get_variables_for_show
     @videos = @track.videos.order_by_status
+    
+    unless @videos.none?
+      @video_likes = current_user.likes_or_dislikes.for_targets('MusicVideo', @videos.map(&:id)).index_by(&:target_id)
+    end
   end
 end
