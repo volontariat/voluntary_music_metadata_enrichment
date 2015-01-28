@@ -4,6 +4,10 @@ window.VoluntaryMusicMetadataEnrichment.Library.YearInReviewTracks or= {}
 window.VoluntaryMusicMetadataEnrichment.Library.YearInReviewTracks.IndexView = class IndexView
   constructor: ->
     window.VoluntaryMusicMetadataEnrichment.Library.YearInReviewTracks.IndexView.makeCollectionSortable()
+    
+    $(document.body).on "ajax:beforeSend", ".destroy_music_year_in_review_top_track_link", ->
+      $(this).find('.ajax_spinner').show()
+    
     new window.VoluntaryMusicMetadataEnrichment.Library.YearInReviewTracks.NewView()
     
   @makeCollectionSortable: ->
