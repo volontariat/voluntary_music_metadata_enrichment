@@ -19,6 +19,9 @@
         <th style="width: 100px"><%= t("music_artists.by_name.top3_tracks") %></th>
   <% end %>
         <th style="width: 75px"><%= t("attributes.listeners") %></th>
+  <% if user_signed_in? && current_user.id == params[:user_id].to_i %>
+        <th></th>
+  <% end %>      
   <% if @group.present? %>
         <th></th>
   <% end %>
@@ -27,17 +30,24 @@
     <tbody>
     <% @artists.each do |artist| %>
       <tr class="<%= cycle('odd', 'even') %>">
-        <td><%= link_to artist.name, music_artist_path(artist.id) %></td>
+        <td style="width: 200px"><%= link_to artist.name, music_artist_path(artist.id) %></td>
       <% if with_disambiguation %>
-        <td><%= artist.disambiguation %></td>
+        <td style="width: 200px"><%= artist.disambiguation %></td>
       <% end %>
       <% if with_founded_at %>
-        <td><%= artist.founded_at.present? ? artist.founded_at.strftime('%d.%m.%Y') : '' %></td>
+        <td style="width: 75px"><%= artist.founded_at.present? ? artist.founded_at.strftime('%d.%m.%Y') : '' %></td>
       <% end %>
       <% if with_top_tracks %> 
-        <td><%= raw(artist.tracks.without_slaves.order('plays DESC').limit(3).map{|t| link_to(t.name, music_track_path(t.id)) }.join(', '))%></td>
+        <td style="width: 100px"><%= raw(artist.tracks.without_slaves.order('plays DESC').limit(3).map{|t| link_to(t.name, music_track_path(t.id)) }.join(', '))%></td>
       <% end %>
-        <td><%= artist.listeners %></td>
+        <td style="width: 75px"><%= artist.listeners %></td>
+      <% if user_signed_in? && current_user.id == params[:user_id].to_i %>
+        <td>
+          <%= link_to destroy_music_library_artist_path(@music_library_artists[artist.id].id, page: params[:page]), method: :delete, remote: true, class: 'btn btn-danger destroy_music_library_artist_link' do %>
+            <%= t('general.remove') %> <%= image_tag 'voluntary/spinner.gif', class: 'ajax_spinner hide' %>
+          <% end %>
+        </td>
+      <% end %>
       <% if @group.present? %>
         <td style="padding: 0px"><%= render partial: 'shared/likes_and_dislikes', locals: { target: @group_artist_connections[artist.id], likes: @group_artist_connection_likes } %></td>
       <% end %>
@@ -46,7 +56,7 @@
     </tbody>
   </table>  
 <% end %>
-<%= will_paginate @artists if paginate %>
+<%= will_paginate @artists, params: { controller: '/music_metadata_enrichment/artists', action: 'index', id: nil }.merge(@pagination_params ||= {}) if paginate %>
 <% if params[:group_id].present? %>
 <p>
   <%= link_to t('music_metadata_enrichment_group_artist_connections.new.short_title'), new_music_group_artist_path(params[:group_id]) %>

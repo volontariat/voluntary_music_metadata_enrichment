@@ -22,6 +22,8 @@ class MusicMetadataEnrichment::ArtistsController < ::MusicMetadataEnrichment::Ap
         @group_artist_connections = @group.artist_connections.where('music_metadata_enrichment_group_artist_connections.artist_id IN(?)', @artists.map(&:id))
         @group_artist_connection_likes = current_user.likes_or_dislikes.for_targets('MusicMetadataEnrichment::GroupArtistConnection', @group_artist_connections.map(&:id)).index_by(&:target_id)
         @group_artist_connections = @group_artist_connections.index_by(&:artist_id)
+      elsif params[:user_id].present? && current_user.try(:id) == params[:user_id].to_i && @artists.any?
+        @music_library_artists = current_user.music_library_artists.where('music_library_artists.artist_id IN(?)', @artists.map(&:id)).index_by(&:artist_id)
       end
       
       render partial: 'music_metadata_enrichment/artists/collection', layout: false, locals: { title: I18n.t("music_metadata_enrichment_group_artist_connections.index.empty_collection"), paginate: true }
