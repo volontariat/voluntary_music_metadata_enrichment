@@ -31,10 +31,12 @@
 
 <%= will_paginate @years_in_review %>
 
-<%= form_tag(create_user_music_year_in_review_path(params[:user_id]), method: :post, class: 'form-search', id: 'new_music_year_in_review_form', remote: true) do %>
-  <%= hidden_field_tag :authenticity_token, form_authenticity_token %>
-  <%= render partial: 'shared/form/error_messages', locals: { resource: @year_in_review } %>
-  <label for="year_in_review_music_year" class="integer required control-label"><abbr title="required">*</abbr> Year</label>
-  <%= text_field_tag 'year_in_review[year]', @year_in_review.year, class: 'input-medium search-query' %>
-  <button type="submit" class="btn"><%= t('years_in_review_music.index.add') %></button>
+<% if current_user.id == params[:user_id].to_i %>
+  <%= form_tag(create_user_music_year_in_review_path(params[:user_id]), method: :post, class: 'form-search', id: 'new_music_year_in_review_form', remote: true) do %>
+    <%= hidden_field_tag :authenticity_token, form_authenticity_token %>
+    <%= render partial: 'shared/form/error_messages', locals: { resource: @year_in_review } %>
+    <label for="year_in_review_music_year" class="integer required control-label"><abbr title="required">*</abbr> Year</label>
+    <%= text_field_tag 'year_in_review[year]', @year_in_review.year, class: 'input-medium search-query' %>
+    <button type="submit" class="btn"><%= t('years_in_review_music.index.add') %></button>
+  <% end %>
 <% end %>
