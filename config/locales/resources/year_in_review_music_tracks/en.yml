@@ -15,3 +15,5 @@ en:
       title: "Add multiple tracks from %{year}: "
       submit: Add tracks if selected and jump to next page if available else stop.  
       tracks_left: "%{count} tracks left."
+    export:
+      title: "Top Tracks %{year} Text for last.fm"

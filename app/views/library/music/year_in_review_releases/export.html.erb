@@ -1,0 +1,13 @@
+<div class="modal-header">
+  <button type="button" id="close_bootstrap_modal_button" class="close" data-dismiss="modal" aria-hidden="true">&times;</button>
+  <h3><%= t('year_in_review_music_releases.export.title', year: params[:year])%></h3>
+</div>
+<div class="modal-body" style="overflow-y:none;">
+  <textarea rows="20" style="width:515px;">
+<% @year_in_review_releases.each do |year_in_review_release| %>
+<%= year_in_review_release.position %>. [artist]<%= year_in_review_release.artist_name %>[/artist] - [album artist=<%= year_in_review_release.artist_name %>]<%= year_in_review_release.release_name %>[/album]
+<% end %>
+  </textarea>
+</div>
+<div class="modal-footer">
+</div>

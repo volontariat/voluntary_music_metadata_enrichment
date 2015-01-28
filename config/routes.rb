@@ -101,6 +101,7 @@ Rails.application.routes.draw do
   post 'users/:user_id/library/music/years_in_review/:year/top_releases/create_multiple' => 'library/music/year_in_review_releases#create_multiple', as: :create_multiple_user_music_year_in_review_top_releases
   delete 'users/current/library/music/year_in_review_music_releases/:id' => 'library/music/year_in_review_releases#destroy', as: :destroy_music_year_in_review_top_release
   put 'users/current/library/music/year_in_review_music_releases/:id/move' => 'library/music/year_in_review_releases#move', as: :move_music_year_in_review_top_release
+  get 'users/current/library/music/years_in_review/:year/top_releases/export' => 'library/music/year_in_review_releases#export', as: :export_music_year_in_review_top_releases
   
   get 'users/:user_id/library/music/years_in_review/:year/top_tracks' => 'library/music/year_in_review_tracks#index', as: :user_music_year_in_review_top_tracks
   get 'users/:user_id/library/music/years_in_review/:year/top_tracks/new' => 'library/music/year_in_review_tracks#new', as: :new_user_music_year_in_review_top_track
@@ -109,6 +110,7 @@ Rails.application.routes.draw do
   post 'users/:user_id/library/music/years_in_review/:year/top_tracks/create_multiple' => 'library/music/year_in_review_tracks#create_multiple', as: :create_multiple_user_music_year_in_review_top_tracks
   delete 'users/current/library/music/year_in_review_music_tracks/:id' => 'library/music/year_in_review_tracks#destroy', as: :destroy_music_year_in_review_top_track
   put 'users/current/library/music/year_in_review_music_tracks/:id/move' => 'library/music/year_in_review_tracks#move', as: :move_music_year_in_review_top_track
+  get 'users/current/library/music/years_in_review/:year/top_tracks/export' => 'library/music/year_in_review_tracks#export', as: :export_music_year_in_review_top_tracks
   
   get 'users/:user_id/library/music/releases' => 'music_metadata_enrichment/releases#index', as: :user_music_library_releases
   get 'users/:user_id/library/music/videos' => 'music_metadata_enrichment/videos#index', as: :user_music_library_videos

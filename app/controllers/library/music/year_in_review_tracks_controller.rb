@@ -75,6 +75,14 @@ class Library::Music::YearInReviewTracksController < ::MusicMetadataEnrichment::
     render layout: false
   end
   
+  def export
+    @user = current_user
+    find_year_in_review
+    get_year_in_review_tracks
+    
+    render layout: false
+  end
+  
   def resource
     @year_in_review_track
   end

@@ -37,11 +37,14 @@
 </ul>
 <% end %>
 
-<%= link_to(
-  t('year_in_review_music_tracks.index.add_single'), new_user_music_year_in_review_top_track_path(params[:user_id], params[:year]), 
-  class: 'remote_modal_link'
-) %> | 
-<%= link_to(
-  t('year_in_review_music_tracks.index.add_multiple_from_year', year: params[:year]), multiple_new_user_music_year_in_review_top_tracks_path(params[:year]), 
-  class: 'remote_modal_link'
-) %>
+<% if current_user.try(:id) == params[:user_id].to_i %>
+  <%= link_to(
+    t('year_in_review_music_tracks.index.add_single'), new_user_music_year_in_review_top_track_path(params[:user_id], params[:year]), 
+    class: 'remote_modal_link'
+  ) %> | 
+  <%= link_to(
+    t('year_in_review_music_tracks.index.add_multiple_from_year', year: params[:year]), multiple_new_user_music_year_in_review_top_tracks_path(params[:year]), 
+    class: 'remote_modal_link'
+  ) %> | 
+  <%= link_to t('general.export'), export_music_year_in_review_top_tracks_path(params[:year]), class: 'remote_modal_link' %>
+<% end %>

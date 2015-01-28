@@ -15,3 +15,5 @@ en:
       title: "Add multiple releases from %{year}: "
       submit: Add releases if selected and jump to next page if available else stop.
       releases_left: "%{count} releases left."
+    export:
+      title: "Top Releases %{year} Text for last.fm"
