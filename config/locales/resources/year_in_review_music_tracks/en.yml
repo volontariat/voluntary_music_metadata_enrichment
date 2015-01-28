@@ -1,7 +1,7 @@
 en:
   year_in_review_music_tracks:
     index:
-      title: Top Tracks %{year} for %{user}
+      title: "%{user} Top Tracks %{year}"
       short_title: Top Tracks %{year}
       shortest_title: Top Tracks
       empty_collection: No tracks added to this year in review yet.

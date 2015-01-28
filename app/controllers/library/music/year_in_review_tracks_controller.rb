@@ -1,4 +1,4 @@
-class Library::Music::YearInReviewTracksController < ApplicationController
+class Library::Music::YearInReviewTracksController < ::MusicMetadataEnrichment::ApplicationController
   include ::MusicMetadataEnrichment::BaseController
   include Applicat::Mvc::Controller::Resource
 
@@ -7,11 +7,9 @@ class Library::Music::YearInReviewTracksController < ApplicationController
   def index
     @user = User.find(params[:user_id])
     find_year_in_review
+    get_year_in_review_tracks
     
-    if request.xhr?
-      get_year_in_review_tracks
-      render partial: 'library/music/year_in_review_tracks/collection'
-    end
+    render partial: 'library/music/year_in_review_tracks/collection' if request.xhr?
   end
   
   def new
@@ -68,6 +66,10 @@ class Library::Music::YearInReviewTracksController < ApplicationController
     @year_in_review_track.insert_at(params[:position].to_i)
     
     render nothing: true
+  end
+  
+  def resource
+    @year_in_review_track
   end
   
   private

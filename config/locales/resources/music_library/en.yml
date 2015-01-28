@@ -1,7 +1,8 @@
 en:
   music_library:
     index:
-      title: Music Library
+      title: "%{name} Music Library"
       short_title: Library
+      short_title_with_name: "%{name} Library"
       uploaded_videos: Uploaded Videos
       add_artist: Add artist

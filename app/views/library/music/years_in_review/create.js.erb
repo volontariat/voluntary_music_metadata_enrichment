@@ -1,4 +1,5 @@
 $('#years_in_review').html('<%= escape_javascript render(partial: 'library/music/years_in_review/collection') %>');
+$("#years_in_review_spinner").hide();
 
 <% if @notice.present? %>
 alert('<%= @notice %>');

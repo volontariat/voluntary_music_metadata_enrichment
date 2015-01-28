@@ -1,6 +1,6 @@
 <% if @year_in_review_track.persisted? %>
   $('#years_in_review').html('<%= escape_javascript render(partial: 'library/music/year_in_review_tracks/collection') %>');
-  window.make_year_in_review_music_tracks_sortable();
+  window.VoluntaryMusicMetadataEnrichment.Library.YearInReviewTracks.IndexView.makeCollectionSortable();
   $('#bootstrap_modal').modal('hide')
 <% else %>
   $('#bootstrap_modal').html('<%= escape_javascript render(partial: 'library/music/year_in_review_tracks/form') %>');

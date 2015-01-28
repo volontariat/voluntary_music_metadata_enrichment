@@ -1,5 +1,5 @@
 # -*- encoding : utf-8 -*-
-class MusicMetadataEnrichment::TracksController < ApplicationController
+class MusicMetadataEnrichment::TracksController < ::MusicMetadataEnrichment::ApplicationController
   include ::MusicMetadataEnrichment::BaseController
   include Applicat::Mvc::Controller::Resource
   include ::MusicMetadataEnrichment::ArtistConfirmation

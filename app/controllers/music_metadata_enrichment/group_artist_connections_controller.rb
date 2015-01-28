@@ -1,4 +1,4 @@
-class MusicMetadataEnrichment::GroupArtistConnectionsController < ApplicationController
+class MusicMetadataEnrichment::GroupArtistConnectionsController < ::MusicMetadataEnrichment::ApplicationController
   include ::MusicMetadataEnrichment::BaseController
   include Applicat::Mvc::Controller::Resource
   include ::MusicMetadataEnrichment::ArtistConfirmation

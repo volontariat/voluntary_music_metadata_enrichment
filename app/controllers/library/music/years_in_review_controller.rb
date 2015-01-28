@@ -1,15 +1,14 @@
-class Library::Music::YearsInReviewController < ApplicationController
+class Library::Music::YearsInReviewController < ::MusicMetadataEnrichment::ApplicationController
   include ::MusicMetadataEnrichment::BaseController
   include Applicat::Mvc::Controller::Resource
 
   authorize_resource class: 'YearInReviewMusic'
 
   def index
-    if request.xhr? 
-      get_years_in_review
-      build_year_in_review
-      render layout: false
-    end
+    get_years_in_review
+    build_year_in_review
+      
+    render layout: false if request.xhr?
   end
   
   def create
@@ -20,7 +19,8 @@ class Library::Music::YearsInReviewController < ApplicationController
   end
   
   def show
-    @year_in_review = User.find(params[:user_id]).years_in_review_music.where(year: params[:year]).first
+    @user = User.find(params[:user_id])
+    @year_in_review = @user.years_in_review_music.where(year: params[:year]).first
   end
   
   def resource

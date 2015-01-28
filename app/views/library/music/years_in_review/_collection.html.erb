@@ -17,11 +17,11 @@
         <td><%= link_to year_in_review.year, user_music_year_in_review_path(year_in_review.user_id, year_in_review.year) %></td>
         <td><%= link_to(
           t('year_in_review_music_releases.index.shortest_title'), user_music_year_in_review_top_releases_path(year_in_review.user_id, year_in_review.year),
-          class: 'year_in_review_music_release_link', :'data-replace' => '#years_in_review'
+          class: 'year_in_review_music_releases_link', :'data-replace' => '#years_in_review'
         ) %></td>
         <td><%= link_to(
           t('year_in_review_music_tracks.index.shortest_title'), user_music_year_in_review_top_tracks_path(year_in_review.user_id, year_in_review.year), 
-          class: 'year_in_review_music_track_link', :'data-replace' => '#years_in_review'
+          class: 'year_in_review_music_tracks_link', :'data-replace' => '#years_in_review'
         ) %></td>
       </tr>
     <% end %>

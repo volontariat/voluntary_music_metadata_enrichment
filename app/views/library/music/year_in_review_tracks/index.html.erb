@@ -1,0 +1,13 @@
+<% content_for(:title) do %>
+  <%= t('year_in_review_music_tracks.index.title', user: name_with_apostrophe(@user.lastfm_user_name || @user.full_name), year: params[:year]) %>
+<% end %>
+
+<% content_for :document_ready do %>
+  new window.VoluntaryMusicMetadataEnrichment.Library.YearInReviewTracks.IndexView(false);
+<% end %>
+
+<%= image_tag 'voluntary/spinner.gif', id: 'years_in_review_spinner', class: 'hide' %>
+
+<div id="years_in_review">
+  <%= render partial: 'library/music/year_in_review_tracks/collection' %>
+</div>
