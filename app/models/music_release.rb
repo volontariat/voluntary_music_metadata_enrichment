@@ -133,7 +133,7 @@ class MusicRelease < ActiveRecord::Base
     working_releases.each do |working_musicbrainz_release|
       next unless working_musicbrainz_release.status == 'Official'
       
-      next if working_musicbrainz_release.media.map(&:format).select{|f| !['DVD-Video', 'DVD'].include?(f) }.none?
+      next if working_musicbrainz_release.media.map(&:format).any? && working_musicbrainz_release.media.map(&:format).select{|f| !['DVD-Video', 'DVD'].include?(f) }.none?
       
       list << working_musicbrainz_release
     end    
