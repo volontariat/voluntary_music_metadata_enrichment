@@ -6,12 +6,14 @@ module VoluntaryMusicMetadataEnrichment
           primary.dom_class = 'nav'
           
           if user_signed_in?
-            primary.item :music_metadata_enrichment_library, I18n.t('music_library.index.title', name: name_with_apostrophe(@user.lastfm_user_name || @user.full_name)), user_music_library_path(current_user) do |library|
-              library.item :years_in_review, I18n.t('years_in_review_music.index.short_title'), user_music_years_in_review_path(@user), id: nil do |years_in_review|
-                unless (@year_in_review.new_record? rescue true)
-                  years_in_review.item :show, I18n.t('years_in_review_music.show.title', year: @year_in_review.year), user_music_year_in_review_path(@user, @year_in_review.year) do |year_in_review|
-                    year_in_review.item :top_releases, I18n.t('year_in_review_music_releases.index.shortest_title'), user_music_year_in_review_top_releases_path(@user, @year_in_review.year)
-                    year_in_review.item :top_tracks, I18n.t('year_in_review_music_tracks.index.shortest_title'), user_music_year_in_review_top_tracks_path(@user, @year_in_review.year)
+            primary.item :music_metadata_enrichment_library, I18n.t('music_library.index.title', name: name_with_apostrophe(current_user.lastfm_user_name || current_user.full_name)), user_music_library_path(current_user) do |library|
+              if @user.present?
+                library.item :years_in_review, I18n.t('years_in_review_music.index.short_title'), user_music_years_in_review_path(current_user), id: nil do |years_in_review|
+                  unless (@year_in_review.new_record? rescue true)
+                    years_in_review.item :show, I18n.t('years_in_review_music.show.title', year: @year_in_review.year), user_music_year_in_review_path(current_user, @year_in_review.year) do |year_in_review|
+                      year_in_review.item :top_releases, I18n.t('year_in_review_music_releases.index.shortest_title'), user_music_year_in_review_top_releases_path(current_user, @year_in_review.year)
+                      year_in_review.item :top_tracks, I18n.t('year_in_review_music_tracks.index.shortest_title'), user_music_year_in_review_top_tracks_path(current_user, @year_in_review.year)
+                    end
                   end
                 end
               end

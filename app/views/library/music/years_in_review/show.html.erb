@@ -2,6 +2,14 @@
   <%= t('years_in_review_music.show.title_with_name', user: name_with_apostrophe(@user.lastfm_user_name || @user.full_name), year: params[:year]) %>
 <% end %>
 
+<% content_for :breadcrumbs do %>
+  <%= raw [
+    link_to(I18n.t('music_library.index.title', name: name_with_apostrophe(@user.lastfm_user_name || @user.full_name)), user_music_library_path(@user)),
+    link_to(I18n.t('years_in_review_music.index.short_title'), user_music_years_in_review_path(@user)),
+    link_to(I18n.t('years_in_review_music.show.title', year: @year_in_review.year), user_music_year_in_review_path(@user, @year_in_review.year))
+  ].join(' > ') %>
+<% end %>
+
 <ul class="nav nav-tabs nav-stacked">
   <li><%= link_to(
     t('year_in_review_music_releases.index.shortest_title'), user_music_year_in_review_top_releases_path(params[:user_id], params[:year])
