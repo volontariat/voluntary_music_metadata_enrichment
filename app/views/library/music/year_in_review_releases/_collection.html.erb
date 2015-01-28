@@ -9,7 +9,8 @@
       <th style="width: 50px;"><%= t("attributes.position") %></th>
       <th style="width: 200px;"><%= t("music_artists.model.short_name") %></th>
       <th style="width: 200px;"><%= t("attributes.name") %></th>
-      <th><%= t("activerecord.attributes.music_release.released_at") %></th>
+      <th style="width: 75px;"><%= t("activerecord.attributes.music_release.released_at") %></th>
+      <th></th>
     </tr>
   </thead>
 </table>      
@@ -21,7 +22,12 @@
         <td class="list-element-striped" id="year_in_review_music_release_position_<%= year_in_review_release.id %>" style="width: 50px; text-align:right"><%= year_in_review_release.position %></td>
         <td class="list-element-striped" style="width: 200px;"><%= link_to year_in_review_release.artist_name, music_artist_path(year_in_review_release.artist_id) %></td>
         <td class="list-element-striped" style="width: 200px;"><%= link_to year_in_review_release.release_name, music_release_path(year_in_review_release.release_id) %></td>
-        <td class="list-element-striped"><%= year_in_review_release.released_at.present? ? year_in_review_release.released_at.strftime('%d.%m.%Y') : '' %></td>
+        <td class="list-element-striped" style="width: 75px"><%= year_in_review_release.released_at.present? ? year_in_review_release.released_at.strftime('%d.%m.%Y') : '' %></td>
+        <td class="list-element-striped">
+          <%= link_to destroy_music_year_in_review_top_release_path(year_in_review_release.id), method: :delete, remote: true, class: 'btn btn-danger destroy_music_year_in_review_top_release_link' do %>
+            <%= t('general.remove') %> <%= image_tag 'voluntary/spinner.gif', class: 'ajax_spinner hide' %>
+          <% end %>
+        </td>
       </tr>
     </table>  
   </li>  

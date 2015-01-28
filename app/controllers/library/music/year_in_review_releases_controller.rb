@@ -2,7 +2,8 @@ class Library::Music::YearInReviewReleasesController < ::MusicMetadataEnrichment
   include ::MusicMetadataEnrichment::BaseController
   include Applicat::Mvc::Controller::Resource
 
-  authorize_resource class: 'YearInReviewMusicRelease', except: [:move]
+  before_action :find_resource, only: [:move, :destroy]
+  authorize_resource class: 'YearInReviewMusicRelease'
   
   def index
     @user = User.find(params[:user_id])
@@ -59,13 +60,19 @@ class Library::Music::YearInReviewReleasesController < ::MusicMetadataEnrichment
   end
   
   def move
-    @year_in_review_release = YearInReviewMusicRelease.find(params[:id])
-    
-    authorize! :move, @year_in_review_release
-    
     @year_in_review_release.insert_at(params[:position].to_i)
     
     render nothing: true
+  end
+  
+  def destroy
+    @year_in_review_release.destroy!
+    @user = current_user
+    params[:user_id], params[:year] = current_user.id, @year_in_review_release.year
+    find_year_in_review
+    get_year_in_review_releases
+    
+    render layout: false
   end
   
   def resource
@@ -73,7 +80,7 @@ class Library::Music::YearInReviewReleasesController < ::MusicMetadataEnrichment
   end
   
   private
-  
+ 
   def find_year_in_review
     @year_in_review = @user.years_in_review_music.where(year: params[:year]).first
   end
@@ -83,6 +90,10 @@ class Library::Music::YearInReviewReleasesController < ::MusicMetadataEnrichment
     find_year_in_review
     params[:year_in_review_music_release] ||= {}
     @year_in_review_release = @year_in_review.releases.new(release_id: params[:year_in_review_music_release][:release_id])
+  end
+  
+  def find_resource
+    @year_in_review_release = YearInReviewMusicRelease.find(params[:id])
   end
   
   def get_year_in_review_releases
