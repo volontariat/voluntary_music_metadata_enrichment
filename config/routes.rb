@@ -19,6 +19,7 @@ Rails.application.routes.draw do
       member do
         get 'artists' => 'artists#index'
         get 'releases' => 'releases#index'
+        get 'releases/export' => 'releases#export'
       end
       
       resources :releases, only: [:new]

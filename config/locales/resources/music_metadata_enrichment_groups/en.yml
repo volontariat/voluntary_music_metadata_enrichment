@@ -11,6 +11,8 @@ en:
     create:
       successful: Group successfully created.
         
+    show:
+      export: Export Group's Releases Text for last.fm
   activerecord:
     models:
       music_metadata_enrichment_group: Group

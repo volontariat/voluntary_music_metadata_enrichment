@@ -43,8 +43,9 @@
 
 <%= will_paginate @releases if paginate %>
 
-<% if ['groups', 'group_release_connections'].include?(controller_name) && params[:id] %>
-  <%= link_to t('music_releases.index.add'), new_music_group_release_path(params[:id]) %>
+<% if (request.original_url.match('/groups/') || ['groups', 'group_release_connections'].include?(controller_name)) && params[:id] %>
+  <%= link_to t('music_releases.index.add'), new_music_group_release_path(params[:id]) %> | 
+  <%= link_to t('general.export'), releases_export_music_group_path(params[:id]), class: 'remote_modal_link' %>
 <% elsif controller_name == 'artists' && params[:id].present? %>
   <%= link_to t('music_releases.index.add'), new_music_artist_release_path(params[:id]) %>
 <% else %>

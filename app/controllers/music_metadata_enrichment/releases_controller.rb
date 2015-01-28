@@ -4,7 +4,7 @@ class MusicMetadataEnrichment::ReleasesController < ::MusicMetadataEnrichment::A
   include Applicat::Mvc::Controller::Resource
   include ::MusicMetadataEnrichment::ArtistConfirmation
   
-  authorize_resource class: 'MusicRelease', except: [:by_name]
+  authorize_resource class: 'MusicRelease', except: [:by_name, :export]
   
   def index
     if request.xhr? 
@@ -171,6 +171,14 @@ class MusicMetadataEnrichment::ReleasesController < ::MusicMetadataEnrichment::A
       @releases = MusicRelease.artist_and_name_like(params[:artist_name], params[:name]) if @releases.nil? || @releases.count == 0
       @releases = @releases.paginate(per_page: 10, page: params[:page] || 1)
     end
+  end
+  
+  def export
+    @group = MusicMetadataEnrichment::Group.find(params[:id])
+    @current_releases = @group.releases.released_in_year(Time.now.strftime('%Y')).order('released_at ASC')
+    @future_releases = @group.releases.released_in_year(Time.now.strftime('%Y').to_i + 1).order('released_at ASC')
+    
+    render layout: false
   end
   
   def resource
