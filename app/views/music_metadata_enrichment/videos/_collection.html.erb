@@ -12,12 +12,14 @@
 
 <%= will_paginate @videos if paginate %>
 
-<% if params[:group_id] %>
-  <%= link_to t('music_videos.index.add'), new_music_group_video_path(params[:group_id]) %>
-<% elsif params[:artist_id] %>
-  <%= link_to t('music_videos.index.add'), new_music_artist_video_path(params[:artist_id]) %>
-<% elsif controller_name == 'tracks' && params[:id] %>
-  <%= link_to t('music_videos.index.add'), new_music_track_video_path(params[:id]) %>
-<% else %>
-  <%= link_to t('music_videos.index.add'), new_music_video_path %>
+<% if user_signed_in? %>
+  <% if params[:group_id] %>
+    <%= link_to t('music_videos.index.add'), new_music_group_video_path(params[:group_id]) %>
+  <% elsif params[:artist_id] %>
+    <%= link_to t('music_videos.index.add'), new_music_artist_video_path(params[:artist_id]) %>
+  <% elsif controller_name == 'tracks' && params[:id] %>
+    <%= link_to t('music_videos.index.add'), new_music_track_video_path(params[:id]) %>
+  <% else %>
+    <%= link_to t('music_videos.index.add'), new_music_video_path %>
+  <% end %>
 <% end %>

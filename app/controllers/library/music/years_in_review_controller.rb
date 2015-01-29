@@ -6,7 +6,7 @@ class Library::Music::YearsInReviewController < ::MusicMetadataEnrichment::Appli
 
   def index
     get_years_in_review
-    build_year_in_review
+    build_year_in_review if user_signed_in?
       
     render layout: false if request.xhr?
   end

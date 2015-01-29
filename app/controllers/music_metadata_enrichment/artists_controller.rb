@@ -20,7 +20,11 @@ class MusicMetadataEnrichment::ArtistsController < ::MusicMetadataEnrichment::Ap
       
       if request.original_url.match('/groups/') && params[:id] && @artists.any?
         @group_artist_connections = @group.artist_connections.where('music_metadata_enrichment_group_artist_connections.artist_id IN(?)', @artists.map(&:id))
-        @group_artist_connection_likes = current_user.likes_or_dislikes.for_targets('MusicMetadataEnrichment::GroupArtistConnection', @group_artist_connections.map(&:id)).index_by(&:target_id)
+        
+        if user_signed_in?
+          @group_artist_connection_likes = current_user.likes_or_dislikes.for_targets('MusicMetadataEnrichment::GroupArtistConnection', @group_artist_connections.map(&:id)).index_by(&:target_id)
+        end
+        
         @group_artist_connections = @group_artist_connections.index_by(&:artist_id)
       elsif params[:user_id].present? && current_user.try(:id) == params[:user_id].to_i && @artists.any?
         @music_library_artists = current_user.music_library_artists.where('music_library_artists.artist_id IN(?)', @artists.map(&:id)).index_by(&:artist_id)
@@ -80,7 +84,7 @@ class MusicMetadataEnrichment::ArtistsController < ::MusicMetadataEnrichment::Ap
   private
   
   def delete_user_id_which_is_not_from_current_user
-    params.delete(:user_id) if params[:user_id].present? && params[:user_id].to_i != current_user.id
+    params.delete(:user_id) if action_name != 'index' && params[:user_id].present? && params[:user_id].to_i != current_user.try(:id)
   end
   
   def get_variables_for_show

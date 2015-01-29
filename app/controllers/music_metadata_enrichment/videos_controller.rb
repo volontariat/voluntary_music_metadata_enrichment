@@ -22,7 +22,7 @@ class MusicMetadataEnrichment::VideosController < ::MusicMetadataEnrichment::App
       
       @videos = @videos.order('created_at DESC').paginate(per_page: 5, page: params[:page] || 1)
       
-      unless @videos.none?
+      unless @videos.none? || !user_signed_in?
         @video_likes = current_user.likes_or_dislikes.for_targets('MusicVideo', @videos.map(&:id)).index_by(&:target_id)
       end
       
