@@ -6,20 +6,30 @@ window.VoluntaryMusicMetadataEnrichment.Library.YearsInReview.IndexView = class 
     if withAjaxLinks
       $(document.body).on "click", ".year_in_review_music_releases_link", (event) ->
         $this = $(this)
+        $this.find('.ajax_spinner').show()
         
-        $.ajax(url: $this.attr('href'), type: "GET", dataType: "html").success (data) ->
+        $.ajax(url: $this.attr('href'), type: "GET", dataType: "html").done((data) =>
+          $this.find('.ajax_spinner').hide()
           $($this.data("replace")).html(data)
           window.VoluntaryMusicMetadataEnrichment.Library.YearInReviewReleases.IndexView.makeCollectionSortable()
-          
+        ).fail((data) =>
+          $this.find('.ajax_spinner').hide()
+          alert 'Failed to load top releases!'
+        )
         event.preventDefault()  
       
       $(document.body).on "click", ".year_in_review_music_tracks_link", (event) ->
         $this = $(this)
+        $this.find('.ajax_spinner').show()
         
-        $.ajax(url: $this.attr('href'), type: "GET", dataType: "html").success (data) ->
+        $.ajax(url: $this.attr('href'), type: "GET", dataType: "html").done((data) =>
+          $this.find('.ajax_spinner').hide()
           $($this.data("replace")).html(data)
           window.VoluntaryMusicMetadataEnrichment.Library.YearInReviewTracks.IndexView.makeCollectionSortable()
-          
+        ).fail((data) =>
+          $this.find('.ajax_spinner').hide()
+          alert 'Failed to load top tracks!'
+        )
         event.preventDefault()  
         
     $(document.body).on "ajax:beforeSend", "#new_music_year_in_review_form", ->

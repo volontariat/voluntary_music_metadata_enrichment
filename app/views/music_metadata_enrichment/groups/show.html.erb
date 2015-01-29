@@ -9,15 +9,19 @@
 
 <div class="tabs">
   <ul>
-    <li><a href="#releases"><%= t('music_releases.index.short_title') %></a></li>
+    <li>
+      <a href="#releases"><%= t('music_releases.index.short_title') %></a>
+    </li>
     <li>
       <a href="<%= music_group_videos_path(@group.id) %>">
-        <%= t('music_videos.index.short_title') %>
+        <%= t('music_videos.index.short_title') %> 
+        <%= image_tag 'voluntary/spinner.gif', class: 'ajax_spinner hide' %>
       </a>
     </li>
     <li>
       <a href="<%= artists_music_group_path(@group.id) %>">
-        <%= t('music_artists.index.short_title') %>
+        <%= t('music_artists.index.short_title') %> 
+        <%= image_tag 'voluntary/spinner.gif', class: 'ajax_spinner hide' %>
       </a>
     </li>
   </ul>
