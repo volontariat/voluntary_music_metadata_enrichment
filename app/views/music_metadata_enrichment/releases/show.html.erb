@@ -1,7 +1,7 @@
 <h3><%= @release.artist_name %> - <%= @release.name %></h3>
 
 <dl class="dl-horizontal">
- <%= show_attribute :mbid, value: link_to(@release.mbid, "http://musicbrainz.org/release/#{@release.mbid}") %>
+ <%= show_attribute :mbid, value: link_to(@release.mbid, "http://musicbrainz.org/release/#{@release.mbid}") if @release.mbid.present? %>
  <%= show_attribute :artist_id, value: link_to(@release.artist_name, music_artist_path(@release.artist_id)) %>
  <%= show_attribute :released_at, value: @release.formatted_released_at_or_future_release_date %>
  <%= show_attribute :listeners %>
