@@ -67,25 +67,24 @@ class MusicArtist < ActiveRecord::Base
     begin
       recordings = MusicBrainz::Recording.search(mbid, nil, limit: 100, offset: offset, create_models: true)
       count = recordings.total_count
-      
-      recordings = recordings.select{|r| !['intro', 'outro'].include?(r.title.downcase) && !r.title.match(/\(/) && r.disambiguation.blank? }
+      recordings = recordings.select{|r| !MusicTrack.name_included_in_bonustrack_blacklist?(r.title) && r.disambiguation.blank? }
       recording_titles = recordings.map{|r| MusicTrack.format_name(r.title).downcase }.uniq
       voluntary_names = MusicTrack.where("artist_id = :artist_id AND LOWER(name) IN(:name)", artist_id: id, name: recording_titles).map{|t| t.name.downcase }
       
       recordings.select{|r| !voluntary_names.include?(MusicTrack.format_name(r.title).downcase) }.each do |recording|
-        next if bonus_track_names.map(&:downcase).include? MusicTrack.format_name(recording.title).downcase
+        next if bonus_track_names.include? MusicTrack.format_name(recording.title).downcase
         
-        track = MusicTrack.new(artist_id: id, name: MusicTrack.format_name(recording.title))
+        track = MusicTrack.new(artist: self, name: MusicTrack.format_name(recording.title))
         track.artist_mbid = mbid
         
         if track.is_bonus_track?
           track.create_bonus_track(recording.id)
-          bonus_track_names << track.name
+          bonus_track_names << track.name.downcase
         end
       end
       
       offset += 100
-    end while offset < count  
+    end while offset < count
   end
   
   def import_music_videos_from_tapetv

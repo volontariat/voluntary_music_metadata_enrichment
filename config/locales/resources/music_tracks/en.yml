@@ -36,3 +36,10 @@ en:
         duration: Duration
         released_at: Released at
         
+    errors:
+      models:
+        music_track:
+          attributes:
+            name:
+              included_in_blacklist: 'included in blacklist'
+        

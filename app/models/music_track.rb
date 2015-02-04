@@ -33,8 +33,9 @@ class MusicTrack < ActiveRecord::Base
   validates :name, presence: true, uniqueness: { scope: :release_id, case_sensitive: false }
   validates :mbid, presence: true, uniqueness: true, length: { is: 36 }
   validates :spotify_track_id, length: { is: 22 }, allow_blank: true
+  validate :name_not_included_in_blacklist
   
-  attr_accessible :mbid, :artist_id, :artist_name, :release_id, :release_name, :master_track_id, :nr, :name, :duration, :listeners, :plays
+  attr_accessible :mbid, :artist, :artist_id, :artist_name, :release_id, :release_name, :master_track_id, :nr, :name, :duration, :listeners, :plays
   
   attr_accessor :artist_mbid
   
@@ -80,6 +81,30 @@ class MusicTrack < ActiveRecord::Base
     value.gsub(/’|´/, "'").gsub(/\(Album version\)|\(Single version\)|\(Remastered\)|\(clean\)/i, '').strip
   end
   
+  def self.name_included_in_blacklist?(name)
+    if name =~ /\[credits|data track|encore break|untitled|photo gallery|interview\]/i
+      true
+    else
+      false
+    end
+  end
+  
+  def self.name_included_in_bonustrack_blacklist?(name)
+    if name_included_in_blacklist?(name)
+      true
+    elsif name =~ /^intro|introduction|outro|credits|interview$/i
+      true
+    elsif name =~ /\[intro|outro|introduction\]/i 
+      true
+    elsif name =~ /medley|megamix|mega mix|mastermix|master mix|acoustic/i
+      true
+    elsif name =~ /\(/
+      true
+    else
+      false
+    end
+  end
+  
   def set_spotify_track_id
     return if spotify_track_id.present?
     
@@ -116,12 +141,13 @@ class MusicTrack < ActiveRecord::Base
   end
   
   def is_bonus_track?
+    return false if ::MusicTrack.name_included_in_bonustrack_blacklist?(name)
+    
     tracks = MusicBrainz::Recording.search(artist_mbid ? artist_mbid : artist.mbid, name, limit: 100).select{|t| MusicTrack.format_name(t[:title]).downcase == name.downcase.strip }
     
     tracks.map do |t| 
       (t[:releases] || []).select do |r| 
-        r[:status] == 'Official' && !(r[:artists] || []).map{|a| a[:name]}.include?('Various Artists') && 
-        ['Album', 'EP'].include?((r[:release_group] || {})[:primary_type]) &&
+        r[:status] == 'Official' && !(r[:artists] || []).map{|a| a[:name]}.include?('Various Artists') &&
         (r[:release_group][:secondary_types] || []).select{|st| ['Audiobook', 'Compilation', 'Live', 'Remix'].include?(st)}.none?
       end.map{|r| (r[:release_group] || {})[:id] }
     end.flatten.uniq.each do |release_group_mbid|
@@ -137,9 +163,10 @@ class MusicTrack < ActiveRecord::Base
         sleep 30
       end
           
-      next if release_group.releases.select{|r| r.status == 'Official' && r.media.map(&:format).select{|m| ['DVD-Video', 'DVD'].select{|m2| m == m2 }.any?}.none? }
+      next if release_group.releases.select{|r| r.status != 'Official' || (r.media.map(&:format).any? && r.media.map(&:format).select{|m| ['DVD-Video', 'DVD'].select{|m2| m == m2 }.none?}.none?) }
+      next unless ['Album', 'EP'].include?(release_group.primary_type)
     
-      self.release_name = working_release_name
+      self.release_name = release_group.title
       
       break
     end
@@ -165,6 +192,12 @@ class MusicTrack < ActiveRecord::Base
   end
   
   private
+  
+  def name_not_included_in_blacklist
+    if ::MusicTrack.name_included_in_blacklist?(name) 
+      errors[:name] << I18n.t('activerecord.errors.models.music_metadata_enrichment_group.attributes.name.included_in_blacklist')
+    end
+  end
   
   def gsub_name
     self.name = MusicTrack.format_name(name)
