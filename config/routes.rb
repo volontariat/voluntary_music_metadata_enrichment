@@ -1,5 +1,5 @@
 Rails.application.routes.draw do
-  get '/products/music-metadata-enrichment' => 'product/music_metadata_enrichment#index', as: 'music_metadata_enrichment_product'
+  get '/products/music-metadata-enrichment', to: redirect('/music'), as: 'music_metadata_enrichment_product'
   #get '/music_metadata_enrichment' => 'product/music_metadata_enrichment#index'
   get '/music' => 'product/music_metadata_enrichment#index'
   get '/music_metadata_enrichment', to: redirect('/music')
