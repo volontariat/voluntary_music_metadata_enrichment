@@ -29,7 +29,7 @@ module MusicMetadataEnrichment
               (params[:group_id].present? ? {group_id: params[:group_id]} : {}).merge(music_video: { track_id: @track.id })
             ) 
           end
-        else
+        elsif @track.release_name.present?
           release = MusicRelease.create(artist_id: @track.artist_id, name: @track.release_name)
           
           if release.valid?
