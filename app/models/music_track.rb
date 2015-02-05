@@ -15,7 +15,10 @@ class MusicTrack < ActiveRecord::Base
   end
   
   scope :for_year_in_review, ->(year_in_review) do
-    released_in_year(year_in_review.year).where('music_tracks.id NOT IN(?)', year_in_review.tracks.map(&:track_id))
+    track_ids = year_in_review.tracks.map(&:track_id)
+    tracks = released_in_year(year_in_review.year)
+    tracks = tracks.where('music_tracks.id NOT IN(?)', track_ids) if track_ids.any?
+    tracks
   end
   
   def self.by_artist_and_name(artist_name, name)

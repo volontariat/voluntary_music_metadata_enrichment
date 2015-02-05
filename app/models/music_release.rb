@@ -23,7 +23,10 @@ class MusicRelease < ActiveRecord::Base
   end
   
   scope :for_year_in_review, ->(year_in_review) do
-    released_in_year(year_in_review.year).where('music_releases.id NOT IN(?)', year_in_review.releases.map(&:release_id))
+    release_ids = year_in_review.releases.map(&:release_id)
+    releases = released_in_year(year_in_review.year)
+    releases = releases.where('music_releases.id NOT IN(?)', release_ids) if release_ids.any?
+    releases
   end
   
   validates :artist_id, presence: true
