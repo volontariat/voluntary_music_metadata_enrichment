@@ -17,8 +17,8 @@ class CreateMusicMetadataEnrichmentGroups < ActiveRecord::Migration
       t.timestamps
     end
     
-    add_index :music_metadata_enrichment_group_artist_connections, :group_id
-    add_index :music_metadata_enrichment_group_artist_connections, :artist_id
+    add_index :music_metadata_enrichment_group_artist_connections, :group_id, name: 'index_music_group_artist_connections_on_group_id'
+    add_index :music_metadata_enrichment_group_artist_connections, :artist_id, name: 'index_music_group_artist_connections_on_artist_id'
   end
   
   def down
