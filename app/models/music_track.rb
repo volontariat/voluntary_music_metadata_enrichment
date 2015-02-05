@@ -107,7 +107,7 @@ class MusicTrack < ActiveRecord::Base
   
   def set_spotify_track_id
     return if spotify_track_id.present?
-    
+
     response = nil
     
     begin
@@ -120,6 +120,8 @@ class MusicTrack < ActiveRecord::Base
     return if response.nil?
     
     response['tracks']['items'].each do |item|
+      next unless item['name'].downcase == name.downcase
+      
       artist_found = false
       
       item['artists'].each do |working_artist|
@@ -132,12 +134,12 @@ class MusicTrack < ActiveRecord::Base
       
       next unless artist_found
       
-      next unless item['name'].downcase == name.downcase
-      
-      update_attribute(:spotify_track_id, item['id'])
-      
-      break
+      self.spotify_track_id = item['id']
+
+      break if item['artists'].length == 1
     end
+    
+    save if spotify_track_id.present?
   end
   
   def is_bonus_track?
@@ -188,7 +190,7 @@ class MusicTrack < ActiveRecord::Base
   end
   
   def formatted_duration
-    Time.at(duration / 1000).strftime('%M:%S')
+    Time.at(duration / 1000).strftime('%M:%S') if duration.present?
   end
   
   private
