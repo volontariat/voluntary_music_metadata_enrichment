@@ -131,7 +131,7 @@ module MusicMetadataEnrichment
       else
         @artist = MusicArtist.create(name: name_and_mbid.split(';').first, mbid: name_and_mbid.split(';').last)
         
-        if @artist.valid?
+        if @artist.persisted?
           if from == 'new_artist'
             flash[:notice] = I18n.t('music_artists.create.scheduled_artist_for_import')
           elsif ['new_release', 'new_track', 'new_video'].include? from
@@ -142,6 +142,10 @@ module MusicMetadataEnrichment
             if params[:group_id].present?
               MusicMetadataEnrichment::GroupArtistConnection.create(group_id: params[:group_id], artist_id: @artist.id)
               redirect_to music_group_path(params[:group_id])
+            elsif params[:user_id].present?
+              flash[:notice] = I18n.t('music_artists.create.library_addition_successful')
+              MusicLibraryArtist.create(user_id: params[:user_id], artist_id: @artist.id)
+              redirect_to user_music_library_path(params[:user_id])  
             else
               redirect_to music_path
             end
