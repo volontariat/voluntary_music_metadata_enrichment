@@ -3,6 +3,7 @@ class MusicArtist < ActiveRecord::Base
   has_many :releases, class_name: 'MusicRelease', foreign_key: 'artist_id', dependent: :destroy
   has_many :tracks, class_name: 'MusicTrack', foreign_key: 'artist_id'
   has_many :videos, class_name: 'MusicVideo', foreign_key: 'artist_id'
+  has_many :music_library_artists, dependent: :destroy, foreign_key: 'artist_id'
   
   scope :name_like, ->(name) do
     where(MusicArtist.arel_table[:name].matches("%#{name}%"))
