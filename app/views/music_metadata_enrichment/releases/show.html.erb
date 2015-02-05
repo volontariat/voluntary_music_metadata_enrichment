@@ -39,7 +39,7 @@
         <td><%= render partial: 'music_metadata_enrichment/tracks/spotify_track_player', locals: { spotify_track_id: track.spotify_track_id } %></td>
         <td><%= track.formatted_duration %></td>
   <% if @release.name == '[Bonus Tracks]' %>
-        <td><%= track.released_at.strftime('%d.%m.%Y') %>
+        <td><%= track.released_at.strftime('%d.%m.%Y') if track.released_at.present? %>
   <% end %>        
         <td><%= track.listeners %></td>
         <td><%= track.plays %></td>
