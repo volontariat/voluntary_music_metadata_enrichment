@@ -72,8 +72,11 @@ module VoluntaryMusicMetadataEnrichment
                 artist = nil
                 
                 unless artist = voluntary_artists.select{|a| a.mbid == lastfm_artist['mbid'] }.first
-                  if MusicBrainz::Artist.find(lastfm_artist['mbid'])
-                    artist = MusicArtist.create(name: lastfm_artist['name'], mbid: lastfm_artist['mbid'])
+                  musicbrainz_artist = MusicBrainz::Artist.find(lastfm_artist['mbid'])
+                  
+                  if musicbrainz_artist
+                    artist = MusicArtist.where(mbid: musicbrainz_artist.id).first
+                    artist = MusicArtist.create(name: lastfm_artist['name'], mbid: musicbrainz_artist.id) unless artist
                   end
                 end
                 

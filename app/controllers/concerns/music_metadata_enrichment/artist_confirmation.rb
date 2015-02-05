@@ -11,6 +11,7 @@ module MusicMetadataEnrichment
         musicbrainz_artist = MusicBrainz::Artist.find(@artist.mbid)
         
         if musicbrainz_artist
+          @artist.mbid = musicbrainz_artist.id
           @artist.name = musicbrainz_artist.name
           artist = nil
           
