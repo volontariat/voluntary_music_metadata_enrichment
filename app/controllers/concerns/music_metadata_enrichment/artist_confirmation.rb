@@ -14,8 +14,8 @@ module MusicMetadataEnrichment
           @artist.mbid = musicbrainz_artist.id
           @artist.name = musicbrainz_artist.name
           artist = nil
-          
-          if ['new_release', 'new_track', 'new_video'].include?(from) && (artist = MusicArtist.where(mbid: @artist.mbid).first) && artist.active?
+
+          if (artist = MusicArtist.where(mbid: @artist.mbid).first) && artist.active? && ['new_release', 'new_track', 'new_video'].include?(from)
             working_params = {}
             
             if params[:group_id].present?
