@@ -1,5 +1,7 @@
 # -*- encoding : utf-8 -*-
 class MusicRelease < ActiveRecord::Base
+  SECONDARY_TYPES_BLACKLIST = ['Audiobook', 'Compilation', 'DJ-mix', 'Interview', 'Live', 'Remix', 'Spokenword', 'Mixtape/Street']
+  
   belongs_to :artist, class_name: 'MusicArtist'
   belongs_to :user
   
@@ -116,7 +118,7 @@ class MusicRelease < ActiveRecord::Base
   
   def groups
     musicbrainz_release_groups = MusicBrainz::ReleaseGroup.search(artist.mbid, name, extra_query: 'AND (type:album OR type:ep)')
-    musicbrainz_release_groups.select{|rg| rg[:releases].select{|r| r[:status] == 'Official'}.any? && (rg[:secondary_types].nil? || rg[:secondary_types].select{|st| ['Audiobook', 'Compilation', 'Live', 'Remix'].include?(st)}.none?) && rg[:artists].length == 1 }
+    musicbrainz_release_groups.select{|rg| rg[:releases].select{|r| r[:status] == 'Official'}.any? && (rg[:secondary_types].nil? || rg[:secondary_types].select{|st| SECONDARY_TYPES_BLACKLIST.include?(st)}.none?) && rg[:artists].length == 1 }
   end
  
   def groups_without_limitation

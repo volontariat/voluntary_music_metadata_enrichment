@@ -153,7 +153,7 @@ class MusicTrack < ActiveRecord::Base
     tracks.map do |t| 
       (t[:releases] || []).select do |r| 
         r[:status] == 'Official' && !(r[:artists] || []).map{|a| a[:name]}.include?('Various Artists') &&
-        (r[:release_group][:secondary_types] || []).select{|st| ['Audiobook', 'Compilation', 'Live', 'Remix'].include?(st)}.none?
+        (r[:release_group][:secondary_types] || []).select{|st| MusicRelease::SECONDARY_TYPES_BLACKLIST.include?(st)}.none?
       end.map{|r| (r[:release_group] || {})[:id] }
     end.flatten.uniq.each do |release_group_mbid|
       next if release_group_mbid.nil?

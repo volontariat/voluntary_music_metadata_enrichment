@@ -39,7 +39,7 @@ class MusicArtist < ActiveRecord::Base
         release_groups = musicbrainz_artist.release_groups(offset: offset)
         count = release_groups.total_count
         
-        release_groups.select{|r| ['Album', 'EP'].include?(r.type) && r.secondary_types.select{|st| ['Audiobook', 'Compilation', 'Live', 'Remix'].include?(st)}.none? && r.artists.length == 1}.each do |musicbrainz_release_group|
+        release_groups.select{|r| ['Album', 'EP'].include?(r.type) && r.secondary_types.select{|st| MusicRelease::SECONDARY_TYPES_BLACKLIST.include?(st)}.none? && r.artists.length == 1}.each do |musicbrainz_release_group|
           releases = musicbrainz_release_group.releases
           
           next if releases.select{|r| r.status == 'Official' && (r.media.map(&:format).none? || r.media.map(&:format).select{|f| !['DVD-Video', 'DVD'].include?(f) }.any?) }.none?
