@@ -9,16 +9,17 @@ class MusicMetadataEnrichment::ArtistsController < ::MusicMetadataEnrichment::Ap
   
   def index
     if request.xhr? 
-      if request.original_url.match('/groups/') && params[:id]
-        @group = MusicMetadataEnrichment::Group.find(params[:id])
+      if params[:group_id].present? || request.original_url.match('/groups/') && params[:id]
+        @group = MusicMetadataEnrichment::Group.find(params[:group_id] || params[:id])
         @artists = @group.artists
+        @pagination_params = { group_id: (params[:group_id] || params[:id]) }
       elsif params[:user_id].present?
         @artists = User.find(params[:user_id]).music_artists
       end
       
       @artists = @artists.order('name ASC').paginate(per_page: 10, page: params[:page] || 1)
       
-      if request.original_url.match('/groups/') && params[:id] && @artists.any?
+      if @group && @artists.any?
         @group_artist_connections = @group.artist_connections.where('music_metadata_enrichment_group_artist_connections.artist_id IN(?)', @artists.map(&:id))
         
         if user_signed_in?

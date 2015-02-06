@@ -57,9 +57,9 @@
   </table>  
 <% end %>
 <%= will_paginate @artists, params: { controller: '/music_metadata_enrichment/artists', action: 'index', id: nil }.merge(@pagination_params ||= {}) if paginate %>
-<% if params[:group_id].present? %>
+<% if @group.present? %>
 <p>
-  <%= link_to t('music_metadata_enrichment_group_artist_connections.new.short_title'), new_music_group_artist_path(params[:group_id]) %>
+  <%= link_to t('music_metadata_enrichment_group_artist_connections.new.short_title'), new_music_group_artist_path(@group.id) %>
 </p>
 <% elsif params[:user_id].present? %>
 <p>
