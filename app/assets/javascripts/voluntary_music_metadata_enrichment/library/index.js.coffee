@@ -13,7 +13,8 @@ $(document).ready ->
 
   $(document.body).on "ajax:beforeSend", ".destroy_music_library_artist_link", ->
     $(this).find('.ajax_spinner').show()
-
+  
   new window.VoluntaryMusicMetadataEnrichment.Library.YearsInReview.IndexView(true)
   new window.VoluntaryMusicMetadataEnrichment.Library.YearInReviewReleases.IndexView()
   new window.VoluntaryMusicMetadataEnrichment.Library.YearInReviewTracks.NewView()
+  new window.Likes.List()
