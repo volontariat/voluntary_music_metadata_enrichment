@@ -10,6 +10,7 @@ Rails.application.routes.draw do
       resources :artists, only: [:new], controller: 'group_artist_connections' do
         collection do
           get :import
+          post :import, as: :post_import
           get :name_confirmation
           get :select_artist
           get :creation
