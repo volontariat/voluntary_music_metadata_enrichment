@@ -203,5 +203,7 @@ class MusicMetadataEnrichment::ReleasesController < ::MusicMetadataEnrichment::A
     else
       @tracks = @release.tracks.order('nr ASC')
     end
+    
+    @tracks = @tracks.paginate(per_page: 50, page: params[:tracks_page] || 1)
   end
 end
