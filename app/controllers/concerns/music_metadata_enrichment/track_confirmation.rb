@@ -8,7 +8,15 @@ module MusicMetadataEnrichment
       name_and_mbid = params[:music_track].delete(:name_and_mbid)
       @track.name = MusicTrack.format_name(name_and_mbid.split(';').first)
       
-      if track = MusicTrack.where("artist_id = :artist_id AND LOWER(name) = :name", artist_id: @track.artist_id, name: @track.name.downcase.strip).first
+      if @track.name.length > 255
+        flash[:alert] = I18n.t('errors.messages.too_long.other', count: 255)
+        
+        if params[:group_id].present?
+          redirect_to music_group_path(params[:group_id])
+        else
+          redirect_to music_path
+        end
+      elsif track = MusicTrack.where("artist_id = :artist_id AND LOWER(name) = :name", artist_id: @track.artist_id, name: @track.name.downcase.strip).first
         if from == 'new_track'
           flash[:alert] = I18n.t('music_tracks.create.already_exist')
           redirect_to music_track_path(track.id)

@@ -33,7 +33,7 @@ class MusicTrack < ActiveRecord::Base
     where(table[:artist_name].matches("%#{artist_name}%").and(table[:name].matches("%#{name}%")))
   end
   
-  validates :name, presence: true, uniqueness: { scope: :release_id, case_sensitive: false }
+  validates :name, presence: true, length: { maximum: 255 }, uniqueness: { scope: :release_id, case_sensitive: false }
   validates :mbid, presence: true, uniqueness: true, length: { is: 36 }
   validates :spotify_track_id, length: { is: 22 }, allow_blank: true
   validate :name_not_included_in_blacklist
