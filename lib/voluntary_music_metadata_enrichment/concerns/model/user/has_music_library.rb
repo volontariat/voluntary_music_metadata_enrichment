@@ -55,13 +55,13 @@ module VoluntaryMusicMetadataEnrichment
               
               voluntary_artists = MusicArtist.where('mbid IN(?)', artist_mbids).to_a
               
-              if lastfm_artists.select{|a| !artist_names.include?(a['name'])}.none?
+              if lastfm_artists.select{|a| !artist_names.include?(a['name'])}.none? || lastfm_artists.select{|a| a['playcount'].to_i >= 5 }.none?
                 # over last page
                 break
               end
   
               lastfm_artists.each do |lastfm_artist|
-                if artist_names.include?(lastfm_artist['name'])
+                if lastfm_artist['playcount'].to_i < 5 || artist_names.include?(lastfm_artist['name'])
                   next
                 else
                   artist_names << lastfm_artist['name']
