@@ -51,25 +51,40 @@ class MusicArtist < ActiveRecord::Base
   end
   
   def import_releases(musicbrainz_artist = nil)
-    musicbrainz_artist = MusicBrainz::Artist.find(artist.mbid) unless musicbrainz_artist
+    musicbrainz_artist = MusicBrainz::Artist.find(mbid) unless musicbrainz_artist
     
     offset, count = 0, 100
       
     begin
       release_groups = musicbrainz_artist.release_groups(offset: offset)
       count = release_groups.total_count
+      release_groups = release_groups.select{|r| ['Album', 'EP'].include?(r.type) && r.secondary_types.select{|st| MusicRelease::SECONDARY_TYPES_BLACKLIST.include?(st)}.none? && r.artists.length == 1}
       
-      release_groups.select{|r| ['Album', 'EP'].include?(r.type) && r.secondary_types.select{|st| MusicRelease::SECONDARY_TYPES_BLACKLIST.include?(st)}.none? && r.artists.length == 1}.each do |musicbrainz_release_group|
-        releases = musicbrainz_release_group.releases
+      voluntary_releases = if release_groups.none?
+        []
+      else 
+        releases.where('music_releases.name IN (?)', release_groups.map(&:title).uniq).map{|r| "#{(r.is_lp ? 1 : 0)};#{r.name}"}
+      end
+      
+      release_groups.select{|r| !voluntary_releases.include?("#{r.type == 'Album' ? 1 : 0};#{r.title}")}.each do |musicbrainz_release_group|
+        release_is_lp_plus_name = "#{musicbrainz_release_group.type == 'Album' ? 1 : 0};#{musicbrainz_release_group.title}"
         
-        next if releases.select{|r| r.status == 'Official' && (r.media.map(&:format).none? || r.media.map(&:format).select{|f| !['DVD-Video', 'DVD'].include?(f) }.any?) }.none?
+        next if voluntary_releases.include?(release_is_lp_plus_name)
         
-        release = MusicRelease.create(artist_id: artist.id, artist_name: artist.name, name: musicbrainz_release_group.title)
+        musicbrainz_releases = musicbrainz_release_group.releases
+        
+        next if musicbrainz_releases.select{|r| r.status == 'Official' && (r.media.map(&:format).none? || r.media.map(&:format).select{|f| !['DVD-Video', 'DVD'].include?(f) }.any?) }.none?
+        
+        release = releases.create(
+          artist_name: name, name: musicbrainz_release_group.title,
+          is_lp: musicbrainz_release_group.type == 'Album'
+        )
         
         next unless release.persisted?
           
-        release.releases = releases
+        release.releases = musicbrainz_releases
         release.import_metadata!
+        voluntary_releases << release_is_lp_plus_name
       end
       
       offset += 100
@@ -158,7 +173,7 @@ class MusicArtist < ActiveRecord::Base
   private
   
   def create_bonustracks_release
-    release = releases.create(name: '[Bonus Tracks]')
+    release = releases.create(name: '[Bonus Tracks]', is_lp: true)
     release.update_attribute(:state, 'active')
   end
   

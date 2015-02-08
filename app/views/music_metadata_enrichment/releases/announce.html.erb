@@ -5,6 +5,7 @@
   <%= hidden_field_tag :group_id, params[:group_id] if params[:group_id].present? %>
   <%= f.hidden_field :artist_id %>
   <%= f.hidden_field :name %>
+  <%= f.input :is_lp %>
   <%= f.input :future_release_date, hint: I18n.t('music_releases.announce.future_release_date_format') %>
   <%= f.submit %>
 <% end %>

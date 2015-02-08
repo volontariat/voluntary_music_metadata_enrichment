@@ -32,7 +32,7 @@ class MusicRelease < ActiveRecord::Base
   end
   
   validates :artist_id, presence: true
-  validates :name, presence: true
+  validates :name, presence: true, uniqueness: { scope: [:artist_id, :is_lp] }
   validates :mbid, uniqueness: true, allow_blank: true, length: { is: 36 }
   validate :future_release_date_format
   
@@ -40,7 +40,7 @@ class MusicRelease < ActiveRecord::Base
   after_update :sync_tracks
   after_update :sync_year_in_review_music_releases
   
-  attr_accessible :mbid, :artist_id, :artist_name, :name, :future_release_date, :released_at, :listeners, :plays
+  attr_accessible :mbid, :artist_id, :artist_name, :is_lp, :name, :future_release_date, :released_at, :listeners, :plays
   
   attr_accessor :releases
   

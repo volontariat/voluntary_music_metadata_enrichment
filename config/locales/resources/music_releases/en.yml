@@ -57,9 +57,11 @@ en:
       music_release: Music Release
     attributes:
       music_release:
+        is_lp: Is LP?
         released_at: Released at
         type: Type
         secondary_types: Secondary types
+        
     errors:
       models:
         music_release:

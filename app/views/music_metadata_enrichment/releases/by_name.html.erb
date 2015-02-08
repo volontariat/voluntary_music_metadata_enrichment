@@ -14,7 +14,7 @@
     <% @releases.each do |release| %>
       <tr class="<%= cycle('odd', 'even') %>">
         <td><%= link_to release.artist_name, music_artist_path(release.artist_id) %></td>
-        <td><%= link_to release.name, music_release_path(release.id) %></td>
+        <td><%= link_to release.name, music_release_path(release.id) %> (<%= release.is_lp ? 'LP' : 'EP' %>)</td>
       </tr>
     <% end %>
     </tbody>

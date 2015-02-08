@@ -40,7 +40,7 @@ class MusicTrack < ActiveRecord::Base
   
   attr_accessible :mbid, :artist, :artist_id, :artist_name, :release_id, :release_name, :master_track_id, :nr, :name, :duration, :listeners, :plays
   
-  attr_accessor :artist_mbid
+  attr_accessor :artist_mbid, :release_is_lp
   
   before_validation :gsub_name
   before_create :set_artist_name
@@ -172,6 +172,7 @@ class MusicTrack < ActiveRecord::Base
       next unless ['Album', 'EP'].include?(release_group.primary_type)
     
       self.release_name = release_group.title
+      self.release_is_lp = release_group.type == 'Album'
       
       break
     end

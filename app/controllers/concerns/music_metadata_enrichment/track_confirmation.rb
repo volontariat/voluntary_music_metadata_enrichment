@@ -38,7 +38,7 @@ module MusicMetadataEnrichment
             ) 
           end
         elsif @track.release_name.present?
-          release = MusicRelease.create(artist_id: @track.artist_id, name: @track.release_name)
+          release = MusicRelease.create(artist_id: @track.artist_id, name: @track.release_name, is_lp: @track.release_is_lp)
           
           if release.valid?
             flash[:notice] = I18n.t('music_tracks.create.scheduled_release_for_import')

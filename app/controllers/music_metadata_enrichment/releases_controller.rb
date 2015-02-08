@@ -27,7 +27,7 @@ class MusicMetadataEnrichment::ReleasesController < ::MusicMetadataEnrichment::A
   def autocomplete
     artist = MusicArtist.find(params[:artist_id])
     render json: (
-      artist.releases.select('id, name').where("name LIKE ?", "#{params[:term]}%").order(:name).limit(10).map{|r| { id: r.id, value: r.name } }
+      artist.releases.select('id, is_lp, name').where("name LIKE ?", "#{params[:term]}%").order(:name).limit(10).map{|r| { id: r.id, value: "#{r.name} (#{r.is_lp ? 'LP' : 'EP'})" } }
     ), root: false
   end
   
@@ -67,16 +67,18 @@ class MusicMetadataEnrichment::ReleasesController < ::MusicMetadataEnrichment::A
   
   def create
     params[:music_release] ||= {}
-    name_and_mbid = params[:music_release].delete(:name_and_mbid)
+    name_and_mbid = params[:music_release].delete(:name_and_mbid).split(';')
     artist = MusicArtist.find(params[:music_release][:artist_id])
-    release = MusicRelease.where(artist_id: artist.id, name: name_and_mbid.split(';').first).first
+    musicbrainz_release_group = MusicBrainz::ReleaseGroup.find(name_and_mbid.last)
+    is_lp = musicbrainz_release_group.type == 'Album'
+    release = MusicRelease.where(artist_id: artist.id, name: name_and_mbid.first, is_lp: is_lp).first
     
     if release
       flash[:alert] = I18n.t('music_releases.create.release_already_imported')
     else
       release = MusicRelease.create(
         artist_id: params[:music_release][:artist_id], artist_name: artist.name, 
-        name: name_and_mbid.split(';').first
+        name: name_and_mbid.split(';').first, is_lp: is_lp
       )
       
       if release.valid?
@@ -117,7 +119,7 @@ class MusicMetadataEnrichment::ReleasesController < ::MusicMetadataEnrichment::A
   def create_announcement
     build_release
     
-    if MusicRelease.where(artist_id: @release.artist_id, name: @release.name).first
+    if MusicRelease.where(artist_id: @release.artist_id, name: @release.name, is_lp: @release.is_lp).first
       flash[:alert] = I18n.t('music_releases.create.release_already_imported')
       
       if params[:group_id].present?
@@ -190,6 +192,7 @@ class MusicMetadataEnrichment::ReleasesController < ::MusicMetadataEnrichment::A
   def build_release
     params[:music_release] ||= {}
     @release = MusicRelease.new
+    @release.is_lp = params[:music_release][:is_lp]
     @release.name = params[:music_release][:name]
     @release.mbid = params[:music_release][:mbid] unless ['announce', 'create_announcement'].include? action_name
     @release.artist_id = params[:music_release][:artist_id]
