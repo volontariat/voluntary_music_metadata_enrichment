@@ -18,6 +18,7 @@ en:
       
     artist_confirmation:
       title: "New Music Release: artist confirmation"
+      classical_releases_not_supported: The music metadata enrichment project does not import classical releases but supports adding tracks to the special release '[[Bonus Tracks]]'.
       artist_import_scheduled: Music artist has been scheduled for metadata import. After it you can add releases, tracks or videos to the artist.
       
     select_artist:

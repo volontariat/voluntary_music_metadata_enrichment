@@ -26,7 +26,18 @@ module MusicMetadataEnrichment
             end
               
             case from
-            when 'new_release' then redirect_to name_music_releases_path(working_params.merge(music_release: { artist_id: artist.id }))
+            when 'new_release'
+              if artist.is_classical?
+                flash[:alert] = I18n.t('music_releases.artist_confirmation.classical_releases_not_supported')
+                
+                if params[:group_id].present?
+                  redirect_to music_group_path(params[:group_id])
+                else
+                  redirect_to music_path
+                end
+              else
+                redirect_to name_music_releases_path(working_params.merge(music_release: { artist_id: artist.id }))
+              end
             when 'new_track' then redirect_to name_music_tracks_path(music_track: { artist_id: artist.id })
             when 'new_video'
               redirect_to track_name_music_tracks_path(working_params.merge(music_track: { artist_id: artist.id }))

@@ -26,7 +26,7 @@ module MusicMetadataEnrichment
           ) 
         end
       else
-        if @track.is_bonus_track?
+        if @track.artist.is_classical? || @track.is_bonus_track?
           @track.create_bonus_track(name_and_mbid.split(';').last)
           flash[:notice] = I18n.t('music_tracks.create.successfully_creation')
           

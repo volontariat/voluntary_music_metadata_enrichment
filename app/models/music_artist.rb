@@ -33,31 +33,47 @@ class MusicArtist < ActiveRecord::Base
       lastfm_artist = lastfm.artist.get_info(mbid: artist.mbid)
       artist.update_attributes(listeners: lastfm_artist['stats']['listeners'], plays: lastfm_artist['stats']['playcount'])
       
-      offset, count = 0, 100
-      
-      begin
-        release_groups = musicbrainz_artist.release_groups(offset: offset)
-        count = release_groups.total_count
-        
-        release_groups.select{|r| ['Album', 'EP'].include?(r.type) && r.secondary_types.select{|st| MusicRelease::SECONDARY_TYPES_BLACKLIST.include?(st)}.none? && r.artists.length == 1}.each do |musicbrainz_release_group|
-          releases = musicbrainz_release_group.releases
-          
-          next if releases.select{|r| r.status == 'Official' && (r.media.map(&:format).none? || r.media.map(&:format).select{|f| !['DVD-Video', 'DVD'].include?(f) }.any?) }.none?
-          
-          release = MusicRelease.create(artist_id: artist.id, artist_name: artist.name, name: musicbrainz_release_group.title)
-          
-          next unless release.persisted?
-            
-          release.releases = releases
-          release.import_metadata!
-        end
-        
-        offset += 100
-      end while offset < count  
-      
-      #artist.import_bonus_tracks
-      #artist.import_music_videos_from_tapetv
+      unless artist.is_classical?(lastfm_artist)
+        artist.import_releases(musicbrainz_artist)
+        #artist.import_bonus_tracks
+        #artist.import_music_videos_from_tapetv
+      end
     end
+  end
+  
+  def is_classical?(lastfm_artist = nil)
+    unless lastfm_artist
+      lastfm = Lastfm.new(LastfmApiKey, LastfmApiSecret)
+      lastfm_artist = lastfm.artist.get_info(mbid: mbid)
+    end
+
+    (lastfm_artist['tags']['tag'].map{|t| t['name']}.include?('classic') rescue false)
+  end
+  
+  def import_releases(musicbrainz_artist = nil)
+    musicbrainz_artist = MusicBrainz::Artist.find(artist.mbid) unless musicbrainz_artist
+    
+    offset, count = 0, 100
+      
+    begin
+      release_groups = musicbrainz_artist.release_groups(offset: offset)
+      count = release_groups.total_count
+      
+      release_groups.select{|r| ['Album', 'EP'].include?(r.type) && r.secondary_types.select{|st| MusicRelease::SECONDARY_TYPES_BLACKLIST.include?(st)}.none? && r.artists.length == 1}.each do |musicbrainz_release_group|
+        releases = musicbrainz_release_group.releases
+        
+        next if releases.select{|r| r.status == 'Official' && (r.media.map(&:format).none? || r.media.map(&:format).select{|f| !['DVD-Video', 'DVD'].include?(f) }.any?) }.none?
+        
+        release = MusicRelease.create(artist_id: artist.id, artist_name: artist.name, name: musicbrainz_release_group.title)
+        
+        next unless release.persisted?
+          
+        release.releases = releases
+        release.import_metadata!
+      end
+      
+      offset += 100
+    end while offset < count  
   end
   
   def import_bonus_tracks
