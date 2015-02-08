@@ -33,7 +33,7 @@ class MusicArtist < ActiveRecord::Base
       lastfm_artist = lastfm.artist.get_info(mbid: artist.mbid)
       artist.update_attributes(listeners: lastfm_artist['stats']['listeners'], plays: lastfm_artist['stats']['playcount'])
       
-      unless artist.is_classical?(lastfm_artist)
+      unless artist.is_classical?(lastfm)
         artist.import_releases(musicbrainz_artist)
         #artist.import_bonus_tracks
         #artist.import_music_videos_from_tapetv
@@ -41,14 +41,12 @@ class MusicArtist < ActiveRecord::Base
     end
   end
   
-  def is_classical?(lastfm_artist = nil)
-    unless lastfm_artist
-      lastfm = Lastfm.new(LastfmApiKey, LastfmApiSecret)
-      lastfm_artist = lastfm.artist.get_info(mbid: mbid)
-    end
+  def is_classical?(lastfm = nil)
+    lastfm ||= Lastfm.new(LastfmApiKey, LastfmApiSecret)
+    lastfm_artist_tags = lastfm.artist.get_top_tags(mbid: mbid)
 
-    tags = lastfm_artist['tags']['tag'].map{|t| t['name'] } rescue []
-    tags.select{|t| ['classic', 'classical'].include?(t) }.any?
+    tags = lastfm_artist_tags.map{|t| t['name'] }[0..9] rescue []
+    tags.select{|t| ['classic', 'classical'].include?(t) }.any? && tags.select{|t| ['pop', 'rock', 'crossover', 'alternative'].include?(t) }.none?
   end
   
   def import_releases(musicbrainz_artist = nil)
