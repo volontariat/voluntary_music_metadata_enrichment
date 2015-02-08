@@ -47,7 +47,8 @@ class MusicArtist < ActiveRecord::Base
       lastfm_artist = lastfm.artist.get_info(mbid: mbid)
     end
 
-    (lastfm_artist['tags']['tag'].map{|t| t['name']}.include?('classic') rescue false)
+    tags = lastfm_artist['tags']['tag'].map{|t| t['name'] } rescue []
+    tags.select{|t| ['classic', 'classical'].include?(t) }.any?
   end
   
   def import_releases(musicbrainz_artist = nil)
