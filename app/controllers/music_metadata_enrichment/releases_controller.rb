@@ -27,7 +27,7 @@ class MusicMetadataEnrichment::ReleasesController < ::MusicMetadataEnrichment::A
   def autocomplete
     artist = MusicArtist.find(params[:artist_id])
     render json: (
-      artist.releases.select('id, is_lp, name').where("name LIKE ?", "#{params[:term]}%").order(:name).limit(10).map{|r| { id: r.id, value: "#{r.name} (#{r.is_lp ? 'LP' : 'EP'})" } }
+      artist.releases.select('id, is_lp, name').where("name LIKE ?", "#{params[:term].to_s.strip}%").order(:name).limit(10).map{|r| { id: r.id, value: "#{r.name} (#{r.is_lp ? 'LP' : 'EP'})" } }
     ), root: false
   end
   
