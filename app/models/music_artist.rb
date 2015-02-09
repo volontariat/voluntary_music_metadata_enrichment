@@ -45,7 +45,7 @@ class MusicArtist < ActiveRecord::Base
     lastfm ||= Lastfm.new(LastfmApiKey, LastfmApiSecret)
     lastfm_artist_tags = lastfm.artist.get_top_tags(mbid: mbid)
 
-    tags = lastfm_artist_tags.map{|t| t['name'] }[0..9] rescue []
+    tags = lastfm_artist_tags.map{|t| t['name'].downcase }[0..9] rescue []
     tags.select{|t| ['classic', 'classical'].include?(t) }.any? && tags.select{|t| ['pop', 'rock', 'crossover', 'alternative'].include?(t) }.none?
   end
   
