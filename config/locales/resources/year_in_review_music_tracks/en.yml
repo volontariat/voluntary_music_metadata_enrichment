@@ -13,6 +13,8 @@ en:
       successful: Successfully added a track to your year in review.
     multiple_new:
       title: "Add multiple tracks from %{year}: "
+      only_tracks_of_top_releases: Only tracks of top releases?
+      no_top_releases_available: No Top Releases for this year available!
       submit: Add tracks if selected and jump to next page if available else stop.  
       tracks_left: "%{count} tracks left."
     export:

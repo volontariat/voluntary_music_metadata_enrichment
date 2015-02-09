@@ -1,7 +1,10 @@
-<% if params[:commit] == I18n.t('general.close') || @tracks.none? %>
+<% if @message.blank? && (params[:commit] == I18n.t('general.close') || @tracks.none?) %>
   $('#years_in_review').html('<%= escape_javascript render(partial: 'library/music/year_in_review_tracks/collection') %>');
   window.VoluntaryMusicMetadataEnrichment.Library.YearInReviewTracks.IndexView.makeCollectionSortable();
   $('#bootstrap_modal').modal('hide')
 <% else %>
   $('#bootstrap_modal').html('<%= escape_javascript render(partial: 'library/music/year_in_review_tracks/multiple_form') %>');
+<% end %>
+<% if @message.present? %>
+  alert("<%= @message %>");
 <% end %>

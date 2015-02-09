@@ -19,29 +19,42 @@ class Library::Music::YearInReviewTracksController < ::MusicMetadataEnrichment::
   end
   
   def multiple_new
-    @user = current_user
-    find_year_in_review
-    @tracks = current_user.music_tracks.for_year_in_review(@year_in_review)
-    @tracks = @tracks.where('music_tracks.id > ?', params[:last_id]) if params[:last_id].present?
-    @tracks_left = @tracks.count
-    @tracks = @tracks.order('music_tracks.id ASC').limit(10)
-    params[:last_id] = params[:commit] == I18n.t('general.close') || @tracks.none? ? nil : @tracks.last.id
-    
-    if params[:commit] != I18n.t('general.close') && params[:year_in_review_music_tracks].present?
-      params[:year_in_review_music_tracks].each do |track_id, checked|
-        next unless checked == '1'
-        
-        @year_in_review_track = @year_in_review.tracks.create(track_id: track_id)
-        
-        next unless @year_in_review_track.persisted?
-        
-        MusicLibraryArtist.create(user_id: current_user.id, artist_id: @year_in_review_track.artist_id)
+    if params[:commit].present?
+      @user = current_user
+      find_year_in_review
+      @tracks = current_user.music_tracks.for_year_in_review(@year_in_review)
+      @release_ids = []
+      
+      if params[:only_tracks_of_top_releases] == 'true'
+        @release_ids = @year_in_review.releases.map(&:release_id)
+        @tracks = @tracks.where('music_tracks.release_id IN(?)', @release_ids) if @release_ids.any?
       end
-    end
-    
-    if params[:commit] == I18n.t('general.close') || @tracks.none?
-      get_year_in_review_tracks
-      params[:user_id] = current_user.id 
+      
+      if params[:only_tracks_of_top_releases] == 'true' && @release_ids.none?
+        @message = I18n.t('year_in_review_music_tracks.multiple_new.no_top_releases_available')
+      else
+        @tracks = @tracks.where('music_tracks.id > ?', params[:last_id]) if params[:last_id].present?
+        @tracks_left = @tracks.count
+        @tracks = @tracks.order('music_tracks.id ASC').limit(10)
+        params[:last_id] = params[:commit] == I18n.t('general.close') || @tracks.none? ? nil : @tracks.last.id
+        
+        if params[:commit] != I18n.t('general.close') && params[:year_in_review_music_tracks].present?
+          params[:year_in_review_music_tracks].each do |track_id, checked|
+            next unless checked == '1'
+            
+            @year_in_review_track = @year_in_review.tracks.create(track_id: track_id)
+            
+            next unless @year_in_review_track.persisted?
+            
+            MusicLibraryArtist.create(user_id: current_user.id, artist_id: @year_in_review_track.artist_id)
+          end
+        end
+        
+        if params[:commit] == I18n.t('general.close') || @tracks.none?
+          get_year_in_review_tracks
+          params[:user_id] = current_user.id 
+        end
+      end
     end
     
     render layout: false
