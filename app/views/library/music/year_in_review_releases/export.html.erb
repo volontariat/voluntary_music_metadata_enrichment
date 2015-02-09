@@ -5,7 +5,8 @@
 <div class="modal-body" style="overflow-y:none;">
   <textarea rows="20" style="width:515px;">
 <% @year_in_review_releases.each do |year_in_review_release| %>
-<%= year_in_review_release.position %>. [artist]<%= year_in_review_release.artist_name %>[/artist] - [album artist=<%= year_in_review_release.artist_name %>]<%= year_in_review_release.release_name %>[/album]
+<%= year_in_review_release.position %>. [artist]<%= year_in_review_release.artist_name %>[/artist] - [album artist=<%= year_in_review_release.artist_name %>]<%= year_in_review_release.release_name %>[/album] <%= year_in_review_release_top_track_lastfm_links(@year_in_review_tracks[year_in_review_release.release_id] || []) %>
+
 <% end %>
   </textarea>
 </div>

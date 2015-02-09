@@ -106,5 +106,7 @@ class Library::Music::YearInReviewReleasesController < ::MusicMetadataEnrichment
   
   def get_year_in_review_releases
     @year_in_review_releases = @year_in_review.releases.order('position ASC')
+    @year_in_review_tracks = @year_in_review.tracks.order('position ASC').group_by(&:release_id)
+    @year_in_review_tracks_count = @year_in_review_tracks.values.flatten.length
   end
 end

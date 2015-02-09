@@ -9,6 +9,8 @@ en:
       add_single_long: Add release to year in review %{year}
       add_multiple_from_year: Add multiple releases from %{year}
       add_multiple_from_year_long: Add multiple releases from %{year} which belong to artists in your library
+      top_track_positions_sum: Top Track Pos. Sum
+      
     create:
       successful: Successfully added a release to your year in review.
     multiple_new:

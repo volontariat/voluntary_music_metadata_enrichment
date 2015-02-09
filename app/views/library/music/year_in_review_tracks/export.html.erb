@@ -5,7 +5,7 @@
 <div class="modal-body" style="overflow-y:none;">
   <textarea rows="20" style="width:515px;">
 <% @year_in_review_tracks.each do |year_in_review_track| %>
-<%= year_in_review_track.position %>. [artist]<%= year_in_review_track.artist_name %>[/artist] - [track artist=<%= year_in_review_track.artist_name %>]<%= year_in_review_track.track_name %>[/track]
+<%= year_in_review_track.position %>. <%= lastfm_track_text(year_in_review_track) %>
 <% end %>
   </textarea>
 </div>
