@@ -15,18 +15,24 @@ class MusicArtist < ActiveRecord::Base
   after_update :synchronize_artist_name
   after_create :create_bonustracks_release
   
-  attr_accessible :name, :mbid, :disambiguation, :founded_at, :dissolved_at, :listeners, :plays
+  attr_accessible :name, :is_ambiguous, :mbid, :disambiguation, :founded_at, :dissolved_at, :listeners, :plays
   
   state_machine :state, initial: :without_metadata do
     event :import_metadata do transition :without_metadata => :active; end
     
     before_transition :without_metadata => :active do |artist, transition|
       musicbrainz_artist = MusicBrainz::Artist.find(artist.mbid)
-  
+      is_ambiguous = if artist.is_ambiguous.nil?
+        MusicBrainz::Artist.search(artist.name).select{|a| a[:name].downcase == artist.name.downcase}.length > 1
+      else
+        artist.is_ambiguous
+      end
+      
       artist.update_attributes(
         disambiguation: musicbrainz_artist.disambiguation,
         founded_at: artist.musicbrainz_date_to_iso_date(musicbrainz_artist.begin), 
-        dissolved_at: artist.musicbrainz_date_to_iso_date(musicbrainz_artist.end)
+        dissolved_at: artist.musicbrainz_date_to_iso_date(musicbrainz_artist.end),
+        is_ambiguous: is_ambiguous
       )
       
       lastfm = Lastfm.new(LastfmApiKey, LastfmApiSecret)

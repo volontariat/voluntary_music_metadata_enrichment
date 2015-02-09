@@ -19,7 +19,7 @@ module VoluntaryMusicMetadataEnrichment
           end
           
           def import_music_artists(lastfm, start_page = 1)
-            artist_names = []
+            artist_mbids = []
             
             1000.times do |page|
               page +=1
@@ -50,38 +50,41 @@ module VoluntaryMusicMetadataEnrichment
                 puts "USER #{lastfm_user_name}: LIBRARY PAGE ##{page} IS EMPTY" 
                 break
               end
-             
-              artist_mbids = lastfm_artists.map{|a| a['mbid']}.uniq
               
-              voluntary_artists = MusicArtist.where('mbid IN(?)', artist_mbids).to_a
+              mbids_by_artist = {}
               
-              if lastfm_artists.select{|a| !artist_names.include?(a['name'])}.none? || lastfm_artists.select{|a| a['playcount'].to_i >= 5 }.none?
+              lastfm_artists.each do |a|
+                mbids_by_artist[a['name'].downcase] ||= MusicBrainz::Artist.search(a['name']).select{|a2| a2[:name].downcase == a['name'].downcase}.map{|a| a[:mbid]}
+              end
+               
+              voluntary_artists = MusicArtist.where('mbid IN(?)', mbids_by_artist.values.flatten.uniq).to_a
+              
+              if lastfm_artists.select{|a| mbids_by_artist[a['name'].downcase].select{|mbid| !artist_mbids.include?(mbid)}.any? }.none? || lastfm_artists.select{|a| a['playcount'].to_i >= 5 }.none?
                 # over last page
                 break
               end
   
               lastfm_artists.each do |lastfm_artist|
-                if lastfm_artist['playcount'].to_i < 5 || artist_names.include?(lastfm_artist['name'])
+                current_artist_mbids = mbids_by_artist[lastfm_artist['name'].downcase].select{|mbid| !artist_mbids.include?(mbid)}
+                
+                if lastfm_artist['playcount'].to_i < 5 || current_artist_mbids.none?
                   next
                 else
-                  artist_names << lastfm_artist['name']
+                  artist_mbids += current_artist_mbids
                 end
                 
                 next if lastfm_artist['mbid'].blank?
                 
-                artist = nil
-                
-                unless artist = voluntary_artists.select{|a| a.mbid == lastfm_artist['mbid'] }.first
-                  musicbrainz_artist = MusicBrainz::Artist.find(lastfm_artist['mbid'])
-                  
-                  if musicbrainz_artist
-                    artist = MusicArtist.where(mbid: musicbrainz_artist.id).first
-                    artist = MusicArtist.create(name: lastfm_artist['name'], mbid: musicbrainz_artist.id) unless artist
+                current_artist_mbids.each do |mbid|
+                  artist = nil
+                   
+                  unless artist = voluntary_artists.select{|a| a.mbid == mbid }.first
+                    artist = MusicArtist.create(name: lastfm_artist['name'], mbid: mbid, is_ambiguous: mbids_by_artist[lastfm_artist['name'].downcase].length > 1)
                   end
-                end
-                
-                if artist
-                  music_library_artists.create(artist_id: artist.id, plays: lastfm_artist['playcount']) unless new_record?
+                  
+                  if artist.persisted?
+                    music_library_artists.create(artist_id: artist.id, plays: lastfm_artist['playcount']) unless new_record?
+                  end
                 end
               end
             end
