@@ -1,4 +1,4 @@
-<h3><%= t('year_in_review_music_releases.index.short_title', year: params[:year]) %></h3>
+<h3><%= link_to t('year_in_review_music_releases.index.short_title', year: params[:year]), user_music_year_in_review_top_releases_path(@user, @year_in_review.year) %></h3>
 
 <% if @year_in_review_releases.none? %>
 <p><%= t('year_in_review_music_releases.index.empty_collection') %></p>

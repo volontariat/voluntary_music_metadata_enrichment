@@ -1,4 +1,4 @@
-<h3><%= t('years_in_review_music.index.short_title') %></h3>
+<h3><%= link_to t('years_in_review_music.index.short_title'), user_music_years_in_review_path(@user) %></h3>
 
 <% if @years_in_review.none? %>
 <p><%= t('years_in_review_music.index.empty_collection') %></p>
