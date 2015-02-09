@@ -103,6 +103,7 @@ class MusicRelease < ActiveRecord::Base
           
           # no bang because of releases like the following which includes the same track multiple times: http://musicbrainz.org/release/2b18f9eb-b171-4fd6-ab1f-9801c4adc992
           if track.try(:id)
+            track.do_not_sync = true
             track.import_metadata
           end
         end

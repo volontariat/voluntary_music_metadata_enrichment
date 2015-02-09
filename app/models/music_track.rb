@@ -40,7 +40,7 @@ class MusicTrack < ActiveRecord::Base
   
   attr_accessible :mbid, :artist, :artist_id, :artist_name, :release_id, :release_name, :master_track_id, :nr, :name, :duration, :listeners, :plays
   
-  attr_accessor :artist_mbid, :release_is_lp
+  attr_accessor :artist_mbid, :release_is_lp, :do_not_sync
   
   before_validation :gsub_name
   before_create :set_artist_name
@@ -240,6 +240,8 @@ class MusicTrack < ActiveRecord::Base
   end
   
   def sync_year_in_review_music_tracks
+    return if do_not_sync
+    
     year_in_review_music_tracks_attributes = {}
     
     [:artist_name, :release_name, :id, :spotify_track_id, :name, :released_at].each do |attribute|
