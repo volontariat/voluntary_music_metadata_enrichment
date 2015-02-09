@@ -1,0 +1,4 @@
+en:
+  year_in_review_music_release_flops:
+    create:
+      failed: "The release could not be added to the flop list: %{errors}"

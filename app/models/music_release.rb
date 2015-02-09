@@ -21,14 +21,20 @@ class MusicRelease < ActiveRecord::Base
   end
   
   scope :released_in_year, ->(year) do
-    where("released_at >= :from AND released_at <= :to", from: Time.local(year,1,1,0,0,0), to: Time.local(year,12,31,23,59,59))
+    where("music_releases.released_at >= :from AND music_releases.released_at <= :to", from: Time.local(year,1,1,0,0,0), to: Time.local(year,12,31,23,59,59))
   end
   
   scope :for_year_in_review, ->(year_in_review) do
     release_ids = year_in_review.releases.map(&:release_id)
     releases = released_in_year(year_in_review.year)
     releases = releases.where('music_releases.id NOT IN(?)', release_ids) if release_ids.any?
+    releases = releases.without_flops(year_in_review.id)
     releases
+  end
+  
+  scope :without_flops, ->(year_in_review_id) do
+    joins("LEFT JOIN year_in_review_music_release_flops ON year_in_review_music_release_flops.year_in_review_music_id = #{year_in_review_id} AND year_in_review_music_release_flops.release_id = music_releases.id").
+    where('year_in_review_music_release_flops.id IS NULL')
   end
   
   validates :artist_id, presence: true
@@ -280,5 +286,6 @@ class MusicRelease < ActiveRecord::Base
     return if year_in_review_music_releases_attributes.empty?
     
     YearInReviewMusicRelease.where(release_id: id).update_all year_in_review_music_releases_attributes
+    YearInReviewMusicReleaseFlop.where(release_id: id).update_all year_in_review_music_releases_attributes
   end
 end

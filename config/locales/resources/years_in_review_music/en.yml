@@ -12,6 +12,10 @@ en:
     show:
       title: "Year in Review %{year}"  
       title_with_name: "%{user} Year in Review %{year}"
+      
+    general:
+      flop: Flop  
+      
   activerecord:
     models:
       year_in_review: Year in Review

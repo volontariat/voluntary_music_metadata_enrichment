@@ -1,0 +1,5 @@
+<% if @year_in_review_track_flop.persisted? %>
+   $('#track_<%= @year_in_review_track_flop.track_id %>').remove();
+<% else %>
+  alert("<%= raw I18n.t('year_in_review_music_track_flops.create.failed', errors: @year_in_review_track_flop.errors.full_messages.join('. '))%>");
+<% end %>

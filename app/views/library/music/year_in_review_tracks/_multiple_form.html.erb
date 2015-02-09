@@ -34,21 +34,27 @@
       <table class="table" style="margin-bottom: 0px">
         <thead>
           <tr class="<%= cycle('odd', 'even') %>">
-            <th style="width: 15px;"></th>
-            <th style="width: 75px"><%= t("activerecord.attributes.music_release.released_at") %></th>
-            <th style="width: 200px;"><%= t("music_artists.model.short_name") %></th>
-            <th><%= t("attributes.name") %></th>
+            <th style="width:15px;"></th>
+            <th style="width:75px;"><%= t("activerecord.attributes.music_release.released_at") %></th>
+            <th style="width:200px;"><%= t("music_artists.model.short_name") %></th>
+            <th style="width:200px;"><%= t("attributes.name") %></th>
+            <th style="width:300px;"></th>
             <th></th>
           </tr>
         </thead>
         <tbody>
           <% @tracks.each do |track| %>
-          <tr>
+          <tr id="track_<%= track.id %>">
             <td><%= check_box_tag "year_in_review_music_tracks[#{track.id}]", 1 %></td>
             <td><%= track.released_at.strftime('%d.%m.%Y') %></td>
             <td><%= link_to track.artist_name, music_artist_path(track.artist_id) %></td> 
             <td><%= link_to track.name, music_track_path(track.id) %></td>
             <td><%= render partial: 'music_metadata_enrichment/tracks/spotify_track_player', locals: { spotify_track_id: track.spotify_track_id } %></td>
+            <td>
+              <%= link_to create_user_music_year_in_review_flop_track_path(current_user.id, @year_in_review.year, year_in_review_music_track_flop: { track_id: track.id }), method: :post, remote: true, class: 'btn btn-danger create_music_year_in_review_flop_track_link' do %>
+                <%= t('years_in_review_music.general.flop') %> <%= image_tag 'voluntary/spinner.gif', class: 'ajax_spinner hide' %>
+              <% end %>
+            </td>
           <% end %>
         </tbody>
       </table>

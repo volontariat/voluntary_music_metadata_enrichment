@@ -11,14 +11,20 @@ class MusicTrack < ActiveRecord::Base
   scope :without_slaves, -> { where('music_tracks.master_track_id IS NULL') }
   
   scope :released_in_year, ->(year) do
-    where("released_at >= :from AND released_at <= :to", from: Time.local(year,1,1,0,0,0), to: Time.local(year,12,31,23,59,59))
+    where("music_tracks.released_at >= :from AND music_tracks.released_at <= :to", from: Time.local(year,1,1,0,0,0), to: Time.local(year,12,31,23,59,59))
   end
   
   scope :for_year_in_review, ->(year_in_review) do
     track_ids = year_in_review.tracks.map(&:track_id)
     tracks = released_in_year(year_in_review.year)
     tracks = tracks.where('music_tracks.id NOT IN(?)', track_ids) if track_ids.any?
+    tracks = tracks.without_flops(year_in_review.id)
     tracks
+  end
+  
+  scope :without_flops, ->(year_in_review_id) do
+    joins("LEFT JOIN year_in_review_music_track_flops ON year_in_review_music_track_flops.year_in_review_music_id = #{year_in_review_id} AND year_in_review_music_track_flops.track_id = music_tracks.id").
+    where('year_in_review_music_track_flops.id IS NULL')
   end
   
   def self.by_artist_and_name(artist_name, name)
@@ -257,5 +263,6 @@ class MusicTrack < ActiveRecord::Base
     return if year_in_review_music_tracks_attributes.empty?
     
     YearInReviewMusicTrack.where(track_id: id).update_all year_in_review_music_tracks_attributes
+    YearInReviewMusicTrackFlop.where(track_id: id).update_all year_in_review_music_tracks_attributes
   end
 end

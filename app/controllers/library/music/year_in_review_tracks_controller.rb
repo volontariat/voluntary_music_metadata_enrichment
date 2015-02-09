@@ -64,6 +64,7 @@ class Library::Music::YearInReviewTracksController < ::MusicMetadataEnrichment::
     build_resource
     
     if @year_in_review_track.save
+      @year_in_review.flop_tracks.where(track_id: @year_in_review_track.track_id).delete_all
       MusicLibraryArtist.create(user_id: current_user.id, artist_id: @year_in_review_track.artist_id)
       @notice = I18n.t('year_in_review_music_tracks.create.successful') 
       get_year_in_review_tracks

@@ -13,7 +13,7 @@
   <div class="modal-header">
     <h3><%= t('year_in_review_music_releases.multiple_new.title', year: params[:year])%> <%= t('year_in_review_music_releases.multiple_new.releases_left', count: @releases_left) %></h3>
   </div>
-  <div class="modal-body" style="overflow-y:none;">
+  <div class="modal-body" style="overflow-y:scroll;">
     <%= hidden_field_tag :year, params[:year] %>
     <%= hidden_field_tag :last_id, params[:last_id] %>
     
@@ -23,16 +23,22 @@
           <th style="width: 15px;"></th>
           <th style="width: 75px"><%= t("activerecord.attributes.music_release.released_at") %></th>
           <th style="width: 200px;"><%= t("music_artists.model.short_name") %></th>
-          <th><%= t("attributes.name") %></th>
+          <th style="width: 200px"><%= t("attributes.name") %></th>
+          <th></th>
         </tr>
       </thead>
       <tbody>
         <% @releases.each do |release| %>
-        <tr>
+        <tr id="release_<%= release.id %>">
           <td><%= check_box_tag "year_in_review_music_releases[#{release.id}]", 1 %></td>
           <td><%= release.formatted_released_at_or_future_release_date %></td>
           <td><%= link_to release.artist_name, music_artist_path(release.artist_id) %></td> 
           <td><%= link_to release.name, music_release_path(release.id) %></td>
+          <td>
+            <%= link_to create_user_music_year_in_review_flop_release_path(current_user.id, @year_in_review.year, year_in_review_music_release_flop: { release_id: release.id }), method: :post, remote: true, class: 'btn btn-danger create_music_year_in_review_flop_release_link' do %>
+              <%= t('years_in_review_music.general.flop') %> <%= image_tag 'voluntary/spinner.gif', class: 'ajax_spinner hide' %>
+            <% end %>
+          </td>
         <% end %>
       </tbody>
     </table>

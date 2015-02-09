@@ -99,6 +99,7 @@ Rails.application.routes.draw do
   get 'users/:user_id/library/music/years_in_review/:year/top_releases' => 'library/music/year_in_review_releases#index', as: :user_music_year_in_review_top_releases
   get 'users/:user_id/library/music/years_in_review/:year/top_releases/new' => 'library/music/year_in_review_releases#new', as: :new_user_music_year_in_review_top_release
   post 'users/:user_id/library/music/years_in_review/:year/top_releases' => 'library/music/year_in_review_releases#create', as: :create_user_music_year_in_review_top_release
+  post 'users/:user_id/library/music/years_in_review/:year/flop_releases' => 'library/music/year_in_review_release_flops#create', as: :create_user_music_year_in_review_flop_release
   get 'users/current/library/music/years_in_review/:year/top_releases/multiple_new' => 'library/music/year_in_review_releases#multiple_new', as: :multiple_new_user_music_year_in_review_top_releases
   post 'users/:user_id/library/music/years_in_review/:year/top_releases/create_multiple' => 'library/music/year_in_review_releases#create_multiple', as: :create_multiple_user_music_year_in_review_top_releases
   delete 'users/current/library/music/year_in_review_music_releases/:id' => 'library/music/year_in_review_releases#destroy', as: :destroy_music_year_in_review_top_release
@@ -108,6 +109,7 @@ Rails.application.routes.draw do
   get 'users/:user_id/library/music/years_in_review/:year/top_tracks' => 'library/music/year_in_review_tracks#index', as: :user_music_year_in_review_top_tracks
   get 'users/:user_id/library/music/years_in_review/:year/top_tracks/new' => 'library/music/year_in_review_tracks#new', as: :new_user_music_year_in_review_top_track
   post 'users/:user_id/library/music/years_in_review/:year/top_tracks' => 'library/music/year_in_review_tracks#create', as: :create_user_music_year_in_review_top_track
+  post 'users/:user_id/library/music/years_in_review/:year/flop_tracks' => 'library/music/year_in_review_track_flops#create', as: :create_user_music_year_in_review_flop_track
   get 'users/current/library/music/years_in_review/:year/top_tracks/multiple_new' => 'library/music/year_in_review_tracks#multiple_new', as: :multiple_new_user_music_year_in_review_top_tracks
   post 'users/:user_id/library/music/years_in_review/:year/top_tracks/create_multiple' => 'library/music/year_in_review_tracks#create_multiple', as: :create_multiple_user_music_year_in_review_top_tracks
   delete 'users/current/library/music/year_in_review_music_tracks/:id' => 'library/music/year_in_review_tracks#destroy', as: :destroy_music_year_in_review_top_track

@@ -8,6 +8,9 @@ window.VoluntaryMusicMetadataEnrichment.Library.YearInReviewReleases.IndexView =
     $(document.body).on "ajax:beforeSend", ".destroy_music_year_in_review_top_release_link", ->
       $(this).find('.ajax_spinner').show()
     
+    $(document.body).on "ajax:beforeSend", ".create_music_year_in_review_flop_release_link", ->
+      $(this).find('.ajax_spinner').show()
+    
     new window.VoluntaryMusicMetadataEnrichment.Library.YearInReviewReleases.NewView()
     
   @makeCollectionSortable: ->

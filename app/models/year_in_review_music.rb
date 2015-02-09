@@ -4,7 +4,9 @@ class YearInReviewMusic < ActiveRecord::Base
   belongs_to :user
   
   has_many :releases, class_name: 'YearInReviewMusicRelease', dependent: :delete_all
+  has_many :flop_releases, class_name: 'YearInReviewMusicReleaseFlop', dependent: :delete_all
   has_many :tracks, class_name: 'YearInReviewMusicTrack', dependent: :delete_all
+  has_many :flop_tracks, class_name: 'YearInReviewMusicTrackFlop', dependent: :delete_all
   
   validates :user_id, presence: true
   validates :year, presence: true, numericality: { only_integer: true }, uniqueness: { scope: :user_id }
