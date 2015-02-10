@@ -61,12 +61,16 @@ class MusicTrack < ActiveRecord::Base
     
     before_transition :without_metadata => :active do |track, transition|
       lastfm = Lastfm.new(LastfmApiKey, LastfmApiSecret)
-      lastfm_track = lastfm.track.get_info(artist: track.artist_name, track: track.name) rescue nil
       
-      if lastfm_track.present?
+      begin
+        lastfm_track = lastfm.track.get_info(artist: track.artist_name, track: track.name)
         attributes = { listeners: lastfm_track['listeners'], plays: lastfm_track['playcount'] }
         attributes[:duration] = lastfm_track['duration'] if track.duration.blank?
         track.update_attributes(attributes)
+      rescue Lastfm::ApiError => e
+        unless e.message.match(/Artist not found|Track not found/)
+          raise e
+        end
       end
       
       track.set_spotify_track_id

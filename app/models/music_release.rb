@@ -74,8 +74,10 @@ class MusicRelease < ActiveRecord::Base
         lastfm = Lastfm.new(LastfmApiKey, LastfmApiSecret)
         lastfm_album = lastfm.album.get_info(artist: release.artist_name, album: release.name)
         release.update_attributes(listeners: lastfm_album['listeners'], plays: lastfm_album['playcount'])
-      rescue Lastfm::ApiError
-        # rescue from album not found
+      rescue Lastfm::ApiError => e
+        unless e.message.match(/Artist not found|Album not found/)
+          raise e
+        end
       end
       
       musicbrainz_release = MusicBrainz::Release.find(release.mbid, [:recordings])

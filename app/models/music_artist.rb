@@ -36,8 +36,15 @@ class MusicArtist < ActiveRecord::Base
       )
       
       lastfm = Lastfm.new(LastfmApiKey, LastfmApiSecret)
-      lastfm_artist = lastfm.artist.get_info(mbid: artist.mbid)
-      artist.update_attributes(listeners: lastfm_artist['stats']['listeners'], plays: lastfm_artist['stats']['playcount'])
+      
+      begin
+        lastfm_artist = lastfm.artist.get_info(artist: artist.name)
+        artist.update_attributes(listeners: lastfm_artist['stats']['listeners'], plays: lastfm_artist['stats']['playcount'])
+      rescue Lastfm::ApiError => e
+        unless e.message.match('The artist you supplied could not be found')
+          raise e
+        end
+      end
       
       unless artist.is_classical?(lastfm)
         artist.import_releases(musicbrainz_artist)
