@@ -60,7 +60,7 @@ class YearInReviewMusic < ActiveRecord::Base
         break
       end
       
-      if lastfm_albums.select{|a| !working_releases.include?([a['artist']['name'], a['name']])}.none?
+      if lastfm_albums.select{|a| !working_releases.include?([a['artist']['name'].downcase, MusicRelease.format_lastfm_name(a['name']).downcase])}.none?
         # over last page
         break
       end
@@ -71,7 +71,7 @@ class YearInReviewMusic < ActiveRecord::Base
         next if lastfm_album['playcount'].to_i < 20
         
         album_name = MusicRelease.format_lastfm_name(lastfm_album['name'])
-        working_release = [lastfm_album['artist']['name'], album_name]
+        working_release = [lastfm_album['artist']['name'].downcase, album_name.downcase]
         
         if working_releases.include?(working_release)
           next
@@ -140,7 +140,7 @@ class YearInReviewMusic < ActiveRecord::Base
             year_in_reviews[current_year] = year_in_review
           end
 
-          year_in_reviews[current_year].releases.create!(release_id: release.id)
+          year_in_reviews[current_year].releases.create(release_id: release.id)
         end
       end
     end
@@ -185,7 +185,7 @@ class YearInReviewMusic < ActiveRecord::Base
         break
       end
       
-      if lastfm_tracks.select{|a| !working_tracks.include?([a['artist']['name'], a['name']])}.none?
+      if lastfm_tracks.select{|a| !working_tracks.include?([a['artist']['name'].downcase, a['name'].downcase])}.none?
         # over last page
         break
       end
@@ -195,7 +195,7 @@ class YearInReviewMusic < ActiveRecord::Base
       lastfm_tracks.each do |lastfm_track|
         next if lastfm_track['playcount'].to_i < 3
         
-        working_track = [lastfm_track['artist']['name'], lastfm_track['name']]
+        working_track = [lastfm_track['artist']['name'].downcase, lastfm_track['name'].downcase]
         
         if working_tracks.include?(working_track)
           next
@@ -275,7 +275,7 @@ class YearInReviewMusic < ActiveRecord::Base
             year_in_reviews[current_year] = year_in_review
           end
 
-          year_in_reviews[current_year].tracks.create!(track_id: track.id)
+          year_in_reviews[current_year].tracks.create(track_id: track.id)
         end
       end
     end
