@@ -14,6 +14,8 @@ class YearInReviewMusic < ActiveRecord::Base
   attr_accessible :user_id, :year
   
   def self.initialize_by_lastfm(user, year = nil)
+    return if user.lastfm_user_name.blank?
+    
     lastfm = Lastfm.new(LastfmApiKey, LastfmApiSecret)
     [
       initialize_top_releases_by_lastfm(lastfm, user, year), 
@@ -63,10 +65,10 @@ class YearInReviewMusic < ActiveRecord::Base
         break
       end
       
-      break if lastfm_albums.select{|a| a['playcount'].to_i >= 10 }.none?
+      break if lastfm_albums.select{|a| a['playcount'].to_i >= 20 }.none?
         
       lastfm_albums.each do |lastfm_album|
-        next if lastfm_album['playcount'].to_i < 10
+        next if lastfm_album['playcount'].to_i < 20
         
         album_name = MusicRelease.format_lastfm_name(lastfm_album['name'])
         working_release = [lastfm_album['artist']['name'], album_name]
@@ -125,9 +127,7 @@ class YearInReviewMusic < ActiveRecord::Base
           
           current_year = release.released_at.strftime('%Y').to_i
           
-          unless Time.local(current_year, 1, 1) > 15.months.ago
-            next if lastfm_album['playcount'].to_i < 50
-          end
+          next if Time.local(current_year, 1, 1) < 15.months.ago && lastfm_album['playcount'].to_i < 50
           
           MusicLibraryArtist.create(user_id: user.id, artist_id: release.artist_id)
           
@@ -190,10 +190,10 @@ class YearInReviewMusic < ActiveRecord::Base
         break
       end
       
-      break if lastfm_tracks.select{|a| a['playcount'].to_i > 1 }.none?
+      break if lastfm_tracks.select{|a| a['playcount'].to_i >= 3 }.none?
         
       lastfm_tracks.each do |lastfm_track|
-        next if lastfm_track['playcount'].to_i < 2
+        next if lastfm_track['playcount'].to_i < 3
         
         working_track = [lastfm_track['artist']['name'], lastfm_track['name']]
         
@@ -249,7 +249,7 @@ class YearInReviewMusic < ActiveRecord::Base
             released_at = lastfm_album_info['releasedate'] if lastfm_album_info['releasedate'].present?
             
             if released_at.present?
-              track.release.update_attribute(:released_at, Time.parse(released_at))
+              track.update_attribute(:released_at, Time.parse(released_at))
             else
               missing_tracks << { 
                 rank: lastfm_track['rank'], artist_name: lastfm_track['artist']['name'], name: lastfm_track['name']
@@ -262,10 +262,8 @@ class YearInReviewMusic < ActiveRecord::Base
         
           current_year = track.released_at.strftime('%Y').to_i
           
-          unless Time.local(current_year, 1, 1) > 15.months.ago
-            next if lastfm_track['playcount'].to_i < 10
-          end
-        
+          next if Time.local(current_year, 1, 1) < 15.months.ago && lastfm_track['playcount'].to_i < 10
+          
           MusicLibraryArtist.create(user_id: user.id, artist_id: track.artist_id)
           
           unless year_in_reviews[current_year]
