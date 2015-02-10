@@ -56,10 +56,19 @@ class MusicArtist < ActiveRecord::Base
   
   def is_classical?(lastfm = nil)
     lastfm ||= Lastfm.new(LastfmApiKey, LastfmApiSecret)
-    lastfm_artist_tags = lastfm.artist.get_top_tags(mbid: mbid)
-
-    tags = lastfm_artist_tags.map{|t| t['name'].downcase }[0..9] rescue []
-    tags.select{|t| ['classic', 'classical'].include?(t) }.any? && tags.select{|t| ['pop', 'rock', 'crossover', 'alternative'].include?(t) }.none?
+    
+    begin
+      lastfm_artist_tags = lastfm.artist.get_top_tags(artist: name)
+  
+      tags = lastfm_artist_tags.map{|t| t['name'].downcase }[0..9] rescue []
+      tags.select{|t| ['classic', 'classical'].include?(t) }.any? && tags.select{|t| ['pop', 'rock', 'crossover', 'alternative'].include?(t) }.none?
+    rescue Lastfm::ApiError => e
+      unless e.message.match('The artist you supplied could not be found')
+        raise e
+      end
+      
+      false
+    end
   end
   
   def import_releases(musicbrainz_artist = nil)
