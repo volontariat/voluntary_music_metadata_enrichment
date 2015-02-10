@@ -79,7 +79,7 @@ class MusicArtist < ActiveRecord::Base
     begin
       release_groups = musicbrainz_artist.release_groups(offset: offset)
       count = release_groups.total_count
-      release_groups = release_groups.select{|r| ['Album', 'EP'].include?(r.type) && r.secondary_types.select{|st| MusicRelease::SECONDARY_TYPES_BLACKLIST.include?(st)}.none? && r.artists.length == 1}
+      release_groups = release_groups.select{|r| ['Album', 'Soundtrack', 'EP'].include?(r.type) && r.secondary_types.select{|st| MusicRelease::SECONDARY_TYPES_BLACKLIST.include?(st)}.none? && r.artists.length == 1}
       
       voluntary_releases = if release_groups.none?
         []

@@ -126,7 +126,7 @@ class MusicRelease < ActiveRecord::Base
   end
   
   def groups
-    musicbrainz_release_groups = MusicBrainz::ReleaseGroup.search(artist.mbid, name, extra_query: 'AND (type:album OR type:ep)')
+    musicbrainz_release_groups = MusicBrainz::ReleaseGroup.search(artist.mbid, name, extra_query: 'AND (type:album OR type:ep OR type:soundtrack)')
     musicbrainz_release_groups.select{|rg| rg[:releases].select{|r| r[:status] == 'Official'}.any? && (rg[:secondary_types].nil? || rg[:secondary_types].select{|st| SECONDARY_TYPES_BLACKLIST.include?(st)}.none?) && rg[:artists].length == 1 }
   end
  
