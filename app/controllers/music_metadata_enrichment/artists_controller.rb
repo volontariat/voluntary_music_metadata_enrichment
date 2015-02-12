@@ -37,7 +37,7 @@ class MusicMetadataEnrichment::ArtistsController < ::MusicMetadataEnrichment::Ap
   
   def autocomplete
     render json: (
-      MusicArtist.select('id, name').where("LOWER(name) LIKE ?", "#{params[:term].to_s.strip.downcase}%").order(:name).limit(10).map{|a| { id: a.id, value: a.name } }
+      MusicArtist.select('id, name').where("LOWER(name) LIKE ?", "#{params[:term].to_s.strip.downcase}%").order(:name).limit(10).map{|a| { id: a.id, value: a.name + (a.disambiguation.present? ? " (#{a.disambiguation})" : '') } }
     ), root: false
   end
   
