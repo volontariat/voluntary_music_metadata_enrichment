@@ -10,7 +10,6 @@
       <th style="width: 200px;"><%= t("music_artists.model.short_name") %></th>
       <th style="width: 200px;"><%= t("attributes.name") %></th>
       <th style="width: 75px;"><%= t("activerecord.attributes.music_release.released_at") %></th>
-      <th style="width: 300px"></th>
       <th></th>
     </tr>
   </thead>
@@ -24,7 +23,6 @@
         <td class="list-element-striped" style="width: 200px;"><%= link_to year_in_review_track.artist_name, music_artist_path(year_in_review_track.artist_id) %></td>
         <td class="list-element-striped" style="width: 200px;"><%= link_to year_in_review_track.track_name, music_track_path(year_in_review_track.track_id) %></td>
         <td class="list-element-striped" style="width: 75px;"><%= year_in_review_track.released_at.present? ? year_in_review_track.released_at.strftime('%d.%m.%Y') : '' %></td>
-        <td class="list-element-striped" style="width: 300px"><%= render partial: 'music_metadata_enrichment/tracks/spotify_track_player', locals: { spotify_track_id: year_in_review_track.spotify_track_id } %></td>
         <td class="list-element-striped">
           <% if current_user.try(:id) == params[:user_id].to_i %>
             <%= link_to destroy_music_year_in_review_top_track_path(year_in_review_track.id), method: :delete, remote: true, class: 'btn btn-danger destroy_music_year_in_review_top_track_link' do %>
