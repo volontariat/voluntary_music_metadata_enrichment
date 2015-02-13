@@ -1,5 +1,7 @@
 # -*- encoding : utf-8 -*-
 class MusicRelease < ActiveRecord::Base
+  include LastfmRequest
+  
   SECONDARY_TYPES_BLACKLIST = ['Audiobook', 'Compilation', 'DJ-mix', 'Interview', 'Live', 'Remix', 'Spokenword', 'Mixtape/Street']
   
   belongs_to :artist, class_name: 'MusicArtist'
@@ -70,15 +72,9 @@ class MusicRelease < ActiveRecord::Base
       musicbrainz_release, dvd_recording_mbids = release.release_with_highest_tracks_count(releases)
       release.update_attributes(mbid: musicbrainz_release.id, released_at: musicbrainz_release.date)
       
-      begin
-        lastfm = Lastfm.new(LastfmApiKey, LastfmApiSecret)
-        lastfm_album = lastfm.album.get_info(artist: release.artist_name, album: release.name)
-        release.update_attributes(listeners: lastfm_album['listeners'], plays: lastfm_album['playcount'])
-      rescue Lastfm::ApiError => e
-        unless e.message.match(/Artist not found|Album not found/)
-          raise e
-        end
-      end
+      lastfm = Lastfm.new(LastfmApiKey, LastfmApiSecret)
+      lastfm_album = release.lastfm_request(lastfm, :album, :get_info, /Artist not found|Album not found/, artist: release.artist_name, album: release.name)
+      release.update_attributes(listeners: lastfm_album['listeners'], plays: lastfm_album['playcount']) unless lastfm_album.nil?
       
       musicbrainz_release = MusicBrainz::Release.find(release.mbid, [:recordings])
       first_track_nr_of_disc = release.get_first_track_nr_of_disc(musicbrainz_release)

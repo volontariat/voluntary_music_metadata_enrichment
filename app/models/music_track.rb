@@ -1,5 +1,7 @@
 # -*- encoding : utf-8 -*-
 class MusicTrack < ActiveRecord::Base
+  include LastfmRequest
+  
   belongs_to :master_track, class_name: 'MusicTrack'
   
   # cached associations
@@ -61,16 +63,12 @@ class MusicTrack < ActiveRecord::Base
     
     before_transition :without_metadata => :active do |track, transition|
       lastfm = Lastfm.new(LastfmApiKey, LastfmApiSecret)
-      
-      begin
-        lastfm_track = lastfm.track.get_info(artist: track.artist_name, track: track.name)
+      lastfm_track = track.lastfm_request(lastfm, :track, :get_info, /Artist not found|Track not found/, artist: track.artist_name, track: track.name)
+
+      unless lastfm_track.nil?
         attributes = { listeners: lastfm_track['listeners'], plays: lastfm_track['playcount'] }
         attributes[:duration] = lastfm_track['duration'] if track.duration.blank?
         track.update_attributes(attributes)
-      rescue Lastfm::ApiError => e
-        unless e.message.match(/Artist not found|Track not found/)
-          raise e
-        end
       end
       
       track.set_spotify_track_id

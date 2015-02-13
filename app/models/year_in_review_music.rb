@@ -1,4 +1,6 @@
 class YearInReviewMusic < ActiveRecord::Base
+  include LastfmRequest
+  
   self.table_name = 'year_in_review_music'
   
   belongs_to :user
@@ -29,34 +31,23 @@ class YearInReviewMusic < ActiveRecord::Base
     
     1000.times do |page|
       page +=1
+      period = year.present? && Time.local(year, 1, 1) > 15.months.ago ? '12month' : 'overall'
+        
       lastfm_albums = nil
       
-      3.times do
-        begin
-          begin
-            period = if year.present? && Time.local(year, 1, 1) > 15.months.ago
-              '12month'
-            else
-              'overall'
-            end
-            
-            lastfm_albums = lastfm.user.get_top_albums(user: lastfm_user_name, period: period, page: page)
-            
-            puts "USER #{lastfm_user_name}: TOP ALBUMS PAGE ##{page}"
-          rescue REXML::ParseException
-            lastfm_albums = []
-            puts "USER #{lastfm_user_name}: TOP ALBUMS PAGE ##{page} COULD NOT BE PARSED"
-          end
-          
-          break
-        rescue Lastfm::ApiError, Timeout::Error => e
-          puts "USER #{lastfm_user_name}: TOP ALBUMS PAGE ##{page} ... #{e.class.name}... TRY AGAIN"
-          sleep 30
-        end
+      begin
+        puts "USER #{lastfm_user_name}: TOP ALBUMS PAGE ##{page}"
+        lastfm_albums = MusicArtist.lastfm_request_class_method(
+          lastfm, :user, :get_top_albums, nil, user: lastfm_user_name, period: period, page: page, raise_parse_exception: true
+        )
+      rescue REXML::ParseException
+        lastfm_albums = []
+        puts "USER #{lastfm_user_name}: TOP ALBUMS PAGE ##{page} COULD NOT BE PARSED"
       end
      
       if lastfm_albums.nil? || lastfm_albums.first.nil?
-        puts "USER #{lastfm_user_name}: TOP ALBUMS PAGE ##{page} IS EMPTY" 
+        #puts "USER #{lastfm_user_name}: TOP ALBUMS PAGE ##{page} IS EMPTY" 
+        raise "USER #{lastfm_user_name}: TOP ALBUMS PAGE ##{page} IS EMPTY" 
         break
       end
       
@@ -85,10 +76,10 @@ class YearInReviewMusic < ActiveRecord::Base
         if music_releases_count == 0
           lastfm_album_info = nil
           
-          begin
-            lastfm_album_info = lastfm.album.get_info(artist: lastfm_album['artist']['name'], album: album_name)
-          rescue Lastfm::ApiError
-            lastfm_album_info = lastfm.album.get_info(artist: lastfm_album['artist']['name'], album: lastfm_album['name'])
+          lastfm_album_info = MusicArtist.lastfm_request_class_method(lastfm, :album, :get_info, nil, artist: lastfm_album['artist']['name'], album: album_name)
+          
+          if lastfm_album_info.nil?
+            lastfm_album_info = MusicArtist.lastfm_request_class_method(lastfm, :album, :get_info, nil, artist: lastfm_album['artist']['name'], album: lastfm_album['name'])
           end
           
           if year.present?
@@ -111,7 +102,7 @@ class YearInReviewMusic < ActiveRecord::Base
           if year.present? && release.released_at.present? && release.released_at.strftime('%Y').to_i != year
             next
           elsif release.released_at.blank?
-            lastfm_album_info = lastfm.album.get_info(artist: lastfm_album['artist']['name'], album: lastfm_album['name'])
+            lastfm_album_info = MusicArtist.lastfm_request_class_method(lastfm, :album, :get_info, nil, artist: lastfm_album['artist']['name'], album: lastfm_album['name'])
             
             release.update_attribute(:released_at, Time.parse(lastfm_album_info['releasedate'])) if lastfm_album_info['releasedate'].present?
             
@@ -148,40 +139,30 @@ class YearInReviewMusic < ActiveRecord::Base
     missing_releases
   end
   
+  
+  
   def self.initialize_top_tracks_by_lastfm(lastfm, user, year = nil)
     lastfm_user_name, working_tracks, missing_tracks, lastfm_albums = user.lastfm_user_name, [], [], {}
     year_in_reviews = {}
     
     1000.times do |page|
       page +=1
+      period = year.present? && Time.local(year, 1, 1) > 15.months.ago ? '12month' : 'overall'
+      puts "USER #{lastfm_user_name}: TOP TRACKS PAGE ##{page}"
       lastfm_tracks = nil
       
-      3.times do
-        begin
-          begin
-            period = if year.present? && Time.local(year, 1, 1) > 15.months.ago
-              '12month'
-            else
-              'overall'
-            end
-            
-            lastfm_tracks = lastfm.user.get_top_tracks(user: lastfm_user_name, period: period, page: page)
-            
-            puts "USER #{lastfm_user_name}: TOP TRACKS PAGE ##{page}"
-          rescue REXML::ParseException
-            lastfm_tracks = []
-            puts "USER #{lastfm_user_name}: TOP TRACKS PAGE ##{page} COULD NOT BE PARSED"
-          end
-          
-          break
-        rescue Lastfm::ApiError, Timeout::Error => e
-          puts "USER #{lastfm_user_name}: TOP TRACKS PAGE ##{page} ... #{e.class.name}... TRY AGAIN"
-          sleep 30
-        end
+      begin
+        lastfm_tracks = MusicArtist.lastfm_request_class_method(
+          lastfm, :user, :get_top_tracks, nil, user: lastfm_user_name, period: period, page: page, raise_parse_exception: true
+        )
+      rescue REXML::ParseException
+        lastfm_tracks = []
+        puts "USER #{lastfm_user_name}: TOP TRACKS PAGE ##{page} COULD NOT BE PARSED"
       end
      
       if lastfm_tracks.nil? || lastfm_tracks.first.nil?
-        puts "USER #{lastfm_user_name}: TOP TRACKS PAGE ##{page} IS EMPTY" 
+        #puts "USER #{lastfm_user_name}: TOP TRACKS PAGE ##{page} IS EMPTY" 
+        raise "USER #{lastfm_user_name}: TOP TRACKS PAGE ##{page} IS EMPTY" 
         break
       end
       
@@ -206,8 +187,10 @@ class YearInReviewMusic < ActiveRecord::Base
         music_tracks = MusicTrack.by_artist_and_name(lastfm_track['artist']['name'], lastfm_track['name'])
         
         if music_tracks.count == 0
-          lastfm_track_info = lastfm.track.get_info(artist: lastfm_track['artist']['name'], track: lastfm_track['name'])
-          
+          lastfm_track_info = MusicArtist.lastfm_request_class_method(
+            lastfm, :track, :get_info, nil, artist: lastfm_track['artist']['name'], track: lastfm_track['name']
+          )
+
           lastfm_album_info = if lastfm_track_info['album'].nil? || lastfm_track_info['album']['artist'].downcase != lastfm_track['artist']['name']
             {}
           else
@@ -237,7 +220,9 @@ class YearInReviewMusic < ActiveRecord::Base
           if year.present? && track.released_at.present? && track.released_at.strftime('%Y').to_i != year
             next
           elsif track.released_at.blank?
-            lastfm_track_info = lastfm.track.get_info(artist: lastfm_track['artist']['name'], track: lastfm_track['name'])
+            lastfm_track_info = MusicArtist.lastfm_request_class_method(
+              lastfm, :track, :get_info, nil, artist: lastfm_track['artist']['name'], track: lastfm_track['name']
+            )
             
             lastfm_album_info = if lastfm_track_info['album'].nil? || lastfm_track_info['album']['artist'].downcase != lastfm_track['artist']['name']
               {}
@@ -289,13 +274,10 @@ class YearInReviewMusic < ActiveRecord::Base
     if lastfm_albums[lastfm_album_key]
       lastfm_albums[lastfm_album_key]
     else
-      lastfm_album_info = lastfm.album.get_info(artist: artist_name, album: name)
-      
+      lastfm_album_info = MusicArtist.lastfm_request_class_method(lastfm, :album, :get_info, nil, artist: artist_name, album: name)
+          
       if lastfm_album_info['releasedate'].blank?
-        begin
-          lastfm_album_info = lastfm.album.get_info(artist: artist_name, album: MusicRelease.format_lastfm_name(name))
-        rescue Lastfm::ApiError
-        end
+        lastfm_album_info = MusicArtist.lastfm_request_class_method(lastfm, :album, :get_info, nil, artist: artist_name, album: MusicRelease.format_lastfm_name(name))
       end
       
       lastfm_albums[lastfm_album_key] = lastfm_album_info
