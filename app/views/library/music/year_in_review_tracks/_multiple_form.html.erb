@@ -49,7 +49,13 @@
             <td><%= track.released_at.strftime('%d.%m.%Y') %></td>
             <td><%= link_to track.artist_name, music_artist_path(track.artist_id) %></td> 
             <td><%= link_to track.name, music_track_path(track.id) %></td>
-            <td><%= render partial: 'music_metadata_enrichment/tracks/spotify_track_player', locals: { spotify_track_id: track.spotify_track_id } %></td>
+            <td>
+            <% if track.spotify_track_id.present? %>
+              <i class="icon-play play_track_button" data-spotify-track-id="<%= track.spotify_track_id %>" data-target="#spotify_track_player_<%= track.id %>" style="cursor:pointer; cursor:hand;"></i>
+              <div id="spotify_track_player_<%= track.id %>">
+              </div>
+            <% end %>
+            </td>
             <td>
               <%= link_to create_user_music_year_in_review_flop_track_path(current_user.id, @year_in_review.year, year_in_review_music_track_flop: { track_id: track.id }), method: :post, remote: true, class: 'btn btn-danger create_music_year_in_review_flop_track_link' do %>
                 <%= t('years_in_review_music.general.flop') %> <%= image_tag 'voluntary/spinner.gif', class: 'ajax_spinner hide' %>
