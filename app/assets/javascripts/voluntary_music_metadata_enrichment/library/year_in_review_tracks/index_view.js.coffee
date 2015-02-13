@@ -5,6 +5,21 @@ window.VoluntaryMusicMetadataEnrichment.Library.YearInReviewTracks.IndexView = c
   constructor: ->
     window.VoluntaryMusicMetadataEnrichment.Library.YearInReviewTracks.IndexView.makeCollectionSortable()
     
+    $(document.body).on "click", ".play_track_button", (event) ->
+      event.preventDefault()
+      $('#bootstrap_modal').html(
+        '<div class="modal-header">' +
+        '<button type="button" id="close_bootstrap_modal_button" class="close" data-dismiss="modal" aria-hidden="true">&times;</button>' +
+        '<h3>Play Track</h3>' +
+        '</div>' +
+        '<div class="modal-body" style="overflow-y:none;">' +
+        '<iframe src="https://embed.spotify.com/?uri=spotify:track:' + $(this).data('spotify-track-id') + '&view=coverart" frameborder="0" allowtransparency="true" width="300" height="80"></iframe>' +
+        '</div>' +
+        '<div class="modal-footer">' +
+        '</div>'
+      )  
+      $('#bootstrap_modal').modal('show')
+    
     $(document.body).on "ajax:beforeSend", ".destroy_music_year_in_review_top_track_link", ->
       $(this).find('.ajax_spinner').show()
     
