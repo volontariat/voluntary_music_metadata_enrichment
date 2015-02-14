@@ -38,6 +38,7 @@ class MusicArtist < ActiveRecord::Base
       )
       
       lastfm = Lastfm.new(LastfmApiKey, LastfmApiSecret)
+      
       lastfm_artist = artist.lastfm_request(lastfm, :artist, :get_info, 'The artist you supplied could not be found', artist: artist.name)
       artist.update_attributes(listeners: lastfm_artist['stats']['listeners'], plays: lastfm_artist['stats']['playcount']) unless lastfm_artist.nil?
       
@@ -51,14 +52,25 @@ class MusicArtist < ActiveRecord::Base
   
   def is_classical?(lastfm = nil)
     lastfm ||= Lastfm.new(LastfmApiKey, LastfmApiSecret)
-    lastfm_artist_tags = lastfm_request(lastfm, :artist, :get_top_tags, 'The artist you supplied could not be found', artist: name)
-      
-    if lastfm_artist_tags.nil?
-      raise 'lastfm failed: ' + [:artist, :get_top_tags, 'The artist you supplied could not be found', { artist: name }].inspect
-    end
     
-    tags = lastfm_artist_tags.map{|t| t['name'].downcase }[0..9] rescue []
-    tags.select{|t| ['classic', 'classical'].include?(t) }.any? && tags.select{|t| ['pop', 'rock', 'crossover', 'alternative'].include?(t) }.none?
+    begin
+      lastfm_artist_tags = lastfm_request(
+        lastfm, :artist, :get_top_tags, 'The artist you supplied could not be found', artist: name, raise_if_response_is_just_nil: true
+      )
+        
+      if lastfm_artist_tags.nil?
+        raise 'lastfm failed: ' + [:artist, :get_top_tags, 'The artist you supplied could not be found', { artist: name }].inspect
+      end
+      
+      tags = lastfm_artist_tags.map{|t| t['name'].downcase }[0..9] rescue []
+      tags.select{|t| ['classic', 'classical'].include?(t) }.any? && tags.select{|t| ['pop', 'rock', 'crossover', 'alternative'].include?(t) }.none?
+    rescue StandardError => e
+      if e.message.match('last.fm response is just nil without exceptions')
+        false
+      else
+        raise e
+      end 
+    end
   end
   
   def import_releases(musicbrainz_artist = nil)

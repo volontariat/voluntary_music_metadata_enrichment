@@ -10,6 +10,7 @@ module LastfmRequest
   module ClassMethods
     def lastfm_request_class_method(lastfm, resource, method, error_message_reqexp, params = {})
       response = nil
+      raise_if_response_is_just_nil = params.delete(:raise_if_response_is_just_nil)
       raise_parse_exception = params.delete(:raise_parse_exception)
       
       begin
@@ -18,6 +19,8 @@ module LastfmRequest
         3.times do
           begin
             response = lastfm.send(resource).send(method, params)
+            
+            raise 'last.fm response is just nil without exceptions' if response.nil? && raise_if_response_is_just_nil
             
             break
           rescue Timeout::Error => e 
