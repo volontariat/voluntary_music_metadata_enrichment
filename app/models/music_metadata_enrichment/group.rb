@@ -6,13 +6,17 @@ module MusicMetadataEnrichment
     has_many :artists, class_name: 'MusicArtist', through: :artist_connections
     has_many :releases, class_name: 'MusicRelease', through: :artists
     has_many :videos, class_name: 'MusicVideo', through: :artists
+    has_many :memberships, class_name: 'MusicMetadataEnrichment::GroupMembership', foreign_key: 'group_id', dependent: :destroy
+    has_many :members, class_name: 'User', through: :memberships, source: 'user'
     
     validates :name, presence: true, uniqueness: { case_sensitive: false }
     validate :registered_on_lastfm
     
     attr_accessible :name, :artist_connections_text
     
-    attr_accessor :artist_connections_text
+    attr_accessor :user_id, :artist_connections_text
+    
+    after_create :create_first_member
     
     def import_artist_connections
       artist_names_without_mbid = []
@@ -131,6 +135,10 @@ module MusicMetadataEnrichment
       rescue Lastfm::ApiError
         errors[:name] << I18n.t('activerecord.errors.models.music_metadata_enrichment_group.attributes.name.not_registered_on_lastfm')
       end
+    end
+    
+    def create_first_member
+      memberships.create!(user_id: user_id)
     end
   end
 end

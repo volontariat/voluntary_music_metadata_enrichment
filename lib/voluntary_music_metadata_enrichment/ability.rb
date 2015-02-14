@@ -3,7 +3,7 @@ module VoluntaryMusicMetadataEnrichment
     def self.after_initialize
       Proc.new do |ability, user, options|
         ability.can :read, [
-          MusicMetadataEnrichment::Group, MusicMetadataEnrichment::GroupArtistConnection, 
+          MusicMetadataEnrichment::Group, MusicMetadataEnrichment::GroupArtistConnection, MusicMetadataEnrichment::GroupMembership,
           YearInReviewMusic, YearInReviewMusicRelease, YearInReviewMusicReleaseFlop, YearInReviewMusicTrack, YearInReviewMusicTrackFlop, 
           MusicArtist, MusicRelease, MusicTrack, MusicVideo
         ]
@@ -13,6 +13,8 @@ module VoluntaryMusicMetadataEnrichment
           ability.can(:destroy, MusicLibraryArtist) {|music_library_artist| music_library_artist.user_id == user.id }
           ability.can(:create, MusicMetadataEnrichment::Group)
           ability.can([:create, :name_confirmation, :select_artist, :creation], MusicMetadataEnrichment::GroupArtistConnection)
+          ability.can(:create, MusicMetadataEnrichment::GroupMembership)
+          ability.can(:restful_actions, MusicMetadataEnrichment::GroupMembership) {|membership| membership.user_id == user.id }
           ability.can(:create, YearInReviewMusic)
           ability.can([:create, :move, :destroy], YearInReviewMusicRelease) {|r| r.year_in_review_music.user_id == user.id }
           ability.can([:multiple_new, :export], YearInReviewMusicRelease)

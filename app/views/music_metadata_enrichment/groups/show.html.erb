@@ -5,7 +5,7 @@
   var group_id = "<%= params[:id] %>";
 <% end %>
 
-<h3><%= @group.name %></h3>
+<h3><%= @group.name %> <%= render partial: 'music_metadata_enrichment/group_memberships/create_or_destroy' %></h3>
 
 <div class="tabs">
   <ul>

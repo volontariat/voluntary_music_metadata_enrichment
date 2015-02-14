@@ -13,6 +13,7 @@ class MusicMetadataEnrichment::GroupsController < ::MusicMetadataEnrichment::App
   
   def create
     build_group
+    @group.user_id = current_user.id
     
     if @group.save
       flash[:notice] = I18n.t('music_metadata_enrichment_groups.create.successful')
@@ -24,6 +25,7 @@ class MusicMetadataEnrichment::GroupsController < ::MusicMetadataEnrichment::App
   
   def show
     @group = MusicMetadataEnrichment::Group.find(params[:id])
+    @membership = @group.memberships.where(user_id: current_user.id).first if user_signed_in?
     @year = Time.now.strftime('%Y')
     @releases = @group.releases.released_in_year(@year).order('released_at DESC')
   end

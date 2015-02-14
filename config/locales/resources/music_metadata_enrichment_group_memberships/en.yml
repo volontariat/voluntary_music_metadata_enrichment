@@ -1,0 +1,7 @@
+en:
+  music_metadata_enrichment_group_memberships:
+    create:
+      failed: Joining the group failed!
+      
+    destroy:
+      failed: Leaving the group failed!

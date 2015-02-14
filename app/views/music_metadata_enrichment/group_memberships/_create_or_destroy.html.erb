@@ -1,0 +1,9 @@
+<% if user_signed_in? %>
+  <div id="group_membership" style="display:inline;">
+  <% if @membership.present? && @membership.persisted? %>
+    <%= link_to t('general.leave'), music_group_membership_path(@membership.id), method: :delete, remote: true %>
+  <% else %>
+    <%= link_to t('general.join'), music_group_memberships_path(@group.id), method: :post, remote: true %>
+  <% end %>
+  </div>
+<% end %>

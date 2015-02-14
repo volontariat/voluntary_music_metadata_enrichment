@@ -1,0 +1,5 @@
+<% if @membership.persisted? %>
+  $('#group_membership').html('<%= escape_javascript render(partial: 'music_metadata_enrichment/group_memberships/create_or_destroy') %>');
+<% else %>
+  alert("<%= I18n.t('music_metadata_enrichment_group_memberships.create.failed') %>");
+<% end %>

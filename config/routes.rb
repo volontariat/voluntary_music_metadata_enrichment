@@ -7,6 +7,8 @@ Rails.application.routes.draw do
   
   namespace :music, module: 'music_metadata_enrichment' do
     resources :groups, only: [:index, :new, :create, :show] do
+      resources :memberships, only: [:create], controller: 'group_memberships'
+      
       resources :artists, only: [:new], controller: 'group_artist_connections' do
         collection do
           get :import
@@ -26,6 +28,8 @@ Rails.application.routes.draw do
       resources :releases, only: [:new]
       resources :videos, only: [:index, :new]
     end
+    
+    resources :group_memberships, only: [:destroy]
       
     resources :artists, only: [:index, :new, :create, :show] do
       collection do
