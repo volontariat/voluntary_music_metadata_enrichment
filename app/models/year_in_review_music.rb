@@ -131,7 +131,7 @@ class YearInReviewMusic < ActiveRecord::Base
             year_in_reviews[current_year] = year_in_review
           end
 
-          year_in_reviews[current_year].releases.create(release_id: release.id)
+          year_in_reviews[current_year].releases.create(year: current_year, release_id: release.id, user_id: user.id)
         end
       end
     end
@@ -260,7 +260,7 @@ class YearInReviewMusic < ActiveRecord::Base
             year_in_reviews[current_year] = year_in_review
           end
 
-          year_in_reviews[current_year].tracks.create(track_id: track.id)
+          year_in_reviews[current_year].tracks.create(year: current_year, track_id: track.id, user_id: user.id)
         end
       end
     end

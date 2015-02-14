@@ -6,7 +6,7 @@ module MusicMetadataEnrichment
       
       artist, name = if track.is_a? MusicTrack
         [track.artist_name, track.name]
-      elsif track.is_a? YearInReviewMusicTrack
+      elsif track.is_a?(YearInReviewMusicTrack) || track.is_a?(MusicMetadataEnrichment::GroupYearInReviewTrack)
         [track.artist_name, track.track_name]
       end
       

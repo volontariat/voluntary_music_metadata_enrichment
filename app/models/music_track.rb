@@ -266,5 +266,6 @@ class MusicTrack < ActiveRecord::Base
     
     YearInReviewMusicTrack.where(track_id: id).update_all year_in_review_music_tracks_attributes
     YearInReviewMusicTrackFlop.where(track_id: id).update_all year_in_review_music_tracks_attributes
+    MusicMetadataEnrichment::GroupYearInReviewTrack.where(track_id: id).update_all year_in_review_music_tracks_attributes
   end
 end

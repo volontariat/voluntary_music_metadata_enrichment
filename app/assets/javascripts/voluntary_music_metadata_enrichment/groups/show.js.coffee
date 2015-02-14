@@ -12,3 +12,4 @@ $(document).ready ->
       return
 
   new window.Likes.List()
+  new window.VoluntaryMusicMetadataEnrichment.Library.YearsInReview.IndexView(true)

@@ -94,6 +94,13 @@ Rails.application.routes.draw do
     end
   end
   
+  get 'music/groups/:group_id/years_in_review' => 'music_metadata_enrichment/group_year_in_reviews#index', as: :group_music_years_in_review
+  get 'music/groups/:group_id/years_in_review/:year' => 'music_metadata_enrichment/group_year_in_reviews#show', as: :group_music_year_in_review
+  get 'music/groups/:group_id/years_in_review/:year/top_releases' => 'music_metadata_enrichment/group_year_in_review_releases#index', as: :group_music_year_in_review_top_releases
+  get 'music/groups/:group_id/years_in_review/:year/top_releases/export' => 'music_metadata_enrichment/group_year_in_review_releases#export', as: :group_export_music_year_in_review_top_releases
+  get 'music/groups/:group_id/years_in_review/:year/top_tracks' => 'music_metadata_enrichment/group_year_in_review_tracks#index', as: :group_music_year_in_review_top_tracks
+  get 'music/groups/:group_id/years_in_review/:year/top_tracks/export' => 'music_metadata_enrichment/group_year_in_review_tracks#export', as: :group_export_music_year_in_review_top_tracks
+  
   get 'users/:user_id/library/music' => 'library/music#index', as: :user_music_library
   
   get 'users/:user_id/library/music/years_in_review' => 'library/music/years_in_review#index', as: :user_music_years_in_review

@@ -1,0 +1,18 @@
+<% content_for :title do %>
+  <%= t('years_in_review_music.index.title', user: name_with_apostrophe(@group.name)) %>
+<% end %>
+<% content_for :breadcrumbs do %>
+  <%= raw [
+    link_to(@group.name, music_group_path(@group)),
+    link_to(I18n.t('years_in_review_music.index.short_title'), group_music_years_in_review_path(@group))
+  ].join(' > ') %>
+<% end %>
+<% content_for :document_ready do %>
+  new window.VoluntaryMusicMetadataEnrichment.Library.YearsInReview.IndexView(false);
+<% end %>
+
+<%= image_tag 'voluntary/spinner.gif', id: 'years_in_review_spinner', class: 'hide' %>
+
+<div id="years_in_review">
+  <%= render partial: 'library/music/years_in_review/collection' %>
+</div>

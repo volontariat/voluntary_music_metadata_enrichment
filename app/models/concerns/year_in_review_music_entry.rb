@@ -6,5 +6,7 @@ module YearInReviewMusicEntry
     belongs_to :user
     
     validates :year_in_review_music_id, presence: true
+    
+    attr_accessible :year_in_review_music_id, :user_id, :year
   end
 end

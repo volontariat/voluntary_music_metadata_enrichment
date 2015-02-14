@@ -4,6 +4,8 @@ module VoluntaryMusicMetadataEnrichment
       Proc.new do |ability, user, options|
         ability.can :read, [
           MusicMetadataEnrichment::Group, MusicMetadataEnrichment::GroupArtistConnection, MusicMetadataEnrichment::GroupMembership,
+          MusicMetadataEnrichment::GroupYearInReview, MusicMetadataEnrichment::GroupYearInReviewRelease,
+          MusicMetadataEnrichment::GroupYearInReviewTrack,
           YearInReviewMusic, YearInReviewMusicRelease, YearInReviewMusicReleaseFlop, YearInReviewMusicTrack, YearInReviewMusicTrackFlop, 
           MusicArtist, MusicRelease, MusicTrack, MusicVideo
         ]

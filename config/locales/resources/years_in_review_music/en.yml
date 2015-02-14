@@ -1,9 +1,9 @@
 en:
   years_in_review_music:
     index:
-      title: "%{user} Years in Review"
-      short_title: Years in Review
-      empty_collection: No years in review available for this user.
+      title: "%{user} Year in Reviews"
+      short_title: Year in Reviews
+      empty_collection: No year in reviews available for this user.
       add: Add new year in review
       
     create:

@@ -24,6 +24,12 @@
         <%= image_tag 'voluntary/spinner.gif', class: 'ajax_spinner hide' %>
       </a>
     </li>
+    <li>
+      <a href="<%= group_music_years_in_review_path(@group.id) %>">
+        <%= t('years_in_review_music.index.short_title') %> 
+        <%= image_tag 'voluntary/spinner.gif', class: 'ajax_spinner hide' %>
+      </a>
+    </li> 
   </ul>
   <div id="releases">
     <%= render partial: 'music_metadata_enrichment/releases/collection', locals: { paginate: false, with_artist: true } %>

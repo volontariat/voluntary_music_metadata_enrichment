@@ -27,4 +27,20 @@ FactoryGirl.define do
     association :artist, factory: :music_artist
     sequence(:name) { |n| "music release #{n}#{r_str}" } 
   end
+  
+  factory :music_track do
+    sequence(:mbid) { |n| "mbid-#{n}#{r_str}" } 
+    association :artist, factory: :music_artist
+    association :release, factory: :music_release
+    sequence(:name) { |n| "music release #{n}#{r_str}" } 
+  end
+  
+  factory :music_metadata_enrichment_group, class: MusicMetadataEnrichment::Group do
+    sequence(:name) { |n| "group #{n}#{r_str}" }
+  end
+  
+  factory :year_in_review_music do
+    association :user
+    sequence(:year) {|n| n }
+  end
 end

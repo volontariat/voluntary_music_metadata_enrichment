@@ -8,6 +8,8 @@ module MusicMetadataEnrichment
     has_many :videos, class_name: 'MusicVideo', through: :artists
     has_many :memberships, class_name: 'MusicMetadataEnrichment::GroupMembership', foreign_key: 'group_id', dependent: :destroy
     has_many :members, class_name: 'User', through: :memberships, source: 'user'
+    has_many :year_in_reviews, class_name: 'MusicMetadataEnrichment::GroupYearInReview', dependent: :destroy
+    has_many :year_in_reviews_of_members, class_name: 'YearInReviewMusic', through: :members, source: 'years_in_review_music'
     
     validates :name, presence: true, uniqueness: { case_sensitive: false }
     validate :registered_on_lastfm

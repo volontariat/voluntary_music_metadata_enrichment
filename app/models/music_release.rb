@@ -285,5 +285,6 @@ class MusicRelease < ActiveRecord::Base
     
     YearInReviewMusicRelease.where(release_id: id).update_all year_in_review_music_releases_attributes
     YearInReviewMusicReleaseFlop.where(release_id: id).update_all year_in_review_music_releases_attributes
+    MusicMetadataEnrichment::GroupYearInReviewRelease.where(track_id: id).update_all year_in_review_music_releases_attributes
   end
 end

@@ -1,4 +1,4 @@
-<h3><%= link_to t('year_in_review_music_releases.index.short_title', year: params[:year]), user_music_year_in_review_top_releases_path(@user, @year_in_review.year) %></h3>
+<h3><%= link_to t('year_in_review_music_releases.index.short_title', year: params[:year]), group_or_user_path('music_year_in_review_top_releases', @year_in_review) %></h3>
 
 <% if @year_in_review_releases.none? %>
 <p><%= t('year_in_review_music_releases.index.empty_collection') %></p>
@@ -32,7 +32,7 @@
         </td>
         <td class="list-element-striped" style="width: 75px"><%= year_in_review_release.released_at.present? ? year_in_review_release.released_at.strftime('%d.%m.%Y') : '' %></td>
         <td class="list-element-striped">
-          <% if current_user.try(:id) == params[:user_id].to_i %>
+          <% if @group.blank? && current_user.try(:id) == params[:user_id].to_i %>
             <%= link_to destroy_music_year_in_review_top_release_path(year_in_review_release.id), method: :delete, remote: true, class: 'btn btn-danger destroy_music_year_in_review_top_release_link' do %>
               <%= t('general.remove') %> <%= image_tag 'voluntary/spinner.gif', class: 'ajax_spinner hide' %>
             <% end %>
@@ -45,8 +45,7 @@
 </ul>
 <% end %>
 
-
-<% if current_user.try(:id) == params[:user_id].to_i %>
+<% if @group.blank? && current_user.try(:id) == params[:user_id].to_i %>
   <%= link_to(
     t('year_in_review_music_releases.index.add_single'), new_user_music_year_in_review_top_release_path(params[:user_id], params[:year]), 
     class: 'remote_modal_link'
@@ -55,5 +54,7 @@
     t('year_in_review_music_releases.index.add_multiple_from_year_long', year: params[:year]), multiple_new_user_music_year_in_review_top_releases_path(params[:year]), 
     class: 'remote_modal_link'
   ) %> | 
-  <%= link_to t('general.export'), export_music_year_in_review_top_releases_path(params[:year]), class: 'remote_modal_link' %>
 <% end %>
+
+<%= link_to t('general.export'), group_or_user_path('export_music_year_in_review_top_releases', params[:year]), class: 'remote_modal_link' %>
+
