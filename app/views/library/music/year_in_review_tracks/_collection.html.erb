@@ -15,7 +15,7 @@
     </tr>
   </thead>
 </table>      
-<ul class="nav nav-tabs nav-stacked list-striped" id="year_in_review_music_tracks">
+<ul class="nav nav-tabs nav-stacked list-striped multisortable" id="year_in_review_music_tracks">
   <% @year_in_review_tracks.each do |year_in_review_track| %>
   <li data-id="<%= year_in_review_track.id %>" data-position="<%= year_in_review_track.position %>">
     <table class="table" style="margin-bottom: 0px">

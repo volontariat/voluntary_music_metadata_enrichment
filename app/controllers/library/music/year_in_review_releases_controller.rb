@@ -2,7 +2,7 @@ class Library::Music::YearInReviewReleasesController < ::MusicMetadataEnrichment
   include ::MusicMetadataEnrichment::BaseController
   include Applicat::Mvc::Controller::Resource
 
-  before_action :find_resource, only: [:move, :destroy]
+  before_action :find_resource, only: [:destroy]
   authorize_resource class: 'YearInReviewMusicRelease'
   
   def index
@@ -61,7 +61,12 @@ class Library::Music::YearInReviewReleasesController < ::MusicMetadataEnrichment
   end
   
   def move
-    @year_in_review_release.insert_at(params[:position].to_i)
+    year_in_review_releases = current_user.years_in_review_music_releases.where('year_in_review_music_releases.id IN(?)', params[:positions].keys).index_by(&:id)
+  
+    params[:positions].each do |id, position|
+      year_in_review_releases[id.to_i].reload
+      year_in_review_releases[id.to_i].insert_at(position.to_i)
+    end
     
     render nothing: true
   end

@@ -7,6 +7,8 @@ module VoluntaryMusicMetadataEnrichment
           
           included do
             has_many :years_in_review_music, class_name: 'YearInReviewMusic', dependent: :destroy
+            has_many :years_in_review_music_releases, class_name: 'YearInReviewMusicRelease', through: :years_in_review_music, source: 'releases'
+            has_many :years_in_review_music_tracks, class_name: 'YearInReviewMusicTrack', through: :years_in_review_music, source: 'tracks'
             has_many :music_library_artists, dependent: :destroy
             has_many :music_artists, through: :music_library_artists, source: 'artist'
             has_many :music_releases, through: :music_artists, source: 'releases'

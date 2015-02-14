@@ -14,22 +14,26 @@ window.VoluntaryMusicMetadataEnrichment.Library.YearInReviewReleases.IndexView =
     new window.VoluntaryMusicMetadataEnrichment.Library.YearInReviewReleases.NewView()
     
   @makeCollectionSortable: ->
-    $('#year_in_review_music_releases').sortable
+    $('#year_in_review_music_releases').multisortable
       start: (event, ui) =>
         window.first_position = $('#year_in_review_music_releases li:first').data('position')
         window.last_position = $('#year_in_review_music_releases li:last').data('position')
         
       update: (event, ui) =>
-        source_item = $(ui.item).closest('li')
-        current_position = window.first_position
-        previous_element = null
+        setTimeout window.VoluntaryMusicMetadataEnrichment.Library.YearInReviewReleases.IndexView.sortByPosition, 1000
         
-        $.each $('#year_in_review_music_releases li'), (index, element) ->
-          $(element).data('position', current_position)  
-          $('#year_in_review_music_release_position_' + $(element).data('id')).html(current_position)
-          
-          if $(element).data('id') == $(source_item).data('id')
-            $.post '/users/current/library/music/year_in_review_music_releases/' + $(element).data('id') + '/move', { _method: 'put', position: current_position }
-          
-          previous_element = $(element)
-          current_position += 1
+  @sortByPosition: ->
+    current_position = window.first_position
+    releases_count = $.each $('#year_in_review_music_releases li').length
+    
+    $.each $('#year_in_review_music_releases li'), (index, element) ->
+      $(element).data('position', current_position)  
+      $('#year_in_review_music_release_position_' + $(element).data('id')).html(current_position)
+      current_position += 1
+      
+    positions = {}
+      
+    $.each $('#year_in_review_music_releases li.selected'), (index, element) ->
+      positions[$(element).data('id')] = $(element).data('position')
+      
+    $.post '/users/current/library/music/year_in_review_music_releases/move', { _method: 'put', positions: positions }  
