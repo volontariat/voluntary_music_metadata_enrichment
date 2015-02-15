@@ -56,7 +56,13 @@ module VoluntaryMusicMetadataEnrichment
               mbids_by_artist = {}
               
               lastfm_artists.each do |a|
-                mbids_by_artist[a['name'].downcase] ||= MusicBrainz::Artist.search(a['name']).select{|a2| a2[:name].downcase == a['name'].downcase}.map{|a| a[:mbid]}
+                unless mbids_by_artist.has_key? a['name'].downcase
+                  artists = MusicBrainz::Artist.search(a['name'])
+                  
+                  raise 'MusicBrainz failed: MusicBrainz::Artist.search("' + a['name'] + '")' if artists.nil?
+                  
+                  mbids_by_artist[a['name'].downcase] = artists.select{|a2| a2[:name].downcase == a['name'].downcase}.map{|a| a[:mbid]}
+                end
               end
                
               voluntary_artists = MusicArtist.where('mbid IN(?)', mbids_by_artist.values.flatten.uniq).to_a
