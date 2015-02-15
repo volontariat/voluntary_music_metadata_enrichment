@@ -74,12 +74,22 @@ class Library::Music::YearInReviewTracksController < ::MusicMetadataEnrichment::
   end
   
   def move
-    year_in_review_tracks = current_user.years_in_review_music_tracks.where('year_in_review_music_tracks.id IN(?)', params[:positions].keys).index_by(&:id)
+    year_in_review_tracks = current_user.years_in_review_music_track.where('year_in_review_music_tracks.id IN(?)', params[:positions].values).index_by(&:id)
   
-    params[:positions].each do |id, position|
+    params[:positions].keys.map(&:to_i).sort.each do |position|
+      id = params[:positions][position.to_s]
       year_in_review_tracks[id.to_i].reload
       year_in_review_tracks[id.to_i].insert_at(position.to_i)
     end
+    
+    render nothing: true
+  end
+  
+  def update_all_positions
+    @user = current_user
+    find_year_in_review
+    
+    @year_in_review.update_all_positions_of_users_top_list(@user, :tracks, params[:matches], params[:positions])
     
     render nothing: true
   end

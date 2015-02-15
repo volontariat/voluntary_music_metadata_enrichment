@@ -13,7 +13,10 @@ class YearInReviewMusic < ActiveRecord::Base
   validates :user_id, presence: true
   validates :year, presence: true, numericality: { only_integer: true }, uniqueness: { scope: :user_id }
   
-  attr_accessible :user_id, :year
+  attr_accessible :user_id, :year, :top_release_matches, :top_track_matches
+  
+  serialize :top_release_matches, Array
+  serialize :top_track_matches, Array
   
   def self.initialize_by_lastfm(user, year = nil)
     return if user.lastfm_user_name.blank?
@@ -138,8 +141,6 @@ class YearInReviewMusic < ActiveRecord::Base
     
     missing_releases
   end
-  
-  
   
   def self.initialize_top_tracks_by_lastfm(lastfm, user, year = nil)
     lastfm_user_name, working_tracks, missing_tracks, lastfm_albums = user.lastfm_user_name, [], [], {}
@@ -287,5 +288,25 @@ class YearInReviewMusic < ActiveRecord::Base
   
   def initialize_by_lastfm
     ::YearInReviewMusic.initialize_by_lastfm(user, year)
+  end
+  
+  def update_all_positions_of_users_top_list(user, top_list_type, matches, positions)
+    top_list_entries = top_list_type == :releases ? user.years_in_review_music_releases : user.years_in_review_music_tracks
+    top_list_table = top_list_type == :releases ? 'year_in_review_music_releases' : 'year_in_review_music_tracks'
+    top_list_entries = top_list_entries.where("#{top_list_table}.id IN(?)", positions.values)
+    
+    unless top_list_entries.count == positions.values.length
+      raise CanCan::AccessDenied
+    end
+    
+    update_attribute(top_list_type == :releases ? :top_release_matches : :top_track_matches, JSON.parse(matches))
+    
+    positions.keys.map(&:to_i).sort.each do |position|
+      if top_list_type == :releases
+        ActiveRecord::Base.connection.execute("UPDATE year_in_review_music_releases SET position = #{position} WHERE year_in_review_music_releases.id = #{positions[position.to_s]}")
+      else
+        ActiveRecord::Base.connection.execute("UPDATE year_in_review_music_tracks SET position = #{position} WHERE year_in_review_music_tracks.id = #{positions[position.to_s]}")
+      end
+    end
   end
 end

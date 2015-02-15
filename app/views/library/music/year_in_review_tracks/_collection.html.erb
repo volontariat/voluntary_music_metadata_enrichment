@@ -14,15 +14,30 @@
       <th></th>
     </tr>
   </thead>
-</table>      
-<ul class="nav nav-tabs nav-stacked list-striped multisortable" id="year_in_review_music_tracks">
+</table>   
+
+<%= javascript_tag do %>
+  window.matches = <%= raw @year_in_review.top_track_matches.to_json %>
+<% end %> 
+   
+<ul class="nav nav-tabs nav-stacked list-striped multisortable competitive_list" id="year_in_review_music_tracks" data-update-all-positions-path="<%= update_all_positions_music_year_in_review_top_track_path(@year_in_review.year) %>">
   <% @year_in_review_tracks.each do |year_in_review_track| %>
-  <li data-id="<%= year_in_review_track.id %>" data-position="<%= year_in_review_track.position %>">
+  <li id="competitor_<%= year_in_review_track.id %>" data-id="<%= year_in_review_track.id %>" data-position="<%= year_in_review_track.position %>">
     <table class="table" style="margin-bottom: 0px">
       <tr class="<%= cycle('odd', 'even') %>">
-        <td class="list-element-striped" id="year_in_review_music_track_position_<%= year_in_review_track.id %>" style="width: 50px; text-align:right"><%= year_in_review_track.position %></td>
+        <td class="list-element-striped competitorPosition" style="width: 50px; text-align:right"><%= year_in_review_track.position %></td>
         <td class="list-element-striped" style="width: 200px;"><%= link_to year_in_review_track.artist_name, music_artist_path(year_in_review_track.artist_id) %></td>
-        <td class="list-element-striped" style="width: 200px;"><%= link_to year_in_review_track.track_name, music_track_path(year_in_review_track.track_id) %></td>
+        <td class="list-element-striped" style="width: 200px;">
+          <%= link_to year_in_review_track.track_name, music_track_path(year_in_review_track.track_id) %>
+          
+          <span class="competitorName hide">
+    <% if year_in_review_track.spotify_track_id.present? %>
+            <%= render partial: 'music_metadata_enrichment/tracks/spotify_track_player', locals: { spotify_track_id: year_in_review_track.spotify_track_id } %>
+    <% else %>
+      <%= link_to year_in_review_track.artist_name, music_artist_path(year_in_review_track.artist_id) %> - <%= link_to year_in_review_track.track_name, music_track_path(year_in_review_track.track_id) %>
+    <% end %>
+          </span>
+        </td>
         <td class="list-element-striped" style="width: 50px; text-align:center;">
     <% if year_in_review_track.spotify_track_id.present? %>
           <i class="icon-play play_track_button" data-spotify-track-id="<%= year_in_review_track.spotify_track_id %>" style="cursor:pointer; cursor:hand;"></i>
@@ -52,6 +67,9 @@
     t('year_in_review_music_tracks.index.add_multiple_from_year', year: params[:year]), multiple_new_user_music_year_in_review_top_tracks_path(params[:year]), 
     class: 'remote_modal_link'
   ) %> | 
+  <%= link_to(
+    t('general.sort_through_round_robin_tournament'), '#', class: 'competitive_list_start_link'
+  ) %> |
 <% end %>
 
 <%= link_to t('general.export'), group_or_user_path('export_music_year_in_review_top_tracks', params[:year]), class: 'remote_modal_link' %>

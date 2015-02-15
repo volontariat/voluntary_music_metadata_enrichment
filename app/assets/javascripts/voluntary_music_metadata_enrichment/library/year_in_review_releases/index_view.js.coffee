@@ -12,6 +12,7 @@ window.VoluntaryMusicMetadataEnrichment.Library.YearInReviewReleases.IndexView =
       $(this).find('.ajax_spinner').show()
     
     new window.VoluntaryMusicMetadataEnrichment.Library.YearInReviewReleases.NewView()
+    new window.Voluntary.DomManipulation.CompetitiveList()
     
   @makeCollectionSortable: ->
     $('#year_in_review_music_releases').multisortable
@@ -28,12 +29,12 @@ window.VoluntaryMusicMetadataEnrichment.Library.YearInReviewReleases.IndexView =
     
     $.each $('#year_in_review_music_releases li'), (index, element) ->
       $(element).data('position', current_position)  
-      $('#year_in_review_music_release_position_' + $(element).data('id')).html(current_position)
+      $(element).find('.competitorPosition').html(current_position)
       current_position += 1
       
     positions = {}
       
     $.each $('#year_in_review_music_releases li.selected'), (index, element) ->
-      positions[$(element).data('id')] = $(element).data('position')
+      positions[$(element).data('position')] = $(element).data('id')
       
     $.post '/users/current/library/music/year_in_review_music_releases/move', { _method: 'put', positions: positions }  
