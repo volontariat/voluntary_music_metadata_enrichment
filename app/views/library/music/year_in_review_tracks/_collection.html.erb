@@ -72,4 +72,6 @@
   ) %> |
 <% end %>
 
-<%= link_to t('general.export'), group_or_user_path('export_music_year_in_review_top_tracks', params[:year]), class: 'remote_modal_link' %>
+<% if @group.present? || current_user.try(:id) == params[:user_id].to_i %>
+  <%= link_to t('general.export'), group_or_user_path('export_music_year_in_review_top_tracks', params[:year]), class: 'remote_modal_link' %>
+<% end %>
