@@ -74,7 +74,7 @@ class Library::Music::YearInReviewTracksController < ::MusicMetadataEnrichment::
   end
   
   def move
-    year_in_review_tracks = current_user.years_in_review_music_track.where('year_in_review_music_tracks.id IN(?)', params[:positions].values).index_by(&:id)
+    year_in_review_tracks = current_user.years_in_review_music_tracks.where('year_in_review_music_tracks.id IN(?)', params[:positions].values).index_by(&:id)
   
     params[:positions].keys.map(&:to_i).sort.each do |position|
       id = params[:positions][position.to_s]
