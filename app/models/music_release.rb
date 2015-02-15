@@ -43,6 +43,7 @@ class MusicRelease < ActiveRecord::Base
   validates :name, presence: true, uniqueness: { scope: [:artist_id, :is_lp] }
   validates :mbid, uniqueness: true, allow_blank: true, length: { is: 36 }
   validate :future_release_date_format
+  validates :spotify_album_id, length: { is: 22 }, allow_blank: true
   
   before_save :set_artist_name
   after_update :sync_tracks
@@ -75,6 +76,8 @@ class MusicRelease < ActiveRecord::Base
       lastfm = Lastfm.new(LastfmApiKey, LastfmApiSecret)
       lastfm_album = release.lastfm_request(lastfm, :album, :get_info, /Artist not found|Album not found/, artist: release.artist_name, album: release.name)
       release.update_attributes(listeners: lastfm_album['listeners'], plays: lastfm_album['playcount']) unless lastfm_album.nil?
+      
+      release.set_spotify_album_id
       
       musicbrainz_release = MusicBrainz::Release.find(release.mbid, [:recordings])
       first_track_nr_of_disc = release.get_first_track_nr_of_disc(musicbrainz_release)
@@ -119,6 +122,31 @@ class MusicRelease < ActiveRecord::Base
     return name if name.nil?
     
     name.gsub(/\(Deluxe Edition\)|\(Deluxe\)|\(Deluxe Version\)|\(Deluxe Package\)|\(Bonus Version\)|\(Legacy Edition\)|\(Standard Version\)|\(Remastered Version\)|\(Remastered\)/i, '').strip
+  end
+  
+  def set_spotify_album_id
+    return if spotify_album_id.present?
+
+    response = nil
+    
+    begin
+      response = JSON.parse(
+        HTTParty.get("https://api.spotify.com/v1/search?q=album%3A%22#{URI.encode(name, /\W/)}%22+artist%3A%22#{URI.encode(artist_name, /\W/)}%22&type=album").body
+      )
+    rescue JSON::ParserError
+    end
+    
+    return if response.nil?
+    
+    response['albums']['items'].each do |item|
+      next unless item['name'].downcase == name.downcase
+      
+      self.spotify_album_id = item['id']
+
+      break
+    end
+    
+    save if spotify_album_id.present?
   end
   
   def groups
@@ -276,7 +304,7 @@ class MusicRelease < ActiveRecord::Base
   def sync_year_in_review_music_releases
     year_in_review_music_releases_attributes = {}
     
-    [:artist_name, :name, :released_at].each do |attribute|
+    [:artist_name, :name, :released_at, :spotify_album_id].each do |attribute|
       year_in_review_music_releases_attribute = attribute == :name ? :release_name : attribute
       year_in_review_music_releases_attributes[year_in_review_music_releases_attribute] = send(attribute) if send("#{attribute}_changed?")
     end
@@ -285,6 +313,6 @@ class MusicRelease < ActiveRecord::Base
     
     YearInReviewMusicRelease.where(release_id: id).update_all year_in_review_music_releases_attributes
     YearInReviewMusicReleaseFlop.where(release_id: id).update_all year_in_review_music_releases_attributes
-    MusicMetadataEnrichment::GroupYearInReviewRelease.where(track_id: id).update_all year_in_review_music_releases_attributes
+    MusicMetadataEnrichment::GroupYearInReviewRelease.where(release_id: id).update_all year_in_review_music_releases_attributes
   end
 end

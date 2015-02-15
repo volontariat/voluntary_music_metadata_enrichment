@@ -9,6 +9,7 @@
       <th style="width: 50px; vertical-align:top;"><%= t('attributes.position') %></th>
       <th style="width: 200px; vertical-align:top;"><%= t('music_artists.model.short_name') %></th>
       <th style="width: 200px; vertical-align:top;"><%= t('attributes.name') %></th>
+      <th style="width: 50px"></th>
       <th style="width: 67px; vertical-align:top;"><%= t('year_in_review_music_releases.index.top_track_positions_sum')%></th>
       <th style="width: 300px; vertical-align:top;"><%= t('year_in_review_music_tracks.index.shortest_title') %></th>
       <th style="width: 75px; vertical-align:top;"><%= t("activerecord.attributes.music_release.released_at") %></th>
@@ -32,8 +33,17 @@
           <%= link_to year_in_review_release.release_name, music_release_path(year_in_review_release.release_id) %>
           
           <span class="competitorName hide">
+    <% if year_in_review_release.spotify_album_id.present? %>
+            <%= render partial: 'music_metadata_enrichment/releases/spotify_album_player', locals: { spotify_album_id: year_in_review_release.spotify_album_id } %>
+    <% else %>
             <%= link_to year_in_review_release.artist_name, music_artist_path(year_in_review_release.artist_id) %> - <%= link_to year_in_review_release.release_name, music_release_path(year_in_review_release.release_id) %>
+    <% end %>
           </span>
+        </td>
+        <td class="list-element-striped" style="width: 50px; text-align:center;">
+    <% if year_in_review_release.spotify_album_id.present? %>
+          <i class="icon-play play_album_button" data-spotify-album-id="<%= year_in_review_release.spotify_album_id %>" style="cursor:pointer; cursor:hand;"></i>
+    <% end %>
         </td>
         <td class="list-element-striped" style="width: 67px; text-align: right;">
           <%= year_in_review_top_track_positions_sum(@year_in_review_tracks[year_in_review_release.release_id] || []) %>

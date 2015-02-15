@@ -6,8 +6,9 @@ module YearInReviewMusicReleaseBase
     belongs_to :release, class_name: 'MusicRelease'
     
     validates :release_id, presence: true, uniqueness: { scope: :year_in_review_music_id }
+    validates :spotify_album_id, length: { is: 22 }, allow_blank: true
     
-    attr_accessible :artist_id, :artist_name, :release_id, :release_name
+    attr_accessible :artist_id, :artist_name, :release_id, :release_name, :spotify_album_id
     
     before_create :set_cache_columns
     
@@ -27,6 +28,7 @@ module YearInReviewMusicReleaseBase
       self.artist_id = release.artist_id unless artist_id.present?
       self.artist_name = release.artist_name unless artist_name.present?
       self.release_name = release.name unless release_name.present?
+      self.spotify_album_id = release.spotify_album_id unless spotify_album_id.present?
       self.released_at = release.released_at unless released_at.present?
     end
   end

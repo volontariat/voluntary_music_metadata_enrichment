@@ -10,6 +10,8 @@
 
 <h4><%= t('music_tracks.index.short_title') %></h4>
 
+<%= render partial: 'music_metadata_enrichment/releases/spotify_album_player', locals: { spotify_album_id: @release.spotify_album_id } %>
+
 <% if @tracks.none? %>
 <p><%= I18n.t("music_tracks.index.empty_collection")%></p>
 <% else %>
