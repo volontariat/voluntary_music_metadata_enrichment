@@ -40,7 +40,9 @@ window.VoluntaryMusicMetadataEnrichment.Library.YearInReviewReleases.IndexView =
       $(this).find('.ajax_spinner').show()
     
     new window.VoluntaryMusicMetadataEnrichment.Library.YearInReviewReleases.NewView()
-    new window.Voluntary.DomManipulation.CompetitiveList()
+    
+    new window.Voluntary.DomManipulation.CompetitiveList competitor_name_proc: (spotifyAlbumId) ->
+      return '<iframe src="https://embed.spotify.com/?uri=spotify:album:' + spotifyAlbumId + '" frameborder="0" allowtransparency="true" width="300" height="380"></iframe>'
     
   @makeCollectionSortable: ->
     $('#year_in_review_music_releases').multisortable

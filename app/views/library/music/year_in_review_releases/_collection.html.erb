@@ -32,12 +32,8 @@
         <td class="list-element-striped" style="width: 200px;">
           <%= link_to year_in_review_release.release_name, music_release_path(year_in_review_release.release_id) %>
           
-          <span class="competitorName hide">
-    <% if year_in_review_release.spotify_album_id.present? %>
-            <%= render partial: 'music_metadata_enrichment/releases/spotify_album_player', locals: { spotify_album_id: year_in_review_release.spotify_album_id } %>
-    <% else %>
+          <span class="competitor_name hide"<% if year_in_review_release.spotify_album_id.present? %> data-proc-argument="<%= year_in_review_release.spotify_album_id %>"<% end %>>
             <%= link_to year_in_review_release.artist_name, music_artist_path(year_in_review_release.artist_id) %> - <%= link_to year_in_review_release.release_name, music_release_path(year_in_review_release.release_id) %>
-    <% end %>
           </span>
         </td>
         <td class="list-element-striped" style="width: 50px; text-align:center;">
