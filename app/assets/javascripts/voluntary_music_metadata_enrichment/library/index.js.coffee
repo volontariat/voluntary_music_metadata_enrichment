@@ -16,5 +16,5 @@ $(document).ready ->
   
   new window.VoluntaryMusicMetadataEnrichment.Library.YearsInReview.IndexView(true)
   new window.VoluntaryMusicMetadataEnrichment.Library.YearInReviewReleases.IndexView()
-  new window.VoluntaryMusicMetadataEnrichment.Library.YearInReviewTracks.NewView()
+  new window.VoluntaryMusicMetadataEnrichment.Library.YearInReviewTracks.IndexView()
   new window.Likes.List()
