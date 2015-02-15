@@ -21,7 +21,7 @@ module VoluntaryMusicMetadataEnrichment
           end
           
           def import_music_artists(lastfm, start_page = 1)
-            artist_mbids = []
+            artist_names, artist_mbids = [], []
             
             1000.times do |page|
               page +=1
@@ -54,30 +54,48 @@ module VoluntaryMusicMetadataEnrichment
               end
               
               mbids_by_artist = {}
+              working_artist_names = lastfm_artists.map{|a| a['name'].downcase}.select{|a| !artist_names.include?(a) }
+              
+              voluntary_artist_names = if working_artist_names.empty?
+                lastfm_artists.map{|a| a['name'].downcase}.select{|a| artist_names.include?(a['name'].downcase) }
+              else
+                MusicArtist.select('name').where('LOWER(name) IN(?)', working_artist_names).map{|a| a.name.downcase }
+              end
+              
+              failed_artist_search_names = []
               
               lastfm_artists.each do |a|
-                unless mbids_by_artist.has_key? a['name'].downcase
+                unless mbids_by_artist.has_key?(a['name'].downcase) || (artist_names + voluntary_artist_names).include?(a['name'].downcase)
                   artists = MusicBrainz::Artist.search(a['name'])
                   
-                  raise 'MusicBrainz failed: MusicBrainz::Artist.search("' + a['name'] + '")' if artists.nil?
-                  
-                  mbids_by_artist[a['name'].downcase] = artists.select{|a2| a2[:name].downcase == a['name'].downcase}.map{|a| a[:mbid]}
+                  if artists.nil?
+                    puts 'MusicBrainz failed: MusicBrainz::Artist.search("' + a['name'] + '")'
+                    mbids_by_artist[a['name'].downcase] = []
+                    artist_names << a['name'].downcase
+                    failed_artist_search_names << a['name'].downcase
+                  else
+                    mbids_by_artist[a['name'].downcase] = artists.select{|a2| a2[:name].downcase == a['name'].downcase}.map{|a| a[:mbid]}
+                  end
                 end
               end
                
               voluntary_artists = MusicArtist.where('mbid IN(?)', mbids_by_artist.values.flatten.uniq).to_a
               
-              if lastfm_artists.select{|a| a['playcount'].to_i >= 5 && mbids_by_artist[a['name'].downcase].select{|mbid| !artist_mbids.include?(mbid)}.any? }.none? || lastfm_artists.select{|a| a['playcount'].to_i >= 5 }.none?
+              if lastfm_artists.select{|a| failed_artist_search_names.empty? && a['playcount'].to_i >= 5 && !(artist_names + voluntary_artist_names).include?(a['name'].downcase) && mbids_by_artist[a['name'].downcase].select{|mbid| !artist_mbids.include?(mbid)}.any? }.none? || lastfm_artists.select{|a| a['playcount'].to_i >= 5 }.none?
                 # over last page
                 break
               end
   
               lastfm_artists.each do |lastfm_artist|
+                next if failed_artist_search_names.include?(lastfm_artist['name'].downcase)
+                next if (artist_names + voluntary_artist_names).include?(lastfm_artist['name'].downcase)
+                
                 current_artist_mbids = mbids_by_artist[lastfm_artist['name'].downcase].select{|mbid| !artist_mbids.include?(mbid)}
                 
                 if lastfm_artist['playcount'].to_i < 5 || current_artist_mbids.none?
                   next
                 else
+                  artist_names << lastfm_artist['name'].downcase
                   artist_mbids += current_artist_mbids
                 end
                 
