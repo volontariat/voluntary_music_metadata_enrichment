@@ -51,6 +51,7 @@ window.VoluntaryMusicMetadataEnrichment.Library.YearInReviewTracks.IndexView = c
         window.last_position = $('#year_in_review_music_tracks li:last').data('position')
           
       update: (event, ui) =>
+        $('#year_in_review_music_tracks').sortable('disable');
         setTimeout window.VoluntaryMusicMetadataEnrichment.Library.YearInReviewTracks.IndexView.sortByPosition, 1000
         
   @sortByPosition: ->
@@ -67,4 +68,6 @@ window.VoluntaryMusicMetadataEnrichment.Library.YearInReviewTracks.IndexView = c
     $.each $('#year_in_review_music_tracks li.selected'), (index, element) ->
       positions[$(element).data('position')] = $(element).data('id')
       
-    $.post '/users/current/library/music/year_in_review_music_tracks/move', { _method: 'put', positions: positions }  
+    $.post('/users/current/library/music/year_in_review_music_tracks/move', { _method: 'put', positions: positions }).always(=>
+      $('#year_in_review_music_releases').sortable('enable');
+    )    
