@@ -37,11 +37,12 @@ class MusicArtist < ActiveRecord::Base
         is_ambiguous: is_ambiguous
       )
       
-      lastfm = Lastfm.new(LastfmApiKey, LastfmApiSecret)
-      
-      lastfm_artist = artist.lastfm_request(lastfm, :artist, :get_info, 'The artist you supplied could not be found', artist: artist.name)
-      artist.update_attributes(listeners: lastfm_artist['stats']['listeners'], plays: lastfm_artist['stats']['playcount']) unless lastfm_artist.nil?
-      
+      unless artist.listeners.present? && artist.plays.present?
+        lastfm = Lastfm.new(LastfmApiKey, LastfmApiSecret)
+        lastfm_artist = artist.lastfm_request(lastfm, :artist, :get_info, 'The artist you supplied could not be found', artist: artist.name)
+        artist.update_attributes(listeners: lastfm_artist['stats']['listeners'], plays: lastfm_artist['stats']['playcount']) unless lastfm_artist.nil?
+      end
+       
       unless artist.is_classical?(lastfm)
         artist.import_releases(musicbrainz_artist)
         #artist.import_bonus_tracks
