@@ -63,25 +63,35 @@ module VoluntaryMusicMetadataEnrichment
               end
               
               failed_artist_search_names = []
+              names_of_artists_without_mbid = []
               
               lastfm_artists.each do |a|
-                unless mbids_by_artist.has_key?(a['name'].downcase) || (artist_names + voluntary_artist_names).include?(a['name'].downcase)
-                  artists = MusicBrainz::Artist.search(a['name'])
+                next if (artist_names + voluntary_artist_names).include?(a['name'].downcase)
+                
+                if a['mbid'].blank?
+                  names_of_artists_without_mbid << a['mbid']
+                  artist_names << a['name'].downcase
                   
-                  if artists.nil?
-                    puts 'MusicBrainz failed: MusicBrainz::Artist.search("' + a['name'] + '")'
-                    mbids_by_artist[a['name'].downcase] = []
-                    artist_names << a['name'].downcase
-                    failed_artist_search_names << a['name'].downcase
-                  else
-                    mbids_by_artist[a['name'].downcase] = artists.select{|a2| a2[:name].downcase == a['name'].downcase}.map{|a| a[:mbid]}
-                  end
+                  next
+                end
+                
+                next if mbids_by_artist.has_key?(a['name'].downcase)
+                
+                artists = MusicBrainz::Artist.search(a['name'])
+                
+                if artists.nil?
+                  puts 'MusicBrainz failed: MusicBrainz::Artist.search("' + a['name'] + '")'
+                  mbids_by_artist[a['name'].downcase] = []
+                  artist_names << a['name'].downcase
+                  failed_artist_search_names << a['name'].downcase
+                else
+                  mbids_by_artist[a['name'].downcase] = artists.select{|a2| a2[:name].downcase == a['name'].downcase}.map{|a| a[:mbid]}
                 end
               end
                
               voluntary_artists = MusicArtist.where('mbid IN(?)', mbids_by_artist.values.flatten.uniq).to_a
               
-              if lastfm_artists.select{|a| failed_artist_search_names.empty? && a['playcount'].to_i >= 5 && !(artist_names + voluntary_artist_names).include?(a['name'].downcase) && mbids_by_artist[a['name'].downcase].select{|mbid| !artist_mbids.include?(mbid)}.any? }.none? || lastfm_artists.select{|a| a['playcount'].to_i >= 5 }.none?
+              if failed_artist_search_names.empty? && names_of_artists_without_mbid.empty? && (lastfm_artists.select{|a| a['playcount'].to_i >= 5 && !(artist_names + voluntary_artist_names).include?(a['name'].downcase) && mbids_by_artist[a['name'].downcase].select{|mbid| !artist_mbids.include?(mbid)}.any? }.none? || lastfm_artists.select{|a| a['playcount'].to_i >= 5 }.none?)
                 # over last page
                 break
               end
