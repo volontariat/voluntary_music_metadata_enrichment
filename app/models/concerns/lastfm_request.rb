@@ -23,8 +23,8 @@ module LastfmRequest
             raise 'last.fm response is just nil without exceptions' if response.nil? && raise_if_response_is_just_nil
             
             break
-          rescue Timeout::Error => e 
-            puts "lastfm: timeout for ##{i} time"
+          rescue Timeout::Error, EOFError => e 
+            puts "lastfm: #{e.class.name} for ##{i} time"
             sleep 60 
           rescue ArgumentError => e
             if e.message.match('File does not exist')

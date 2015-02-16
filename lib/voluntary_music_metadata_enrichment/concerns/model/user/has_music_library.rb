@@ -42,7 +42,7 @@ module VoluntaryMusicMetadataEnrichment
                   end
                   
                   break
-                rescue Lastfm::ApiError, Timeout::Error => e
+                rescue Lastfm::ApiError, Timeout::Error, EOFError => e
                   puts "USER #{lastfm_user_name}: LIBRARY PAGE ##{page} ... #{e.class.name}... TRY AGAIN"
                   sleep 30
                 end
