@@ -7,3 +7,9 @@
 </dl>
 
 <%= @video.url_html %>
+
+<%= render partial: 'shared/likes_and_dislikes', locals: { target: @video, likes: @video_likes } %>
+
+<% content_for :javascript_includes do %>
+  <%= javascript_include_tag 'voluntary_music_metadata_enrichment/videos/show' %>
+<% end %>

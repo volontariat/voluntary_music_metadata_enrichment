@@ -85,6 +85,7 @@ class MusicMetadataEnrichment::VideosController < ::MusicMetadataEnrichment::App
   
   def show
     @video = MusicVideo.find(params[:id])
+    @video_likes = current_user.likes_or_dislikes.for_targets('MusicVideo', [@video.id]).index_by(&:target_id) if user_signed_in?
   end
   
   def by_name
