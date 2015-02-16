@@ -20,7 +20,7 @@
     <table class="table" style="margin-bottom: 0px">
       <thead>
         <tr class="<%= cycle('odd', 'even') %>">
-          <th style="width: 15px;"></th>
+          <th style="width: 15px;"><input type="checkbox" id="toggle_checkboxes_checkbox"/></th>
           <th style="width: 75px"><%= t("activerecord.attributes.music_release.released_at") %></th>
           <th style="width: 150px;"><%= t("music_artists.model.short_name") %></th>
           <th style="width: 150px"><%= t("attributes.name") %></th>
@@ -31,7 +31,7 @@
       <tbody>
         <% @releases.each do |release| %>
         <tr id="release_<%= release.id %>">
-          <td><%= check_box_tag "year_in_review_music_releases[#{release.id}]", 1 %></td>
+          <td><%= check_box_tag "year_in_review_music_releases[#{release.id}]", 1, false, class: 'toggleable_checkbox' %></td>
           <td><%= release.formatted_released_at_or_future_release_date %></td>
           <td><%= link_to release.artist_name, music_artist_path(release.artist_id) %></td> 
           <td><%= link_to release.name, music_release_path(release.id) %></td>
