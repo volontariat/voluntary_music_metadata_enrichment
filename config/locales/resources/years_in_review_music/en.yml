@@ -3,7 +3,7 @@ en:
     index:
       title: "%{user} Year in Reviews"
       short_title: Year in Reviews
-      empty_collection: No year in reviews available for this user.
+      empty_collection: No year in reviews available.
       add: Add new year in review
       
     create:
