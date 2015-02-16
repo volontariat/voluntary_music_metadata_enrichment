@@ -1,2 +1,2 @@
-$('#years_in_review').html('<%= escape_javascript render(partial: 'library/music/year_in_review_releases/collection') %>');
-window.VoluntaryMusicMetadataEnrichment.Library.YearInReviewReleases.IndexView.makeCollectionSortable();
+$('#competitor_<%= @year_in_review_release.id %>').remove()
+window.VoluntaryMusicMetadataEnrichment.Library.YearInReviewReleases.IndexView.resetPositions()
