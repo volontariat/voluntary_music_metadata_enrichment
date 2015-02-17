@@ -1,5 +1,5 @@
 <% content_for(:title) do %>
-  <%= t('music_library.index.title', name: name_with_apostrophe(@user.lastfm_user_name || @user.full_name)) %>
+  <%= t('music_library.index.title', name: name_with_apostrophe(@user.best_available_name)) %>
 <% end %>
 <% content_for :javascript_includes do %>
   <%= javascript_include_tag 'voluntary_music_metadata_enrichment/library/index' %>
@@ -8,7 +8,7 @@
   var user_id = "<%= params[:user_id] %>";
 <% end %>
 
-<h3><%= t('music_library.index.short_title_with_name', name: name_with_apostrophe(@user.lastfm_user_name || @user.full_name)) %></h3>
+<h3><%= t('music_library.index.short_title_with_name', name: name_with_apostrophe(@user.best_available_name)) %></h3>
 
 <div class="tabs">
   <ul>
