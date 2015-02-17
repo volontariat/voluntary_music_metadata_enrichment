@@ -54,8 +54,8 @@ class MusicMetadataEnrichment::ReleasesController < ::MusicMetadataEnrichment::A
   def name_confirmation
     build_release
     @release_groups = @release.groups
-
-    if @release_groups.none? && @release.groups_without_limitation.none?
+    
+    if @release_groups.none?
       flash[:notice] = I18n.t('music_releases.name_confirmation.release_not_found')
       redirect_to announce_music_releases_path(
         (params[:group_id].present? ? {group_id: params[:group_id]} : {}).merge(
@@ -77,8 +77,7 @@ class MusicMetadataEnrichment::ReleasesController < ::MusicMetadataEnrichment::A
       flash[:alert] = I18n.t('music_releases.create.release_already_imported')
     else
       release = MusicRelease.create(
-        artist_id: params[:music_release][:artist_id], artist_name: artist.name, 
-        name: name_and_mbid.split(';').first, is_lp: is_lp
+        artist_id: params[:music_release][:artist_id], artist_name: artist.name, name: name_and_mbid.first, is_lp: is_lp
       )
       
       if release.valid?
@@ -97,44 +96,12 @@ class MusicMetadataEnrichment::ReleasesController < ::MusicMetadataEnrichment::A
   
   def announce
     build_release
-    
-    if MusicRelease.where(artist_id: @release.artist_id, name: @release.name).first
-      flash[:alert] = I18n.t('music_releases.create.release_already_imported')
-      
-      if params[:group_id].present?
-        redirect_to music_group_path(params[:group_id])
-      else
-        redirect_to music_path 
-      end
-    elsif @release.groups.any?
-      flash[:notice] = I18n.t('music_releases.announce.please_select_existing_release')
-      redirect_to name_confirmation_music_releases_path(
-        (params[:group_id].present? ? {group_id: params[:group_id]} : {}).merge(
-          music_release: { artist_id: params[:music_release][:artist_id], name: params[:music_release][:name] }
-        )
-      )
-    end
   end
   
   def create_announcement
     build_release
-    
-    if MusicRelease.where(artist_id: @release.artist_id, name: @release.name, is_lp: @release.is_lp).first
-      flash[:alert] = I18n.t('music_releases.create.release_already_imported')
-      
-      if params[:group_id].present?
-        redirect_to music_group_path(params[:group_id])
-      else
-        redirect_to music_path 
-      end
-    elsif @release.groups.any?
-      flash[:notice] = I18n.t('music_releases.announce.please_select_existing_release')
-      redirect_to name_confirmation_music_releases_path(
-        (params[:group_id].present? ? {group_id: params[:group_id]} : {}).merge(
-          music_release: { artist_id: params[:music_release][:artist_id], name: params[:music_release][:name] }
-        )
-      )
-    elsif @release.future_release_date.blank? || !@release.valid?
+
+    if @release.future_release_date.blank? || !@release.valid?
       if @release.future_release_date.blank?
         @release.errors[:future_release_date] << I18n.t('errors.messages.blank')
       end
