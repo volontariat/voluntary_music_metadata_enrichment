@@ -61,9 +61,7 @@ class MusicRelease < ActiveRecord::Base
     
     before_transition :without_metadata => :active do |release, transition|
       releases = if release.releases.nil?
-        musicbrainz_release_group = MusicBrainz::ReleaseGroup.find(release.groups.select{|r| r[:title].downcase == release.name.downcase }.first[:id])
-        release.update_attribute(:is_lp, musicbrainz_release_group.type == 'Album' ? 1 : 0)
-        musicbrainz_release_group.releases
+        release.find_releases
       else
         release.releases
       end
@@ -149,6 +147,12 @@ class MusicRelease < ActiveRecord::Base
         end
       end
     end
+  end
+  
+  def find_releases
+    musicbrainz_release_group = MusicBrainz::ReleaseGroup.find(groups.select{|r| r[:title].downcase == name.downcase }.first[:id])
+    update_attribute(:is_lp, musicbrainz_release_group.type == 'Album' ? 1 : 0)
+    musicbrainz_release_group.releases
   end
   
   def self.format_lastfm_name(name)
