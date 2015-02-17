@@ -3,8 +3,9 @@
 <% if @release_groups.none? %>
 <p><%= I18n.t("music_releases.name_confirmation.release_found_but_does_not_satisfy_criteria")%></p>
 <% else %>
-  <%= form_tag music_releases_path, method: :post do %>
+  <%= form_tag music_releases_path, method: :post, remote: request.xhr? do %>
     <%= hidden_field_tag :group_id, params[:group_id] if params[:group_id].present? %>
+    <%= hidden_field_tag :year_in_review_music_id, params[:year_in_review_music_id] %>
     <%= hidden_field_tag 'music_release[artist_id]', @release.artist_id %>
     <table class="table table-striped">
       <thead>

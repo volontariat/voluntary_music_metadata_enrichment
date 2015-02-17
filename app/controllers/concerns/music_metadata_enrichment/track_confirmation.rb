@@ -11,27 +11,26 @@ module MusicMetadataEnrichment
       if @track.name.length > 255
         flash[:alert] = I18n.t('errors.messages.too_long.other', count: 255)
         
-        if params[:group_id].present?
-          redirect_to music_group_path(params[:group_id])
-        else
-          redirect_to music_path
-        end
+        @path = params[:group_id].present? ? music_group_path(params[:group_id]) :
+         music_path
       elsif track = MusicTrack.where("artist_id = :artist_id AND LOWER(name) = :name", artist_id: @track.artist_id, name: @track.name.downcase.strip).first
-        if from == 'new_track'
+        @path = if from == 'new_track'
           flash[:alert] = I18n.t('music_tracks.create.already_exist')
-          redirect_to music_track_path(track.id)
+          music_track_path(track.id)
         elsif from == 'new_video'
-          redirect_to metadata_music_videos_path(
+          metadata_music_videos_path(
             (params[:group_id].present? ? {group_id: params[:group_id]} : {}).merge(music_video: { track_id: track.id })
           ) 
         end
       else
+        is_bonus_track = name.present? ? false : @track.is_bonus_track?
+        
         if @track.release_name.present?
           release = MusicRelease.create(artist_id: @track.artist_id, name: @track.release_name, is_lp: @track.release_is_lp)
         end
         
         if name.present? || @track.release_name.present?
-          @track.create_draft_track(name)
+          @track.create_draft_track(name || @track.name)
           
           if @track.persisted?
             flash[:notice] = I18n.t('music_tracks.create.draft_successful')
@@ -40,7 +39,7 @@ module MusicMetadataEnrichment
           end
         end  
           
-        if name.blank? && (@track.artist.is_classical? || @track.is_bonus_track?)
+        if name.blank? && (@track.artist.is_classical? || is_bonus_track)
           @track.create_bonus_track(name_and_mbid.split(';').last)
           
           if @track.persisted?
@@ -52,18 +51,20 @@ module MusicMetadataEnrichment
         
         if @track.persisted?  
           if from == 'new_track'
-            redirect_to music_track_path(@track.id)
+            @path = music_track_path(@track.id)
           elsif from == 'new_video'
-            redirect_to metadata_music_videos_path(
+            @path = metadata_music_videos_path(
               (params[:group_id].present? ? {group_id: params[:group_id]} : {}).merge(music_video: { track_id: @track.id })
             ) 
           end
         else
-          redirect_to track_name_music_tracks_path(
+          @path = track_name_music_tracks_path(
             (params[:group_id].present? ? {group_id: params[:group_id]} : {}).merge(music_track: { artist_id: @track.artist_id })
           )
         end
       end
+      
+      redirect_to @path unless @path.blank? || request.xhr?
     end
     
     def build_track

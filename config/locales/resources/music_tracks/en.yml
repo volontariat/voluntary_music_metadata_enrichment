@@ -9,7 +9,8 @@ en:
       
     new: 
       title: "New Music Track: enter artist information"
-
+      short_title: Add Track
+      
     name:
       title: Enter a name for the track
       submit: Search Track on MusicBrainz.org

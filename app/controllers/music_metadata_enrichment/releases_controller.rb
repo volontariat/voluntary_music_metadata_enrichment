@@ -37,18 +37,30 @@ class MusicMetadataEnrichment::ReleasesController < ::MusicMetadataEnrichment::A
     else
       build_artist
     end
+    
+    set_template_name_for_xhr_or_render
   end
   
   def artist_confirmation
     confirm_artist('new_release')
+    set_template_name_for_xhr_or_render
+    
+    render_modal_javascript_response if request.xhr?
   end
   
   def select_artist
     artist_selection('new_release')
+    set_template_name_for_xhr_or_render
+    
+    render_modal_javascript_response if request.xhr?
   end
   
   def name
     build_release
+    
+    set_template_name_for_xhr_or_render
+    
+    render_modal_javascript_response if request.xhr?
   end
   
   def name_confirmation
@@ -57,12 +69,17 @@ class MusicMetadataEnrichment::ReleasesController < ::MusicMetadataEnrichment::A
     
     if @release_groups.none?
       flash[:notice] = I18n.t('music_releases.name_confirmation.release_not_found')
-      redirect_to announce_music_releases_path(
+      @path = announce_music_releases_path(
         (params[:group_id].present? ? {group_id: params[:group_id]} : {}).merge(
           music_release: { artist_id: params[:music_release][:artist_id], name: params[:music_release][:name] }
         )
       )
     end
+    
+    set_template_name_for_xhr_or_render
+    
+    redirect_to @path unless @path.blank? || request.xhr?
+    render_modal_javascript_response if request.xhr?
   end
   
   def create
@@ -71,31 +88,34 @@ class MusicMetadataEnrichment::ReleasesController < ::MusicMetadataEnrichment::A
     artist = MusicArtist.find(params[:music_release][:artist_id])
     musicbrainz_release_group = MusicBrainz::ReleaseGroup.find(name_and_mbid.last)
     is_lp = musicbrainz_release_group.type == 'Album'
-    release = MusicRelease.where(artist_id: artist.id, name: name_and_mbid.first, is_lp: is_lp).first
+    @release = MusicRelease.where(artist_id: artist.id, name: name_and_mbid.first, is_lp: is_lp).first
     
-    if release
+    if @release
       flash[:alert] = I18n.t('music_releases.create.release_already_imported')
     else
-      release = MusicRelease.create(
+      @release = MusicRelease.create(
         artist_id: params[:music_release][:artist_id], artist_name: artist.name, name: name_and_mbid.first, is_lp: is_lp
       )
       
-      if release.valid?
+      if @release.persisted?
         flash[:notice] = I18n.t('music_releases.create.scheduled_release_for_import')
       else
         flash[:alert] = release.errors.full_messages.join('. ')
       end
     end
     
-    if params[:group_id].present?
-      redirect_to music_group_path(params[:group_id])
-    else
-      redirect_to music_path
-    end
+    add_to_year_in_review_music_top_releases if @release.persisted? && params[:year_in_review_music_id].present?
+    @path = (params[:group_id].present? ? music_group_path(params[:group_id]) : music_path) unless params[:year_in_review_music_id].present?
+    
+    redirect_to @path unless @path.blank? || request.xhr?
+    render_modal_javascript_response if request.xhr?
   end
   
   def announce
     build_release
+    set_template_name_for_xhr_or_render
+    
+    render_modal_javascript_response if request.xhr?
   end
   
   def create_announcement
@@ -106,17 +126,19 @@ class MusicMetadataEnrichment::ReleasesController < ::MusicMetadataEnrichment::A
         @release.errors[:future_release_date] << I18n.t('errors.messages.blank')
       end
       
-      render :announce
+      @template = :announce
     else
       @release.save!
       flash[:notice] = I18n.t('music_releases.create_announcement.success')
       
-      if params[:group_id].present?
-        redirect_to music_group_path(params[:group_id])
-      else
-        redirect_to music_path 
-      end
+      @path = params[:group_id].present? ? music_group_path(params[:group_id]) : music_path 
     end
+        
+    add_to_year_in_review_music_top_releases if @release.persisted? && params[:year_in_review_music_id].present?
+    
+    render @template if @template.present? && !request.xhr?
+    redirect_to @path unless @path.blank? || request.xhr?
+    render_modal_javascript_response if request.xhr?
   end
   
   def show
@@ -176,5 +198,12 @@ class MusicMetadataEnrichment::ReleasesController < ::MusicMetadataEnrichment::A
     
     @tracks = @tracks.paginate(per_page: 50, page: params[:tracks_page] || 1)
     @year_in_review_music_releases = @release.year_in_review_tops.where('year_in_review_music_releases.position < 11').group('position').count
+  end
+  
+  def add_to_year_in_review_music_top_releases
+    year_in_review_music = current_user.years_in_review_music.where(id: params[:year_in_review_music_id]).first
+    @path = create_user_music_year_in_review_top_release_path(year_in_review_music.user_id, year_in_review_music.year)
+    @data = { year_in_review_music_release: { release_id: @release.id } }
+    @method = :post
   end
 end

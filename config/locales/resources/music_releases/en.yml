@@ -15,6 +15,7 @@ en:
       
     new: 
       title: "New Music Release: enter artist information"
+      short_title: Add Release
       
     artist_confirmation:
       title: "New Music Release: artist confirmation"

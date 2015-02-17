@@ -3,9 +3,10 @@
 <% if @tracks.none? %>
 <p><%= empty_collection_title %></p>
 <% else %>
-  <%= form_tag form_url, method: form_method do %>
+  <%= form_tag form_url, method: form_method, remote: request.xhr? do %>
     <%= hidden_field_tag :group_id, params[:group_id] if params[:group_id].present? %>
     <%= hidden_field_tag 'music_track[artist_id]', @track.artist_id %>
+    <%= hidden_field_tag :year_in_review_music_id, params[:year_in_review_music_id] %>
     <table class="table table-striped">
       <thead>
         <tr class="<%= cycle('odd', 'even') %>">
@@ -16,7 +17,7 @@
       <tbody>
       <% @tracks.each do |track| %>
         <tr class="<%= cycle('odd', 'even') %>">
-          <td style="width:50px"><%= radio_button_tag 'music_track[name_and_mbid]', "#{track[:title]};#{track[:mbid]}" %></td>
+          <td style="width:50px"><%= radio_button_tag 'music_track[name_and_mbid]', "#{track[:title]};#{track[:id]}" %></td>
           <td><%= track[:title] %></td>
         </tr>
       <% end %>

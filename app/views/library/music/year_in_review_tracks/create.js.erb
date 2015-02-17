@@ -1,3 +1,4 @@
+if($('#competitor_<%= @year_in_review_track.id %>').length == 0) {
 <% if @year_in_review_track.persisted? %>
   $('#year_in_review_music_tracks').append('<%= escape_javascript render(partial: 'library/music/year_in_review_tracks/year_in_review_track', locals: { year_in_review_track: @year_in_review_track }) %>');
   $('#bootstrap_modal').modal('hide')
@@ -6,5 +7,6 @@
 <% end %>
 
 <% if @notice.present? %>
-alert('<%= @notice %>');
+  alert('<%= @notice %>');
 <% end %>
+}

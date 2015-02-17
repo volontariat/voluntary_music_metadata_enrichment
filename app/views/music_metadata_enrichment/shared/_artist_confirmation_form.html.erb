@@ -3,9 +3,10 @@
 <% if @artists.none? %>
 <p><%= I18n.t("music_artists.name_confirmation.empty_collection")%></p>
 <% else %>
-  <%= form_tag form_url, method: form_method do %>
+  <%= form_tag form_url, method: form_method, remote: request.xhr? do %>
     <%= hidden_field_tag :group_id, params[:group_id] if params[:group_id].present? %>
     <%= hidden_field_tag :user_id, params[:user_id] if params[:user_id].present? %>
+    <%= hidden_field_tag :year_in_review_music_id, params[:year_in_review_music_id] %>
     <table class="table table-striped">
       <thead>
         <tr class="<%= cycle('odd', 'even') %>">
