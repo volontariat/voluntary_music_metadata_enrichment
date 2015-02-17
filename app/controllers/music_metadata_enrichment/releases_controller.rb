@@ -53,7 +53,7 @@ class MusicMetadataEnrichment::ReleasesController < ::MusicMetadataEnrichment::A
   
   def name_confirmation
     build_release
-    @release_groups = @release.groups
+    @release_groups = @release.groups(true)
     
     if @release_groups.none?
       flash[:notice] = I18n.t('music_releases.name_confirmation.release_not_found')
