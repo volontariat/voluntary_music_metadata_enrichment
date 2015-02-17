@@ -15,7 +15,8 @@ en:
       
     general:
       flop: Flop  
-      
+      do_not_show_here_anymore: Don't show here anymore
+            
   activerecord:
     models:
       year_in_review: Year in Review

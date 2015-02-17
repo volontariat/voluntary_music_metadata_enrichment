@@ -58,7 +58,7 @@
             </td>
             <td>
               <%= link_to create_user_music_year_in_review_flop_track_path(current_user.id, @year_in_review.year, year_in_review_music_track_flop: { track_id: track.id }), method: :post, remote: true, class: 'btn btn-danger create_music_year_in_review_flop_track_link' do %>
-                <%= t('years_in_review_music.general.flop') %> <%= image_tag 'voluntary/spinner.gif', class: 'ajax_spinner hide' %>
+                <%= t('years_in_review_music.general.do_not_show_here_anymore') %> <%= image_tag 'voluntary/spinner.gif', class: 'ajax_spinner hide' %>
               <% end %>
             </td>
           <% end %>
