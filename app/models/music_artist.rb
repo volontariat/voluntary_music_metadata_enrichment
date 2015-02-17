@@ -119,9 +119,11 @@ class MusicArtist < ActiveRecord::Base
       
       next if voluntary_releases.include?(release_is_lp_plus_name)
       
-      musicbrainz_releases = musicbrainz_release_group.releases
-      
-      next if !without_limitation && musicbrainz_releases.select{|r| r.status == 'Official' && (r.media.map(&:format).none? || r.media.map(&:format).select{|f| !['DVD-Video', 'DVD'].include?(f) }.any?) }.none?
+      unless without_limitation
+        musicbrainz_releases = musicbrainz_release_group.releases
+        
+        next if musicbrainz_releases.select{|r| r.status == 'Official' && (r.media.map(&:format).none? || r.media.map(&:format).select{|f| !['DVD-Video', 'DVD'].include?(f) }.any?) }.none?
+      end
       
       musicbrainz_release_group
     end.select{|r| !r.nil?}
