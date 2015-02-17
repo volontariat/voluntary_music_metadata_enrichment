@@ -4,9 +4,9 @@ module MusicMetadataEnrichment
     
     private
     
-    def track_creation(from)
+    def track_creation(from, name = nil)
       name_and_mbid = params[:music_track].delete(:name_and_mbid)
-      @track.name = MusicTrack.format_name(name_and_mbid.split(';').first)
+      @track.name = name || MusicTrack.format_name(name_and_mbid.split(';').first)
       
       if @track.name.length > 255
         flash[:alert] = I18n.t('errors.messages.too_long.other', count: 255)
@@ -26,10 +26,31 @@ module MusicMetadataEnrichment
           ) 
         end
       else
-        if @track.artist.is_classical? || @track.is_bonus_track?
-          @track.create_bonus_track(name_and_mbid.split(';').last)
-          flash[:notice] = I18n.t('music_tracks.create.successfully_creation')
+        if @track.release_name.present?
+          release = MusicRelease.create(artist_id: @track.artist_id, name: @track.release_name, is_lp: @track.release_is_lp)
+        end
+        
+        if name.present? || @track.release_name.present?
+          @track.create_draft_track(name)
           
+          if @track.persisted?
+            flash[:notice] = I18n.t('music_tracks.create.draft_successful')
+          else
+            flash[:alert] = I18n.t('music_tracks.create.draft_failed', errors: @track.errors.full_messages.join('. '))
+          end
+        end  
+          
+        if name.blank? && (@track.artist.is_classical? || @track.is_bonus_track?)
+          @track.create_bonus_track(name_and_mbid.split(';').last)
+          
+          if @track.persisted?
+            flash[:notice] = I18n.t('music_tracks.create.bonus_track_successful')
+          else
+            flash[:alert] = I18n.t('music_tracks.create.bonus_track_failed', errors: @track.errors.full_messages.join('. '))
+          end
+        end
+        
+        if @track.persisted?  
           if from == 'new_track'
             redirect_to music_track_path(@track.id)
           elsif from == 'new_video'
@@ -37,20 +58,10 @@ module MusicMetadataEnrichment
               (params[:group_id].present? ? {group_id: params[:group_id]} : {}).merge(music_video: { track_id: @track.id })
             ) 
           end
-        elsif @track.release_name.present?
-          release = MusicRelease.create(artist_id: @track.artist_id, name: @track.release_name, is_lp: @track.release_is_lp)
-          
-          if release.valid?
-            flash[:notice] = I18n.t('music_tracks.create.scheduled_release_for_import')
-          else
-            flash[:alert] = release.errors.full_messages.join('. ')
-          end
-          
-          if params[:group_id].present?
-            redirect_to music_group_path(params[:group_id])
-          else
-            redirect_to music_path
-          end
+        else
+          redirect_to track_name_music_tracks_path(
+            (params[:group_id].present? ? {group_id: params[:group_id]} : {}).merge(music_track: { artist_id: @track.artist_id })
+          )
         end
       end
     end

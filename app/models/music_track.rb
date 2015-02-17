@@ -8,7 +8,10 @@ class MusicTrack < ActiveRecord::Base
   belongs_to :artist, class_name: 'MusicArtist'
   belongs_to :release, class_name: 'MusicRelease', counter_cache: true, counter_cache: 'tracks_count'
   
-  has_many :videos, foreign_key: 'track_id', class_name: 'MusicVideo'
+  has_many :videos, foreign_key: 'track_id', class_name: 'MusicVideo', dependent: :destroy
+  has_many :group_year_in_review_tops, foreign_key: 'track_id', class_name: 'MusicMetadataEnrichment::GroupYearInReviewTrack', dependent: :destroy
+  has_many :year_in_review_flops, foreign_key: 'track_id', class_name: 'YearInReviewMusicTrackFlop', dependent: :destroy
+  has_many :year_in_review_tops, foreign_key: 'track_id', class_name: 'YearInReviewMusicTrack', dependent: :destroy
   
   scope :without_slaves, -> { where('music_tracks.master_track_id IS NULL') }
   
@@ -41,8 +44,8 @@ class MusicTrack < ActiveRecord::Base
     where(table[:artist_name].matches("%#{artist_name}%").and(table[:name].matches("%#{name}%")))
   end
   
-  validates :name, presence: true, length: { maximum: 255 }, uniqueness: { scope: :release_id, case_sensitive: false }
-  validates :mbid, presence: true, uniqueness: true, length: { is: 36 }
+  validates :name, length: { maximum: 255 }, uniqueness: { scope: :release_id, case_sensitive: false }
+  validates :mbid, allow_blank: true, uniqueness: true, length: { is: 36 }
   validates :spotify_track_id, length: { is: 22 }, allow_blank: true
   validate :name_not_included_in_blacklist
   
@@ -57,6 +60,7 @@ class MusicTrack < ActiveRecord::Base
   before_create :set_master_track_id_if_available
   after_update :sync_video_track_name
   after_update :sync_year_in_review_music_tracks
+  after_destroy :destroy_slaves
   
   state_machine :state, initial: :without_metadata do
     event :import_metadata do transition :without_metadata => :active; end
@@ -195,10 +199,17 @@ class MusicTrack < ActiveRecord::Base
   end
   
   def create_bonus_track(working_mbid)
+    self.name = MusicTrack.format_name(name)
     self.mbid = working_mbid
     self.release_id = artist.bonus_tracks_release.id
     self.save
     self.import_metadata!
+  end
+  
+  def create_draft_track(name)
+    self.release_id = artist.bonus_tracks_release.id
+    self.name = MusicTrack.format_name(name)
+    self.save
   end
   
   def formatted_duration
@@ -236,7 +247,10 @@ class MusicTrack < ActiveRecord::Base
   end
   
   def set_master_track_id_if_available
-    if track = MusicTrack.where(artist_id: artist_id, name: name).first
+    if track = MusicTrack.where(
+      'artist_id = :artist_id AND release_id <> :bonus_release_id AND master_track_id IS NULL AND LOWER(name) = :name', 
+      artist_id: artist_id, bonus_release_id: release.artist.bonus_tracks_release.id, name: name.downcase
+    ).first
       self.master_track_id = track.id
     end  
   end
@@ -267,5 +281,9 @@ class MusicTrack < ActiveRecord::Base
     YearInReviewMusicTrack.where(track_id: id).update_all year_in_review_music_tracks_attributes
     YearInReviewMusicTrackFlop.where(track_id: id).update_all year_in_review_music_tracks_attributes
     MusicMetadataEnrichment::GroupYearInReviewTrack.where(track_id: id).update_all year_in_review_music_tracks_attributes
+  end
+  
+  def destroy_slaves
+    MusicTrack.where(master_track_id: id).destroy_all if master_track_id.blank?
   end
 end

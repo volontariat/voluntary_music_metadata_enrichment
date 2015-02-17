@@ -11,7 +11,7 @@ module YearInReviewMusicTrackBase
     
     attr_accessible :artist_id, :artist_name, :release_id, :release_name, :track_id, :spotify_track_id, :track_name
     
-    before_create :set_cache_columns
+    before_save :set_cache_columns
     
     private
     
@@ -26,10 +26,10 @@ module YearInReviewMusicTrackBase
       
       self.year = year_in_review_music.year unless year.present?
       self.artist_id = track.artist_id unless artist_id.present?
-      self.artist_name = track.artist_name unless artist_name.present?
-      self.release_id = track.release_id unless release_id.present?
-      self.release_name = track.release_name unless release_name.present?
-      self.track_name = track.name unless track_name.present?
+      self.artist_name = track.artist_name unless artist_name.present? && !track_id_changed?
+      self.release_id = track.release_id unless release_id.present? && !track_id_changed?
+      self.release_name = track.release_name unless release_name.present? && !track_id_changed?
+      self.track_name = track.name unless track_name.present? && !track_id_changed?
       self.spotify_track_id = track.spotify_track_id unless spotify_track_id.present?
       self.released_at = track.released_at unless released_at.present?
     end

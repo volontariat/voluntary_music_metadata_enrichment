@@ -56,6 +56,8 @@ class MusicMetadataEnrichment::VideosController < ::MusicMetadataEnrichment::App
     build_track
     
     @tracks = MusicTrack.search_on_musicbrainz(@track.artist.mbid, @track.name)
+    
+    track_creation('new_video', @track.name) if @tracks.none?
   end
   
   def create_track

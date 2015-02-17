@@ -8,6 +8,9 @@ class MusicRelease < ActiveRecord::Base
   belongs_to :user
   
   has_many :tracks, class_name: 'MusicTrack', foreign_key: 'release_id', dependent: :destroy
+  has_many :group_year_in_review_tops, foreign_key: 'release_id', class_name: 'MusicMetadataEnrichment::GroupYearInReviewRelease', dependent: :destroy
+  has_many :year_in_review_flops, foreign_key: 'release_id', class_name: 'YearInReviewMusicReleaseFlop', dependent: :destroy
+  has_many :year_in_review_tops, foreign_key: 'release_id', class_name: 'YearInReviewMusicRelease', dependent: :destroy
   
   def self.by_artist_and_name(artist_name, name)
     # TODO: monitor if there are artists with multiple releases with the same name
@@ -100,11 +103,39 @@ class MusicRelease < ActiveRecord::Base
           track = nil
           
           begin
+            draft_track = MusicTrack.where(
+              'release_id = :release_id AND master_track_id IS NULL AND LOWER(name) = :name', release_id: release.artist.bonus_tracks_release.id, name: track_name.downcase
+            ).first
+              
             track = MusicTrack.create(
               mbid: musicbrainz_recording.id, artist_id: release.artist_id, artist_name: release.artist_name, 
               release_id: release.id, release_name: release.name, nr: nr, name: track_name, 
               duration: musicbrainz_recording.length
             )
+            
+            if track.persisted?
+              
+              
+              if draft_track.present?
+                puts "track ##{track.id}: draft track ##{draft_track.try(:id).inspect} present" if track.name.downcase.match('summer')
+                
+                [
+                  MusicMetadataEnrichment::GroupYearInReviewTrack, MusicVideo, YearInReviewMusicTrackFlop, YearInReviewMusicTrack
+                ].each do |klass|
+                  klass.where(track_id: draft_track.id).each do |record|
+                    record.update_attribute(:track_id, track.id)
+                    if record.valid?
+                      puts "track ##{track.id}: #{record.class.name} ##{record.id} is valid." if track.name.downcase.match('summer')
+                    else
+                      puts "track ##{track.id}: #{record.class.name} ##{record.id} is invalid: #{track.errors.full_messages.join('.')}" if track.name.downcase.match('summer')
+                    end
+                  end
+                end
+                
+                draft_track.destroy
+                puts "track ##{track.id} tried to destroy draft track: #{draft_track.persisted?.inspect}" if track.name.downcase.match('summer')
+              end
+            end
           rescue ActiveRecord::RecordNotUnique
           end
           
@@ -151,13 +182,15 @@ class MusicRelease < ActiveRecord::Base
   
   def groups
     musicbrainz_release_groups = MusicBrainz::ReleaseGroup.search(artist.mbid, name, extra_query: 'AND (type:album OR type:ep OR type:soundtrack)')
-    musicbrainz_release_groups.select{|rg| rg[:releases].select{|r| r[:status] == 'Official'}.any? && (rg[:secondary_types].nil? || rg[:secondary_types].select{|st| SECONDARY_TYPES_BLACKLIST.include?(st)}.none?) && rg[:artists].length == 1 }
+    
+    if musicbrainz_release_groups.none?
+      count, musicbrainz_release_groups = artist.release_groups(nil, 0, [])
+      musicbrainz_release_groups = musicbrainz_release_groups.select{|r| r.title.downcase.match(name.downcase)}.map(&:to_primitive) 
+    else
+      musicbrainz_release_groups.select{|rg| rg[:releases].select{|r| r[:status] == 'Official'}.any? && (rg[:secondary_types].nil? || rg[:secondary_types].select{|st| SECONDARY_TYPES_BLACKLIST.include?(st)}.none?) && rg[:artists].length == 1 }
+    end
   end
- 
-  def groups_without_limitation
-    MusicBrainz::ReleaseGroup.search(artist.mbid, name)
-  end
-   
+  
   def formatted_released_at_or_future_release_date 
     if future_release_date.present? then future_release_date
     elsif released_at.present? then released_at.strftime('%d.%m.%Y')

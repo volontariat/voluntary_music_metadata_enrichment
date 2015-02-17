@@ -3,6 +3,7 @@ class MusicMetadataEnrichment::TracksController < ::MusicMetadataEnrichment::App
   include ::MusicMetadataEnrichment::BaseController
   include Applicat::Mvc::Controller::Resource
   include ::MusicMetadataEnrichment::ArtistConfirmation
+  include ::MusicMetadataEnrichment::TrackConfirmation
   
   authorize_resource class: 'MusicTrack', except: [:by_name]
   
@@ -36,6 +37,8 @@ class MusicMetadataEnrichment::TracksController < ::MusicMetadataEnrichment::App
     build_track
     
     @tracks = MusicTrack.search_on_musicbrainz(@track.artist.mbid, @track.name)
+    
+    track_creation('new_track', @track.name) if @tracks.none?
   end
   
   def create

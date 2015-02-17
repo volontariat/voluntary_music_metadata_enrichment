@@ -5,7 +5,7 @@
 <h3><%= @track.artist_name %> - <%= @track.name %></h3>
 
 <dl class="dl-horizontal">
- <%= show_attribute :mbid, value: link_to(@track.mbid, "http://musicbrainz.org/recording/#{@track.mbid}") %>
+ <%= show_attribute :mbid, value: link_to(@track.mbid, "http://musicbrainz.org/recording/#{@track.mbid}") if @track.mbid.present? %>
  <%= show_attribute :artist_id, value: link_to(@track.artist_name, music_artist_path(@track.artist_id)) %>
  <%= show_attribute :release_id, value: link_to(@track.release_name, music_release_path(@track.release_id)) %>
  <%= show_attribute :duration, value: @track.formatted_duration %>
