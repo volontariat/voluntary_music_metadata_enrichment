@@ -24,6 +24,8 @@ class MusicArtist < ActiveRecord::Base
     
     before_transition :without_metadata => :active do |artist, transition|
       musicbrainz_artist = MusicBrainz::Artist.find(artist.mbid)
+      update_attribute(:mbid, musicbrainz_artist.id)
+      
       is_ambiguous = if artist.is_ambiguous.nil?
         MusicBrainz::Artist.search(artist.name).select{|a| a[:name].downcase == artist.name.downcase}.length > 1
       else
@@ -122,7 +124,7 @@ class MusicArtist < ActiveRecord::Base
       next if !without_limitation && musicbrainz_releases.select{|r| r.status == 'Official' && (r.media.map(&:format).none? || r.media.map(&:format).select{|f| !['DVD-Video', 'DVD'].include?(f) }.any?) }.none?
       
       musicbrainz_release_group
-    end
+    end.select{|r| !r.nil?}
     
     [count, working_release_groups] 
   end
