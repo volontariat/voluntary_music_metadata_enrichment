@@ -1,6 +1,5 @@
 <% if @year_in_review_track.persisted? %>
-  $('#years_in_review').html('<%= escape_javascript render(partial: 'library/music/year_in_review_tracks/collection') %>');
-  window.VoluntaryMusicMetadataEnrichment.Library.YearInReviewTracks.IndexView.makeCollectionSortable();
+  $('#year_in_review_music_tracks').append('<%= escape_javascript render(partial: 'library/music/year_in_review_tracks/year_in_review_track', locals: { year_in_review_track: @year_in_review_track }) %>');
   $('#bootstrap_modal').modal('hide')
 <% else %>
   $('#bootstrap_modal').html('<%= escape_javascript render(partial: 'library/music/year_in_review_tracks/form') %>');

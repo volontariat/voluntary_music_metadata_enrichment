@@ -1,0 +1,28 @@
+<li id="competitor_<%= year_in_review_track.id %>" data-id="<%= year_in_review_track.id %>" data-position="<%= year_in_review_track.position %>">
+  <table class="table" style="margin-bottom: 0px">
+    <tr class="<%= cycle('odd', 'even') %>">
+      <td class="list-element-striped competitorPosition" style="width: 50px; text-align:right"><%= year_in_review_track.position %></td>
+      <td class="list-element-striped" style="width: 200px;"><%= link_to year_in_review_track.artist_name, music_artist_path(year_in_review_track.artist_id) %></td>
+      <td class="list-element-striped" style="width: 200px;">
+        <%= link_to year_in_review_track.track_name, music_track_path(year_in_review_track.track_id) %>
+        
+        <span class="competitor_name hide"<% if year_in_review_track.spotify_track_id.present? %> data-proc-argument="<%= year_in_review_track.spotify_track_id %>"<% end %>>
+          <%= link_to year_in_review_track.artist_name, music_artist_path(year_in_review_track.artist_id) %> - <%= link_to year_in_review_track.track_name, music_track_path(year_in_review_track.track_id) %>
+        </span>
+      </td>
+      <td class="list-element-striped" style="width: 50px; text-align:center;">
+  <% if year_in_review_track.spotify_track_id.present? %>
+        <i class="icon-play play_track_button" data-spotify-track-id="<%= year_in_review_track.spotify_track_id %>" style="cursor:pointer; cursor:hand;"></i>
+  <% end %>
+      </td>
+      <td class="list-element-striped" style="width: 75px;"><%= year_in_review_track.released_at.present? ? year_in_review_track.released_at.strftime('%d.%m.%Y') : '' %></td>
+      <td class="list-element-striped">
+        <% if @group.blank? && current_user.try(:id) == params[:user_id].to_i %>
+          <%= link_to destroy_music_year_in_review_top_track_path(year_in_review_track.id), method: :delete, remote: true, class: 'btn btn-danger destroy_music_year_in_review_top_track_link' do %>
+            <%= t('general.remove') %> <%= image_tag 'voluntary/spinner.gif', class: 'ajax_spinner hide' %>
+          <% end %>
+        <% end %>
+      </td>
+    </tr>
+  </table>  
+</li>  
