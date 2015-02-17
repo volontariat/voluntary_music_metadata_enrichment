@@ -170,17 +170,9 @@ class MusicTrack < ActiveRecord::Base
     end.flatten.uniq.each do |release_group_mbid|
       next if release_group_mbid.nil?
       
-      release_group = nil
+      release_group = MusicBrainz::ReleaseGroup.find(release_group_mbid)
       
-      3.times do
-        release_group = MusicBrainz::ReleaseGroup.find(release_group_mbid)
-        
-        break unless release_group.nil?
-        
-        sleep 30
-      end
-          
-      next if release_group.releases.select{|r| r.status != 'Official' || (r.media.map(&:format).any? && r.media.map(&:format).select{|m| ['DVD-Video', 'DVD'].select{|m2| m == m2 }.none?}.none?) }
+      next if release_group.releases.select{|r| r.status == 'Official' && (r.media.map(&:format).none? || r.media.map(&:format).select{|f| ['DVD-Video', 'DVD'].include?(f) }.none?) }.none?
       next unless ['Album', 'EP'].include?(release_group.primary_type)
     
       self.release_name = release_group.title
@@ -188,7 +180,7 @@ class MusicTrack < ActiveRecord::Base
       
       break
     end
-    
+
     if self.release_name.blank?
       self.released_at = tracks.map{|t| (t[:releases] || []).select{|r| !r[:date].nil?}.map{|r| r[:date]}}.flatten.uniq.sort.first
       
@@ -249,7 +241,7 @@ class MusicTrack < ActiveRecord::Base
   def set_master_track_id_if_available
     if track = MusicTrack.where(
       'artist_id = :artist_id AND release_id <> :bonus_release_id AND master_track_id IS NULL AND LOWER(name) = :name', 
-      artist_id: artist_id, bonus_release_id: release.artist.bonus_tracks_release.id, name: name.downcase
+      artist_id: artist_id, bonus_release_id: artist.bonus_tracks_release.id, name: name.downcase
     ).first
       self.master_track_id = track.id
     end  
