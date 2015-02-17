@@ -53,6 +53,7 @@ class MusicMetadataEnrichment::ArtistsController < ::MusicMetadataEnrichment::Ap
     params[:music_artist] ||= {}
     name_and_mbid = params[:music_artist].delete(:name_and_mbid)
     create_artist('new_artist', name_and_mbid)
+    redirect_after_artist_available(from)
   end
   
   def show
@@ -61,13 +62,13 @@ class MusicMetadataEnrichment::ArtistsController < ::MusicMetadataEnrichment::Ap
   end
   
   def by_name
-     if params[:name].blank?
-       flash[:alert] = I18n.t('music_artists.by_name.name_blank')
-       redirect_to music_artists_path and return
-     end
+    if params[:name].blank?
+      flash[:alert] = I18n.t('music_artists.by_name.name_blank')
+      redirect_to music_artists_path and return
+    end
      
-     @artists = MusicArtist.where("LOWER(name) = ?", params[:name].downcase.strip)
-     @artist = @artists.first if params[:page].blank? && @artists.count == 1
+    @artists = MusicArtist.where("LOWER(name) = ?", params[:name].downcase.strip)
+    @artist = @artists.first if params[:page].blank? && @artists.count == 1
     
     if @artist
       get_variables_for_show
