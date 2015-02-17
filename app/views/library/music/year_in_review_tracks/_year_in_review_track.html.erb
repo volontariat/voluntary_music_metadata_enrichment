@@ -6,7 +6,7 @@
       <td class="list-element-striped" style="width: 200px;">
         <%= link_to year_in_review_track.track_name, music_track_path(year_in_review_track.track_id) %>
         
-        <span class="competitor_name hide"<% if year_in_review_track.spotify_track_id.present? %> data-proc-argument="<%= year_in_review_track.spotify_track_id %>"<% end %>>
+        <span class="competitor_name hide"<% if year_in_review_track.spotify_track_id.present? %> data-proc-argument="<%= year_in_review_track.spotify_track_id %>;<%= year_in_review_track.id %>"<% end %>>
           <%= link_to year_in_review_track.artist_name, music_artist_path(year_in_review_track.artist_id) %> - <%= link_to year_in_review_track.track_name, music_track_path(year_in_review_track.track_id) %>
         </span>
       </td>

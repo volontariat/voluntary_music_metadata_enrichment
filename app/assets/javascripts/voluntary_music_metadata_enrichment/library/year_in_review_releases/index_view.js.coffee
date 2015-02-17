@@ -41,8 +41,10 @@ window.VoluntaryMusicMetadataEnrichment.Library.YearInReviewReleases.IndexView =
     
     new window.VoluntaryMusicMetadataEnrichment.Library.YearInReviewReleases.NewView()
     
-    new window.Voluntary.DomManipulation.CompetitiveList competitor_name_proc: (spotifyAlbumId) ->
-      return '<iframe src="https://embed.spotify.com/?uri=spotify:album:' + spotifyAlbumId + '" frameborder="0" allowtransparency="true" width="300" height="380"></iframe>'
+    new window.Voluntary.DomManipulation.CompetitiveList competitor_name_proc: (csv) ->
+      csv = csv.split(';')
+      return '<iframe src="https://embed.spotify.com/?uri=spotify:album:' + csv[0] + '" frameborder="0" allowtransparency="true" width="300" height="380"></iframe><br/>' +
+      $("#competitor_#{csv[1]}").find('.competitor_name').html()
     
   @makeCollectionSortable: ->
     $('#year_in_review_music_releases').multisortable
