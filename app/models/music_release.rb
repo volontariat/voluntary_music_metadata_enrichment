@@ -61,20 +61,22 @@ class MusicRelease < ActiveRecord::Base
     
     before_transition :without_metadata => :active do |release, transition|
       releases = if release.releases.nil?
-        MusicBrainz::ReleaseGroup.find(release.groups.select{|r| r[:title] == release.name }.first[:id]).releases
+        musicbrainz_release_group = MusicBrainz::ReleaseGroup.find(release.groups.select{|r| r[:title].downcase == release.name.downcase }.first[:id])
+        release.update_attribute(:is_lp, musicbrainz_release_group.type == 'Album' ? 1 : 0)
+        musicbrainz_release_group.releases
       else
         release.releases
       end
       
       releases = release.prefered_releases(releases)
-     
+      release_date = release.get_earliest_release_date(releases)
+      
       if releases.select{|r| r.media.map(&:format).include?('CD') }.any?
         releases = releases.select{|r| r.media.map(&:format).include?('CD') }
       end
       
-      releases = release.earliest_release(releases)
       musicbrainz_release, dvd_recording_mbids = release.release_with_highest_tracks_count(releases)
-      release.update_attributes(mbid: musicbrainz_release.id, released_at: musicbrainz_release.date)
+      release.update_attributes(mbid: musicbrainz_release.id, released_at: release_date)
       
       lastfm = Lastfm.new(LastfmApiKey, LastfmApiSecret)
       lastfm_album = release.lastfm_request(lastfm, :album, :get_info, /Artist not found|Album not found/, artist: release.artist_name, album: release.name)
@@ -212,20 +214,16 @@ class MusicRelease < ActiveRecord::Base
     list
   end
   
-  def earliest_release(working_releases)
-    earliest_release_date, filtered_releases = nil, []
+  def get_earliest_release_date(working_releases)
+    earliest_release_date = nil
     
     working_releases.each do |working_musicbrainz_release|
       if working_musicbrainz_release.date != nil && (earliest_release_date == nil || working_musicbrainz_release.date < earliest_release_date)
-        filtered_releases.clear
-        filtered_releases << working_musicbrainz_release
         earliest_release_date = working_musicbrainz_release.date
-      elsif working_musicbrainz_release.date == earliest_release_date
-        filtered_releases << working_musicbrainz_release
       end
     end
     
-    filtered_releases
+    earliest_release_date
   end
    
   def release_with_highest_tracks_count(working_releases)
