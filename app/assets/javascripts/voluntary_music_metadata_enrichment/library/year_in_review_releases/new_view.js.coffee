@@ -8,6 +8,8 @@ window.VoluntaryMusicMetadataEnrichment.Library.YearInReviewReleases.NewView = c
         source: $(this).data('source')
         minLength: 2
         appendTo: '#year_in_review_music_release_artist_name_suggestions'
+        search: (event, ui) ->
+          $('#year_in_review_music_release_artist_id').val(null)
         select: (event, ui) ->
           $(this).val(ui.item.value)
           $('#year_in_review_music_release_artist_id').val(ui.item.id)
@@ -20,6 +22,8 @@ window.VoluntaryMusicMetadataEnrichment.Library.YearInReviewReleases.NewView = c
           source: '/music/artists/' + $('#year_in_review_music_release_artist_id').val() + '/releases/autocomplete'
           minLength: 2
           appendTo: '#year_in_review_music_release_release_name_suggestions'
+          search: (event, ui) ->
+            $('#year_in_review_music_release_release_id').val(null)
           select: (event, ui) ->
             $(this).val(ui.item.value)
             $('#year_in_review_music_release_release_id').val(ui.item.id)
