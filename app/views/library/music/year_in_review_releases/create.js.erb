@@ -1,9 +1,12 @@
 if($('#competitor_<%= @year_in_review_release.id %>').length == 0) {
 <% if @year_in_review_release.persisted? %>
+  if($('#no_releases_message').length == 1) {
+    $('#no_releases_message').remove();
+  }
+  
   $('#year_in_review_music_releases').append('<%= escape_javascript render(partial: 'library/music/year_in_review_releases/year_in_review_release', locals: { year_in_review_release: @year_in_review_release }) %>');
   $('#bootstrap_modal').modal('hide')
 <% else %>
-   
   $('#bootstrap_modal').html('<%= escape_javascript render(partial: 'library/music/year_in_review_releases/form') %>');
 <% end %>
 

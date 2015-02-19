@@ -1,8 +1,9 @@
 <h3><%= link_to t('year_in_review_music_releases.index.short_title', year: params[:year]), group_or_user_path('music_year_in_review_top_releases', @year_in_review) %></h3>
 
-<% if @year_in_review_releases.none? %>
-<p><%= t('year_in_review_music_releases.index.empty_collection') %></p>
-<% else %>
+<%= javascript_tag do %>
+  window.matches = <%= raw @year_in_review.top_release_matches.to_json %>
+<% end %> 
+
 <table class="table" style="margin-bottom: 0px">
   <thead>
     <tr class="<%= cycle('odd', 'even') %>">
@@ -18,30 +19,30 @@
   </thead>
 </table> 
 
-<%= javascript_tag do %>
-  window.matches = <%= raw @year_in_review.top_release_matches.to_json %>
-<% end %> 
-    
-<ul class="nav nav-tabs nav-stacked list-striped multisortable competitive_list" id="year_in_review_music_releases" data-update-all-positions-path="<%= update_all_positions_music_year_in_review_top_release_path(@year_in_review.year) %>">
-  <%= render partial: 'library/music/year_in_review_releases/year_in_review_release', collection: @year_in_review_releases %>
-</ul>
+<% if @year_in_review_releases.none? %>
+<p id="no_releases_message"><%= t('year_in_review_music_releases.index.empty_collection') %></p>
 <% end %>
 
-<% if @group.blank? && current_user.try(:id) == params[:user_id].to_i %>
-  <%= link_to(
-    t('year_in_review_music_releases.index.add_single'), new_user_music_year_in_review_top_release_path(params[:user_id], params[:year]), 
-    class: 'remote_modal_link'
-  ) %> | 
-  <%= link_to(
-    t('year_in_review_music_releases.index.add_multiple_from_year_long', year: params[:year]), multiple_new_user_music_year_in_review_top_releases_path(params[:year]), 
-    class: 'remote_modal_link'
-  ) %> |
-  <%= link_to(
-    t('general.sort_through_round_robin_tournament'), '#', class: 'competitive_list_start_link'
-  ) %> | 
-<% end %>
-
-<% if @group.present? || current_user.try(:id) == params[:user_id].to_i %>
-  <%= link_to t('general.export'), group_or_user_path('export_music_year_in_review_top_releases', params[:year]), class: 'remote_modal_link' %>
-<% end %>
-
+<div id="competitive_list_for_releases">    
+  <ul class="nav nav-tabs nav-stacked list-striped multisortable competitive_list" id="year_in_review_music_releases" data-update-all-positions-path="<%= update_all_positions_music_year_in_review_top_release_path(@year_in_review.year) %>">
+    <%= render partial: 'library/music/year_in_review_releases/year_in_review_release', collection: @year_in_review_releases %>
+  </ul>
+  
+  <% if @group.blank? && current_user.try(:id) == params[:user_id].to_i %>
+    <%= link_to(
+      t('year_in_review_music_releases.index.add_single'), new_user_music_year_in_review_top_release_path(params[:user_id], params[:year]), 
+      class: 'remote_modal_link'
+    ) %> | 
+    <%= link_to(
+      t('year_in_review_music_releases.index.add_multiple_from_year_long', year: params[:year]), multiple_new_user_music_year_in_review_top_releases_path(params[:year]), 
+      class: 'remote_modal_link'
+    ) %> |
+    <%= link_to(
+      t('general.sort_through_round_robin_tournament'), '#', class: 'competitive_list_start_link'
+    ) %> | 
+  <% end %>
+  
+  <% if @group.present? || current_user.try(:id) == params[:user_id].to_i %>
+    <%= link_to t('general.export'), group_or_user_path('export_music_year_in_review_top_releases', params[:year]), class: 'remote_modal_link' %>
+  <% end %>
+</div>  
