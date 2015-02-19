@@ -41,7 +41,7 @@ window.VoluntaryMusicMetadataEnrichment.Library.YearInReviewReleases.IndexView =
     
     new window.VoluntaryMusicMetadataEnrichment.Library.YearInReviewReleases.NewView()
     
-    window.competitive_list = new CompetitiveList competitor_name_proc: (csv) ->
+    window.competitive_list_for_releases = new CompetitiveList id: '#competitive_list_for_releases', competitor_name_proc: (csv) ->
       return '<iframe src="https://embed.spotify.com/?uri=spotify:album:' + csv.split(';')[0] + '" frameborder="0" allowtransparency="true" width="300" height="380"></iframe><br/>' + $("#competitor_#{csv.split(';')[1]}").find('.competitor_name').html()
     
   @makeCollectionSortable: ->
