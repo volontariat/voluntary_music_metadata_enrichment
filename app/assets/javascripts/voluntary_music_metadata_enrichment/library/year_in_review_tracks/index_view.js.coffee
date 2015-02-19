@@ -41,7 +41,7 @@ window.VoluntaryMusicMetadataEnrichment.Library.YearInReviewTracks.IndexView = c
     
     new window.VoluntaryMusicMetadataEnrichment.Library.YearInReviewTracks.NewView()
     
-    new window.Voluntary.DomManipulation.CompetitiveList competitor_name_proc: (csv) ->
+    window.competitive_list = new CompetitiveList competitor_name_proc: (csv) ->
       return '<iframe src="https://embed.spotify.com/?uri=spotify:track:' + csv.split(';')[0] + '&view=coverart" frameborder="0" allowtransparency="true" width="300" height="80"></iframe><br/>' + $("#competitor_#{csv.split(';')[1]}").find('.competitor_name').html()
       
   @makeCollectionSortable: ->
@@ -58,7 +58,7 @@ window.VoluntaryMusicMetadataEnrichment.Library.YearInReviewTracks.IndexView = c
       positions[$(element).data('position')] = $(element).data('id')
       
     $.post('/users/current/library/music/year_in_review_music_tracks/move', { _method: 'put', positions: positions }).always(=>
-      $('#year_in_review_music_releases').sortable('enable');
+      $('#year_in_review_music_tracks').sortable('enable');
     )    
 
   @resetPositions: ->
@@ -66,5 +66,5 @@ window.VoluntaryMusicMetadataEnrichment.Library.YearInReviewTracks.IndexView = c
     
     $.each $('#year_in_review_music_tracks li'), (index, element) ->
       $(element).data('position', current_position)  
-      $(element).find('.competitorPosition').html(current_position)
+      $(element).find('.competitor_position').html(current_position)
       current_position += 1
