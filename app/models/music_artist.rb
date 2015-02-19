@@ -104,7 +104,7 @@ class MusicArtist < ActiveRecord::Base
   def release_groups(musicbrainz_artist, offset, voluntary_releases, without_limitation = false)
     musicbrainz_artist = MusicBrainz::Artist.find(mbid) unless musicbrainz_artist
     count = 100
-    working_release_groups = musicbrainz_artist.release_groups(offset: offset)
+    working_release_groups = musicbrainz_artist.release_groups(extra_query: 'AND (type:album OR type:ep OR type:soundtrack)', offset: offset)
     count = working_release_groups.total_count
     working_release_groups = working_release_groups.select{|r| ['Album', 'Soundtrack', 'EP'].include?(r.type) && r.secondary_types.select{|st| MusicRelease::SECONDARY_TYPES_BLACKLIST.include?(st)}.none? && r.artists.length == 1}
     
