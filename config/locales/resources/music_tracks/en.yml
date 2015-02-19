@@ -39,6 +39,7 @@ en:
         nr: Number
         duration: Duration
         released_at: Released at
+        is_draft: Draft?
         
     errors:
       models:
