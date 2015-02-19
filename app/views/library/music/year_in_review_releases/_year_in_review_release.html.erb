@@ -1,7 +1,7 @@
 <li id="competitor_<%= year_in_review_release.id %>" data-id="<%= year_in_review_release.id %>" data-position="<%= year_in_review_release.position %>">
   <table class="table" style="margin-bottom: 0px">
     <tr class="<%= cycle('odd', 'even') %>">
-      <td class="list-element-striped competitorPosition" style="width: 50px; text-align:right"><%= year_in_review_release.position %></td>
+      <td class="list-element-striped competitor_position" style="width: 50px; text-align:right"><%= year_in_review_release.position %></td>
       <td class="list-element-striped" style="width: 200px;"><%= link_to year_in_review_release.artist_name, music_artist_path(year_in_review_release.artist_id) %></td>
       <td class="list-element-striped" style="width: 200px;">
         <%= link_to year_in_review_release.release_name, music_release_path(year_in_review_release.release_id) %>
