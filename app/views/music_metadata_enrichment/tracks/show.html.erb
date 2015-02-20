@@ -26,11 +26,11 @@
   <%= t('years_in_review_music.index.empty_collection') %>
   <% else %>
   <ul class="nav nav-tabs nav-stacked list-striped">
-    <% @year_in_review_music_tracks.keys.sort.each do |position| %>
+    <% @year_in_review_music_tracks.keys.sort[0..4].each do |position| %>
     <li>
       <span style="display: inline;">
         <%= position %>. x <%= @year_in_review_music_tracks[position] %> &nbsp;&nbsp; 
-        <%= raw @track.year_in_review_tops.where(position: position).includes(:user).limit(3).map{|t| link_to(t.user.best_available_name, user_music_year_in_review_top_tracks_path(t.user, t.year))}.join(', ') %>
+        <%= raw @track.year_in_review_tops.published.where(position: position).includes(:user).limit(3).map{|t| link_to(t.user.best_available_name, user_music_year_in_review_top_tracks_path(t.user, t.year))}.join(', ') %>
       </span>
     </li>
     <% end %>

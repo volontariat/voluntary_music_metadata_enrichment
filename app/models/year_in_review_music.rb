@@ -10,6 +10,8 @@ class YearInReviewMusic < ActiveRecord::Base
   has_many :tracks, class_name: 'YearInReviewMusicTrack', dependent: :delete_all
   has_many :flop_tracks, class_name: 'YearInReviewMusicTrackFlop', dependent: :delete_all
   
+  scope :published, -> { where(state: 'published') }
+  
   validates :user_id, presence: true
   validates :year, presence: true, numericality: { only_integer: true }, uniqueness: { scope: :user_id }
   
@@ -17,6 +19,17 @@ class YearInReviewMusic < ActiveRecord::Base
   
   serialize :top_release_matches, Array
   serialize :top_track_matches, Array
+  
+  state_machine :state, initial: :draft do
+    event :publish do
+      transition draft: :published
+    end
+    
+    after_transition draft: :published do |year_in_review_music, transition|
+      year_in_review_music.releases.update_all(state: 'published')
+      year_in_review_music.tracks.update_all(state: 'published')
+    end
+  end
   
   def self.initialize_by_lastfm(user, year = nil)
     return if user.lastfm_user_name.blank?

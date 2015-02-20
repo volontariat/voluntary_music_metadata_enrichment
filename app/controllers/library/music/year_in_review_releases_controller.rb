@@ -82,7 +82,7 @@ class Library::Music::YearInReviewReleasesController < ::MusicMetadataEnrichment
   end
   
   def destroy
-    @year_in_review_release.destroy!
+    @year_in_review_release.destroy
     @user = current_user
     params[:user_id], params[:year] = current_user.id, @year_in_review_release.year
     find_year_in_review
@@ -106,7 +106,9 @@ class Library::Music::YearInReviewReleasesController < ::MusicMetadataEnrichment
   private
  
   def find_year_in_review
-    @year_in_review = @user.years_in_review_music.where(year: params[:year]).first
+    @year_in_review = @user.years_in_review_music
+    @year_in_review = @year_in_review.published unless current_user.try(:id) == @user.id
+    @year_in_review = @year_in_review.where(year: params[:year]).first
   end
   
   def build_resource

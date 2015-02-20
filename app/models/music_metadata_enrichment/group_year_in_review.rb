@@ -19,9 +19,9 @@ module MusicMetadataEnrichment
     end
     
     def self.update_for_group(group)
-      group.year_in_reviews_of_members.group('year_in_review_music.year').map(&:year).sort.each do |year|
+      group.year_in_reviews_of_members.published.group('year_in_review_music.year').map(&:year).sort.each do |year|
         group_year_in_review = group.year_in_reviews.where(year: year).first_or_create
-        year_in_review_of_members = group.year_in_reviews_of_members.where('year_in_review_music.year = ?', year)
+        year_in_review_of_members = group.year_in_reviews_of_members.published.where('year_in_review_music.year = ?', year)
         group_year_in_review.update_attribute(:users_count, year_in_review_of_members.count)
         items = { releases: {}, tracks: {} }
         item_type_specific_attribute = { releases: :release_id, tracks: :track_id }

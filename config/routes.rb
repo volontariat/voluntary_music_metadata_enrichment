@@ -106,6 +106,8 @@ Rails.application.routes.draw do
   get 'users/:user_id/library/music/years_in_review' => 'library/music/years_in_review#index', as: :user_music_years_in_review
   post 'users/:user_id/library/music/years_in_review' => 'library/music/years_in_review#create', as: :create_user_music_year_in_review
   get 'users/:user_id/library/music/years_in_review/:year' => 'library/music/years_in_review#show', as: :user_music_year_in_review
+  put 'users/current/library/music/years_in_review/:id' => 'library/music/years_in_review#publish', as: :publish_music_year_in_review
+  delete 'users/current/library/music/years_in_review/:id' => 'library/music/years_in_review#destroy', as: :destroy_music_year_in_review
   
   get 'users/:user_id/library/music/years_in_review/:year/top_releases' => 'library/music/year_in_review_releases#index', as: :user_music_year_in_review_top_releases
   get 'users/:user_id/library/music/years_in_review/:year/top_releases/new' => 'library/music/year_in_review_releases#new', as: :new_user_music_year_in_review_top_release

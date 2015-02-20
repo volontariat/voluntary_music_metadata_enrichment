@@ -197,7 +197,7 @@ class MusicMetadataEnrichment::ReleasesController < ::MusicMetadataEnrichment::A
     end
     
     @tracks = @tracks.paginate(per_page: 50, page: params[:tracks_page] || 1)
-    @year_in_review_music_releases = @release.year_in_review_tops.where('year_in_review_music_releases.position < 11').group('position').count
+    @year_in_review_music_releases = @release.year_in_review_tops.published.group('position').count
   end
   
   def add_to_year_in_review_music_top_releases

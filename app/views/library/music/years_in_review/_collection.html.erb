@@ -7,7 +7,8 @@
     <thead>
       <tr class="<%= cycle('odd', 'even') %>">
         <th style="width: 25px"><%= t("activerecord.attributes.year_in_review.year") %></th>
-        <th style="width: 75px"></th>
+        <th style="width: 80px"></th>
+        <th style="width: 80px"></th>
         <th></th>
       </tr>
     </thead>
@@ -31,6 +32,22 @@
           ) do %>
             <%= t('year_in_review_music_tracks.index.shortest_title') %> 
             <%= image_tag 'voluntary/spinner.gif', class: 'ajax_spinner hide' %>
+          <% end %>
+        </td>
+        <td>
+          <% if @group.blank? && current_user.try(:id) == params[:user_id].to_i && year_in_review.draft? %>
+            <%= link_to(
+              publish_music_year_in_review_path(year_in_review.id), method: :put, remote: true, 
+              class: 'btn publish_music_year_in_review_link', id: "year_in_review_publish_link_#{year_in_review.id}"
+            ) do %>
+              <%= t('general.publish') %> <%= image_tag 'voluntary/spinner.gif', class: 'ajax_spinner hide' %>
+            <% end %>
+          <% end %>
+          
+          <% if @group.blank? && current_user.try(:id) == params[:user_id].to_i %>
+            <%= link_to destroy_music_year_in_review_path(year_in_review.id), method: :delete, remote: true, class: 'btn btn-danger destroy_music_year_in_review_link' do %>
+              <%= t('general.remove') %> <%= image_tag 'voluntary/spinner.gif', class: 'ajax_spinner hide' %>
+            <% end %>
           <% end %>
         </td>
       </tr>

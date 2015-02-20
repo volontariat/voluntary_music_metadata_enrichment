@@ -31,6 +31,12 @@ window.VoluntaryMusicMetadataEnrichment.Library.YearsInReview.IndexView = class 
           alert 'Failed to load top tracks!'
         )
         event.preventDefault()  
+    
+    $(document.body).on "ajax:beforeSend", ".publish_music_year_in_review_link", ->
+      $(this).find('.ajax_spinner').show()   
+        
+    $(document.body).on "ajax:beforeSend", ".destroy_music_year_in_review_link", ->
+      $(this).find('.ajax_spinner').show()    
         
     $(document.body).on "ajax:beforeSend", "#new_music_year_in_review_form", ->
       $("#years_in_review_spinner").show()

@@ -18,6 +18,7 @@ module VoluntaryMusicMetadataEnrichment
           ability.can(:create, MusicMetadataEnrichment::GroupMembership)
           ability.can(:restful_actions, MusicMetadataEnrichment::GroupMembership) {|membership| membership.user_id == user.id }
           ability.can(:create, YearInReviewMusic)
+          ability.can([:destroy, :publish], YearInReviewMusic) {|y| y.user_id == user.id }
           ability.can([:create, :move, :destroy, :update_all_positions], YearInReviewMusicRelease) {|r| r.year_in_review_music.user_id == user.id }
           ability.can([:multiple_new, :export], YearInReviewMusicRelease)
           ability.can([:create], YearInReviewMusicReleaseFlop) {|r| r.year_in_review_music.user_id == user.id }

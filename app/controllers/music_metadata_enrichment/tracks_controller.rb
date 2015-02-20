@@ -104,7 +104,7 @@ class MusicMetadataEnrichment::TracksController < ::MusicMetadataEnrichment::App
       @video_likes = current_user.likes_or_dislikes.for_targets('MusicVideo', @videos.map(&:id)).index_by(&:target_id)
     end
     
-    @year_in_review_music_tracks = @track.year_in_review_tops.where('year_in_review_music_tracks.position < 11').group('position').count
+    @year_in_review_music_tracks = @track.year_in_review_tops.published.group('position').count
   end
   
   def add_to_year_in_review_music_top_tracks
