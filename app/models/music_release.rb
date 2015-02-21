@@ -150,7 +150,11 @@ class MusicRelease < ActiveRecord::Base
   end
   
   def find_releases
-    musicbrainz_release_group = MusicBrainz::ReleaseGroup.find(groups.select{|r| r[:title].downcase == name.downcase }.first[:id])
+    release_group_mbid = groups.select{|r| r[:title].downcase == name.downcase }.first.try(:[], :id)
+    
+    return [] if release_group_mbid.blank?
+    
+    musicbrainz_release_group = MusicBrainz::ReleaseGroup.find(release_group_mbid)
     update_attribute(:is_lp, musicbrainz_release_group.type == 'Album' ? 1 : 0)
     musicbrainz_release_group.releases
   end
