@@ -150,13 +150,14 @@ class MusicRelease < ActiveRecord::Base
   end
   
   def find_releases
-    release_group_mbid = groups.select{|r| r[:title].downcase == name.downcase }.first.try(:[], :id)
+    list = groups(false, true).select{|a| ((is_lp && a.first[:type] == 'Album') || (!is_lp && a.first[:type] != 'Album')) && a.first[:title].downcase == name.downcase }.first
     
-    return [] if release_group_mbid.blank?
+    return [] if list.nil?
     
-    musicbrainz_release_group = MusicBrainz::ReleaseGroup.find(release_group_mbid)
-    update_attribute(:is_lp, musicbrainz_release_group.type == 'Album' ? 1 : 0)
-    musicbrainz_release_group.releases
+    musicbrainz_release_group, musicbrainz_releases = list
+    update_attribute(:is_lp, musicbrainz_release_group[:type] == 'Album' ? true : false)
+    
+    musicbrainz_releases
   end
   
   def self.format_lastfm_name(name)
@@ -190,15 +191,38 @@ class MusicRelease < ActiveRecord::Base
     save if spotify_album_id.present?
   end
   
-  def groups(without_limitation = false)
-    musicbrainz_release_groups = MusicBrainz::ReleaseGroup.search(artist.mbid, name, extra_query: 'AND (type:album OR type:ep OR type:soundtrack)')
+  def groups(without_limitation, with_releases = false)
+    musicbrainz_release_groups = MusicBrainz::ReleaseGroup.search(artist.mbid, name) #extra_query: 'AND (type:album OR type:ep OR type:soundtrack)')
     
     if musicbrainz_release_groups.none?
       count, musicbrainz_release_groups = artist.release_groups(nil, 0, [], without_limitation)
-      musicbrainz_release_groups = musicbrainz_release_groups.select{|r| r.title.downcase.match(name.downcase)}.map(&:to_primitive) 
-    else
-      musicbrainz_release_groups.select{|rg| rg[:releases].select{|r| r[:status] == 'Official'}.any? && (rg[:secondary_types].nil? || rg[:secondary_types].select{|st| SECONDARY_TYPES_BLACKLIST.include?(st)}.none?) && rg[:artists].length == 1 }
+      musicbrainz_release_groups = musicbrainz_release_groups.map(&:to_primitive) 
     end
+    
+    musicbrainz_release_groups = musicbrainz_release_groups.select do |rg| 
+      ['Album', 'Soundtrack', 'EP'].include?(rg[:type]) &&
+      rg[:releases].select{|r| r[:status] == 'Official'}.any? && 
+      (rg[:secondary_types].nil? || rg[:secondary_types].select{|st| SECONDARY_TYPES_BLACKLIST.include?(st)}.none?) && 
+      rg[:artists].length == 1
+    end
+    
+    unless without_limitation
+      working_groups = []
+      
+      musicbrainz_release_groups.each do |hash|
+        musicbrainz_release_group = MusicBrainz::ReleaseGroup.find(hash[:id])
+        musicbrainz_release_group.releases = nil
+        musicbrainz_releases = musicbrainz_release_group.releases
+          
+        next if musicbrainz_releases.select{|r| r.status == 'Official' && (r.media.map(&:format).none? || r.media.map(&:format).select{|f| !['DVD-Video', 'DVD'].include?(f) }.any?) }.none?
+      
+        working_groups << (with_releases ? [hash, musicbrainz_releases] : hash)
+      end
+      
+      musicbrainz_release_groups = working_groups
+    end
+    
+    musicbrainz_release_groups
   end
   
   def formatted_released_at_or_future_release_date 
