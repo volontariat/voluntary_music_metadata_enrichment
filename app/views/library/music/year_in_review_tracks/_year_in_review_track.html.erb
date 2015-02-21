@@ -1,6 +1,7 @@
 <li id="competitor_<%= year_in_review_track.id %>" data-id="<%= year_in_review_track.id %>" data-position="<%= year_in_review_track.position %>">
   <table class="table" style="margin-bottom: 0px">
     <tr class="<%= cycle('odd', 'even') %>">
+      <td class="list-element-striped" style="width:15px"><%= image_tag 'voluntary/spinner.gif', class: 'hide sorting_spinner' %></td>
       <td class="list-element-striped competitor_position" style="width: 50px; text-align:right"><%= year_in_review_track.position %></td>
       <td class="list-element-striped" style="width: 200px;"><%= link_to year_in_review_track.artist_name, music_artist_path(year_in_review_track.artist_id) %></td>
       <td class="list-element-striped" style="width: 200px;">

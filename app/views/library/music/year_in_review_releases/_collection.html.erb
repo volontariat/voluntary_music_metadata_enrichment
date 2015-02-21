@@ -7,6 +7,7 @@
 <table class="table" style="margin-bottom: 0px">
   <thead>
     <tr class="<%= cycle('odd', 'even') %>">
+      <th style="width:15px"></td>
       <th style="width: 50px; vertical-align:top;"><%= t('attributes.position') %></th>
       <th style="width: 200px; vertical-align:top;"><%= t('music_artists.model.short_name') %></th>
       <th style="width: 200px; vertical-align:top;"><%= t('attributes.name') %></th>
@@ -32,16 +33,14 @@
     <ul>
 <% if @group.blank? && current_user.try(:id) == params[:user_id].to_i %>        
       <li>
-        <%= link_to(
-          t('year_in_review_music_releases.index.add_single'), new_user_music_year_in_review_top_release_path(params[:user_id], params[:year]), 
-          class: 'remote_modal_link'
-        ) %>  
+        <button type="button" class="btn remote_modal_link" data-url="<%= new_user_music_year_in_review_top_release_path(params[:user_id], params[:year]) %>">
+          <%= t('year_in_review_music_releases.index.add_single') %>
+        </button>
       </li>
       <li>
-        <%= link_to(
-          t('year_in_review_music_releases.index.add_multiple_from_year_long', year: params[:year]), multiple_new_user_music_year_in_review_top_releases_path(params[:year]), 
-          class: 'remote_modal_link'
-        ) %> 
+        <button type="button" class="btn remote_modal_link" data-url="<%= multiple_new_user_music_year_in_review_top_releases_path(params[:year]) %>">
+          <%= t('year_in_review_music_releases.index.add_multiple_from_year_long', year: params[:year]) %>
+        </button> 
       </li>
       <li>         
         <button type="button" class="btn competitive_list_start_link">
@@ -56,7 +55,9 @@
 <% end %>
 <% if @group.present? || current_user.try(:id) == params[:user_id].to_i %>
       <li>
-        <%= link_to t('general.export'), group_or_user_path('export_music_year_in_review_top_releases', params[:year]), class: 'remote_modal_link' %>
+        <button type="button" class="btn remote_modal_link" data-url="<%= group_or_user_path('export_music_year_in_review_top_releases', params[:year]) %>">
+          <%= t('general.export') %>
+        </button>
       </li>
 <% end %>        
     </ul>

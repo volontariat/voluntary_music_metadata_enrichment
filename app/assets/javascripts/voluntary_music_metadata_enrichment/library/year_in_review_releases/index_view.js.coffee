@@ -46,25 +46,42 @@ window.VoluntaryMusicMetadataEnrichment.Library.YearInReviewReleases.IndexView =
     
   @makeCollectionSortable: ->
     $('#year_in_review_music_releases').multisortable
+      start: (event, ui) =>
+        $("#competitor_#{$(ui.item).data('id')} .sorting_spinner").show()
+        
       update: (event, ui) =>
-        $('#year_in_review_music_releases').sortable('disable');
-        setTimeout window.VoluntaryMusicMetadataEnrichment.Library.YearInReviewReleases.IndexView.putPositions, 1000
-          
-  @putPositions: ->
-    window.VoluntaryMusicMetadataEnrichment.Library.YearInReviewReleases.IndexView.resetPositions()
-    positions = {}
-      
-    $.each $('#year_in_review_music_releases li.selected'), (index, element) ->
-      positions[$(element).data('position')] = $(element).data('id')
-      
-    $.post('/users/current/library/music/year_in_review_music_releases/move', { _method: 'put', positions: positions }).always(=>
-      $('#year_in_review_music_releases').sortable('enable');
-    )  
+        $('#year_in_review_music_releases').sortable('disable')
+        setTimeout (->
+          window.VoluntaryMusicMetadataEnrichment.Library.YearInReviewReleases.IndexView.putPositions(ui.item.data('id'))
+          return
+        ), 1000
+        
+  @putPositions: (competitorId) ->
+    newPositionOfCompetitor = window.VoluntaryMusicMetadataEnrichment.Library.YearInReviewReleases.IndexView.resetPositions(competitorId)
+    
+    if window.matches.length == 0
+      positions = {}
+        
+      $.each $('#year_in_review_music_releases li.selected'), (index, element) ->
+        positions[$(element).data('position')] = $(element).data('id')
+        
+      $.post('/users/current/library/music/year_in_review_music_releases/move', { _method: 'put', positions: positions }).always(=>
+        $('#year_in_review_music_releases').sortable('enable')
+        $("#competitor_#{competitorId} .sorting_spinner").hide()
+      )  
+    else
+      window.competitive_list_for_releases.moveCompetitorToPosition competitorId, newPositionOfCompetitor, => 
+        $('#year_in_review_music_releases').sortable('enable')
+        $("#competitor_#{competitorId} .sorting_spinner").hide()
    
-  @resetPositions: ->
+  @resetPositions: (competitorId) ->
+    position = null
     current_position = 1
     
     $.each $('#year_in_review_music_releases li'), (index, element) ->
       $(element).data('position', current_position)  
       $(element).find('.competitor_position').html(current_position)
+      position = current_position if $(element).data('id') == competitorId
       current_position += 1
+      
+    return position 

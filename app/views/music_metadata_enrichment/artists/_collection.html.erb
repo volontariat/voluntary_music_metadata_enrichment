@@ -38,7 +38,7 @@
         <td style="width: 75px"><%= artist.founded_at.present? ? artist.founded_at.strftime('%d.%m.%Y') : '' %></td>
       <% end %>
       <% if with_top_tracks %> 
-        <td style="width: 100px"><%= raw(artist.tracks.without_slaves.order('plays DESC').limit(3).map{|t| link_to(t.name, music_track_path(t.id)) }.join(', '))%></td>
+        <td style="width: 100px"><%= raw(artist.tracks.without_slaves.where('plays IS NOT NULL').order('plays DESC').limit(3).map{|t| link_to(t.name, music_track_path(t.id)) }.join(', '))%></td>
       <% end %>
         <td style="width: 75px"><%= artist.listeners %></td>
       <% if user_signed_in? && current_user.id == params[:user_id].to_i %>
