@@ -47,7 +47,7 @@ window.VoluntaryMusicMetadataEnrichment.Library.YearInReviewReleases.IndexView =
   @makeCollectionSortable: ->
     $('#year_in_review_music_releases').multisortable
       start: (event, ui) =>
-        $("#competitor_#{$(ui.item).data('id')} .sorting_spinner").show()
+        window.VoluntaryMusicMetadataEnrichment.Library.YearInReviewReleases.IndexView.showSpinnerForSelectedCompetitors()
         
       update: (event, ui) =>
         $('#year_in_review_music_releases').sortable('disable')
@@ -55,9 +55,20 @@ window.VoluntaryMusicMetadataEnrichment.Library.YearInReviewReleases.IndexView =
           window.VoluntaryMusicMetadataEnrichment.Library.YearInReviewReleases.IndexView.putPositions(ui.item.data('id'))
           return
         ), 1000
+  
+  @showSpinnerForSelectedCompetitors: ->
+    $.each $('#year_in_review_music_releases li.selected'), (index, element) ->
+      $(element).find('.sorting_spinner').show()
+
+  @hideSpinnerForSelectedCompetitors: ->
+    $.each $('#year_in_review_music_releases li.selected'), (index, element) ->
+      $(element).find('.sorting_spinner').hide()
         
   @putPositions: (competitorId) ->
-    newPositionOfCompetitor = window.VoluntaryMusicMetadataEnrichment.Library.YearInReviewReleases.IndexView.resetPositions(competitorId)
+    newPositionOfCompetitor = null
+    
+    unless window.matches.length > 0 && $('#year_in_review_music_releases li.selected').length > 1
+      newPositionOfCompetitor = window.VoluntaryMusicMetadataEnrichment.Library.YearInReviewReleases.IndexView.resetPositions(competitorId)
     
     if window.matches.length == 0
       positions = {}
@@ -67,12 +78,25 @@ window.VoluntaryMusicMetadataEnrichment.Library.YearInReviewReleases.IndexView =
         
       $.post('/users/current/library/music/year_in_review_music_releases/move', { _method: 'put', positions: positions }).always(=>
         $('#year_in_review_music_releases').sortable('enable')
-        $("#competitor_#{competitorId} .sorting_spinner").hide()
+        window.VoluntaryMusicMetadataEnrichment.Library.YearInReviewReleases.IndexView.hideSpinnerForSelectedCompetitors()
       )  
     else
-      window.competitive_list_for_releases.moveCompetitorToPosition competitorId, newPositionOfCompetitor, => 
+      if $('#year_in_review_music_releases li.selected').length == 1
+        window.competitive_list_for_releases.moveCompetitorToPosition competitorId, newPositionOfCompetitor, => 
+          $('#year_in_review_music_releases').sortable('enable')
+          window.VoluntaryMusicMetadataEnrichment.Library.YearInReviewReleases.IndexView.hideSpinnerForSelectedCompetitors()
+      else
+        alert 'Dragging of multiple elements is not supported in round-robin tournament mode!'
+        window.VoluntaryMusicMetadataEnrichment.Library.YearInReviewReleases.IndexView.cancelSorting()
         $('#year_in_review_music_releases').sortable('enable')
-        $("#competitor_#{competitorId} .sorting_spinner").hide()
+        window.VoluntaryMusicMetadataEnrichment.Library.YearInReviewReleases.IndexView.hideSpinnerForSelectedCompetitors()
+        
+  @cancelSorting: ->
+    $wrapper = $('#year_in_review_music_releases')
+
+    $wrapper.find('li').sort((a, b) ->
+      +parseInt($(a).data('position')) - +parseInt($(b).data('position'))
+    ).appendTo $wrapper  
    
   @resetPositions: (competitorId) ->
     position = null
