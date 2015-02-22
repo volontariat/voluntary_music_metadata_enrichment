@@ -123,6 +123,8 @@ module VoluntaryMusicMetadataEnrichment
                   end
                 end
               end
+              
+              sleep 3
             end
             
             update_attribute(:music_library_imported, true) unless new_record?
