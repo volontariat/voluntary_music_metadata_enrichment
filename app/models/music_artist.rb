@@ -81,28 +81,28 @@ class MusicArtist < ActiveRecord::Base
     offset, count, voluntary_releases = 0, 100, []
       
     begin
-      count, working_release_groups = release_groups(musicbrainz_artist, offset, voluntary_releases, false, true)
+      count, working_release_groups = release_groups(musicbrainz_artist, voluntary_releases, offset, false, true)
       
       working_release_groups.each do |array|
         musicbrainz_release_group, musicbrainz_releases = array
-        release_is_lp_plus_name = "#{musicbrainz_release_group.type == 'Album' ? 1 : 0};#{musicbrainz_release_group.title}"
         release = releases.create(
           artist_name: name, name: musicbrainz_release_group.title,
           is_lp: musicbrainz_release_group.type == 'Album'
         )
         
-        next unless release.persisted?
+        unless release.persisted? && release.valid?
+          raise [release.errors.full_messages, release].inspect
+        end
           
         release.releases = musicbrainz_releases
         release.import_metadata!
-        voluntary_releases << release_is_lp_plus_name
       end
       
       offset += 100
     end while offset < count  
   end
   
-  def release_groups(musicbrainz_artist, offset, voluntary_releases, without_limitation, with_releases = false)
+  def release_groups(musicbrainz_artist, voluntary_releases, offset, without_limitation, with_releases = false)
     musicbrainz_artist = MusicBrainz::Artist.find(mbid) unless musicbrainz_artist
     count = 100
     working_release_groups = musicbrainz_artist.release_groups(extra_query: 'AND (type:album OR type:ep OR type:soundtrack)', offset: offset)
@@ -112,13 +112,18 @@ class MusicArtist < ActiveRecord::Base
     voluntary_releases += if working_release_groups.none?
       []
     else 
-      releases.where('music_releases.name IN (?)', working_release_groups.map(&:title).uniq).map{|r| "#{(r.is_lp ? 1 : 0)};#{r.name}"}
+      releases.where('LOWER(music_releases.name) IN (?)', working_release_groups.map(&:title).uniq.map(&:downcase)).map{|r| "#{(r.is_lp ? 1 : 0)};#{r.name.downcase}"}
     end
     
-    working_release_groups = working_release_groups.select{|r| !voluntary_releases.include?("#{r.type == 'Album' ? 1 : 0};#{r.title}")}.map do |musicbrainz_release_group|
-      release_is_lp_plus_name = "#{musicbrainz_release_group.type == 'Album' ? 1 : 0};#{musicbrainz_release_group.title}"
+    voluntary_releases.uniq!
+    list = []
+    
+    working_release_groups = working_release_groups.select{|r| !voluntary_releases.include?("#{r.type == 'Album' ? 1 : 0};#{r.title.downcase}")}.each do |musicbrainz_release_group|
+      release_is_lp_plus_name = "#{musicbrainz_release_group.type == 'Album' ? 1 : 0};#{musicbrainz_release_group.title.downcase}"
       
       next if voluntary_releases.include?(release_is_lp_plus_name)
+      
+      voluntary_releases << release_is_lp_plus_name
       
       unless without_limitation
         musicbrainz_release_group.releases = nil
@@ -127,10 +132,10 @@ class MusicArtist < ActiveRecord::Base
         next if musicbrainz_releases.select{|r| r.status == 'Official' && (r.media.map(&:format).none? || r.media.map(&:format).select{|f| !['DVD-Video', 'DVD'].include?(f) }.any?) }.none?
       end
       
-      with_releases ? [musicbrainz_release_group, musicbrainz_releases] : musicbrainz_release_group
+      list << (with_releases ? [musicbrainz_release_group, musicbrainz_releases] : musicbrainz_release_group)
     end.select{|r| !r.nil?}
     
-    [count, working_release_groups] 
+    [count, list] 
   end
   
   def import_bonus_tracks

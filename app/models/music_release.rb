@@ -195,7 +195,7 @@ class MusicRelease < ActiveRecord::Base
     musicbrainz_release_groups = MusicBrainz::ReleaseGroup.search(artist.mbid, name) #extra_query: 'AND (type:album OR type:ep OR type:soundtrack)')
     
     if musicbrainz_release_groups.none?
-      count, musicbrainz_release_groups = artist.release_groups(nil, 0, [], without_limitation)
+      count, musicbrainz_release_groups = artist.release_groups(nil, [], 0, without_limitation)
       musicbrainz_release_groups = musicbrainz_release_groups.map(&:to_primitive) 
     end
     
