@@ -153,11 +153,17 @@ class MusicRelease < ActiveRecord::Base
     musicbrainz_release_group, musicbrainz_releases = nil, nil
     
     if mbid.present?
-      musicbrainz_release_group = MusicBrainz::Release.find(mbid).release_group
-      musicbrainz_release_group.releases = nil
-      musicbrainz_releases = musicbrainz_release_group.releases
-      musicbrainz_release_group = musicbrainz_release_group.to_primitive
-    else
+      musicbrainz_release = MusicBrainz::Release.find(mbid)
+      
+      unless musicbrainz_release.nil?
+        musicbrainz_release_group = musicbrainz_release.release_group
+        musicbrainz_release_group.releases = nil
+        musicbrainz_releases = musicbrainz_release_group.releases
+        musicbrainz_release_group = musicbrainz_release_group.to_primitive
+      end
+    end
+    
+    if musicbrainz_release_group.nil?
       list = groups(false, true).select{|a| ((is_lp && a.first[:type] == 'Album') || (!is_lp && a.first[:type] != 'Album')) && a.first[:title].downcase == name.downcase }.first
       
       return [] if list.nil?
