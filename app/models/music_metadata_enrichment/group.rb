@@ -80,6 +80,7 @@ module MusicMetadataEnrichment
         3.times do
           begin
             lastfm_users = lastfm.group.get_members(group: 'Dark Electro', page: page)
+            sleep 3
             
             break
           rescue Lastfm::ApiError
