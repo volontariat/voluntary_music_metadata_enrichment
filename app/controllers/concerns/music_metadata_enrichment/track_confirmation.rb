@@ -14,6 +14,7 @@ module MusicMetadataEnrichment
         @path = params[:group_id].present? ? music_group_path(params[:group_id]) :
          music_path
       elsif track = MusicTrack.where("artist_id = :artist_id AND LOWER(name) = :name", artist_id: @track.artist_id, name: @track.name.downcase.strip).first
+        @track = track
         @path = if from == 'new_track'
           flash[:alert] = I18n.t('music_tracks.create.already_exist')
           music_track_path(track.id)
