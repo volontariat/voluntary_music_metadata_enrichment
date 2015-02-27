@@ -57,7 +57,7 @@ module VoluntaryMusicMetadataEnrichment
               working_artist_names = lastfm_artists.map{|a| a['name'].downcase}.select{|a| !artist_names.include?(a) }
               
               voluntary_artist_names = if working_artist_names.empty?
-                lastfm_artists.map{|a| a['name'].downcase}.select{|a| artist_names.include?(a['name'].downcase) }
+                lastfm_artists.map{|a| a['name'].downcase}.select{|a| artist_names.include?(a) }
               else
                 MusicArtist.select('name').where('LOWER(name) IN(?)', working_artist_names).map{|a| a.name.downcase }
               end
