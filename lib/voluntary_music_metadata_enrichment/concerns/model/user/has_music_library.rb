@@ -30,22 +30,13 @@ module VoluntaryMusicMetadataEnrichment
               
               lastfm_artists = nil
               
-              3.times do
-                begin
-                  begin
-                    lastfm_artists = lastfm.library.get_artists(user: lastfm_user_name, page: page)
-                    
-                    puts "USER #{lastfm_user_name}: LIBRARY PAGE ##{page}"
-                  rescue REXML::ParseException
-                    lastfm_artists = []
-                    puts "USER #{lastfm_user_name}: LIBRARY PAGE ##{page} COULD NOT BE PARSED"
-                  end
-                  
-                  break
-                rescue Lastfm::ApiError, Timeout::Error, EOFError => e
-                  puts "USER #{lastfm_user_name}: LIBRARY PAGE ##{page} ... #{e.class.name}... TRY AGAIN"
-                  sleep 30
-                end
+              begin
+                lastfm_artists = MusicArtist.lastfm_request_class_method(
+                  lastfm, :library, :get_artists, nil, user: lastfm_user_name, page: page, raise_parse_exception: true
+                )
+              rescue REXML::ParseException
+                lastfm_artists = []
+                puts "USER #{lastfm_user_name}: LIBRARY PAGE ##{page} COULD NOT BE PARSED"
               end
              
               if lastfm_artists.nil? || lastfm_artists.first.nil?

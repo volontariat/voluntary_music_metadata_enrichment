@@ -75,19 +75,8 @@ module MusicMetadataEnrichment
       
         puts "GROUP MEMBERS PAGE: #{page}"
         
-        lastfm_users = nil
-        
-        3.times do
-          begin
-            lastfm_users = lastfm.group.get_members(group: 'Dark Electro', page: page)
-            sleep 3
-            
-            break
-          rescue Lastfm::ApiError
-            puts "GROUP MEMBERS PAGE: #{page} ... TRY AGAIN"
-            sleep 30
-          end
-        end
+        lastfm_users = MusicArtist.lastfm_request_class_method(lastfm, :group, :get_members, nil, group: 'Dark Electro', page: page)
+        sleep 3
         
         if lastfm_users.select{|u| !user_names.include?(u['name'])}.none?
           # over last page
