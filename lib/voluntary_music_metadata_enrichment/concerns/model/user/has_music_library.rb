@@ -18,6 +18,8 @@ module VoluntaryMusicMetadataEnrichment
             scope :on_lastfm, -> { where('users.lastfm_user_name IS NOT NULL') }
             
             after_destroy :nullify_user_association_at_videos
+            
+            attr_accessor :group_page
           end
           
           def import_music_artists(lastfm, start_page = 1)
@@ -28,6 +30,7 @@ module VoluntaryMusicMetadataEnrichment
               
               next unless page >= start_page
               
+              puts "USER #{lastfm_user_name}: LIBRARY PAGE ##{page} (GROUP MEMBERS PAGE #{group_page})"
               lastfm_artists = nil
               
               begin

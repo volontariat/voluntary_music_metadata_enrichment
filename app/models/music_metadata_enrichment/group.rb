@@ -100,6 +100,7 @@ module MusicMetadataEnrichment
           last_user_name = lastfm_user['name']
           puts "USER #{i}: #{last_user_name} (GROUP MEMBERS PAGE: #{page})"
           user = User.new
+          user.group_page = page
           user.lastfm_user_name = lastfm_user['name']
       
           if lastfm_user['name'] == last_user_name_from_last_run && !library_start_page.nil?
