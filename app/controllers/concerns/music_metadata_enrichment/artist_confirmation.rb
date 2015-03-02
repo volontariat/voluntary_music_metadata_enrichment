@@ -129,7 +129,7 @@ module MusicMetadataEnrichment
         when 'new_track' then 
           @path = name_music_tracks_path(music_track: { artist_id: @artist.id })
         when 'new_video'
-          @path = track_name_music_tracks_path(working_params.merge(music_track: { artist_id: @artist.id }))
+          @path = track_name_music_videos_path(working_params.merge(music_track: { artist_id: @artist.id }))
         else
           if params[:group_id].present?
             @path = music_group_path(params[:group_id])
