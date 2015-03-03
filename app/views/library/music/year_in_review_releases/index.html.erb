@@ -6,7 +6,7 @@
   <%= raw [
     link_to(I18n.t('music_library.index.title', name: name_with_apostrophe(@user.best_available_name)), user_music_library_path(@user)),
     link_to(I18n.t('years_in_review_music.index.short_title'), user_music_years_in_review_path(@user)),
-    link_to(I18n.t('years_in_review_music.show.title', year: @year_in_review.year), user_music_year_in_review_path(@user, @year_in_review.year)),
+    link_to(@year_in_review.year, user_music_year_in_review_path(@user, @year_in_review.year)),
     link_to(I18n.t('year_in_review_music_releases.index.shortest_title'), user_music_year_in_review_top_releases_path(@user, @year_in_review.year))
   ].join(' > ') %>
 <% end %>
