@@ -21,10 +21,7 @@ class MusicMetadataEnrichment::VideosController < ::MusicMetadataEnrichment::App
       end
       
       @videos = @videos.order('created_at DESC').paginate(per_page: 5, page: params[:page] || 1)
-      
-      unless @videos.none? || !user_signed_in?
-        @video_likes = current_user.likes_or_dislikes.for_targets('MusicVideo', @videos.map(&:id)).index_by(&:target_id)
-      end
+      @video_likes = MusicVideo.likes_or_dislikes_for(current_user, @videos.map(&:id)) unless @videos.none? || !user_signed_in?
       
       render partial: 'music_metadata_enrichment/videos/collection', locals: { paginate: true }
     end
@@ -87,7 +84,7 @@ class MusicMetadataEnrichment::VideosController < ::MusicMetadataEnrichment::App
   
   def show
     @video = MusicVideo.find(params[:id])
-    @video_likes = current_user.likes_or_dislikes.for_targets('MusicVideo', [@video.id]).index_by(&:target_id) if user_signed_in?
+    @video_likes = MusicVideo.likes_or_dislikes_for(current_user, [@video.id]) if user_signed_in?
   end
   
   def by_name
