@@ -8,6 +8,8 @@ namespace :voluntary, path: 'api', module: 'voluntary/api', defaults: {format: '
             get :top_tracks
           end
         end
+        
+        resources :videos, only: [:index]
       end
     end
   end
