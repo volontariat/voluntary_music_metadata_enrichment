@@ -1,3 +1,11 @@
+class ActionDispatch::Routing::Mapper
+  def draw(routes_name)
+    path = File.expand_path("routes/#{routes_name}.rb", File.dirname(__FILE__))
+    
+    instance_eval(File.read(path))
+  end
+end
+
 Rails.application.routes.draw do
   get '/products/music-metadata-enrichment', to: redirect('/music'), as: 'music_metadata_enrichment_product'
   #get '/music_metadata_enrichment' => 'product/music_metadata_enrichment#index'
@@ -136,4 +144,6 @@ Rails.application.routes.draw do
   get 'users/:user_id/library/music/artists' => 'music_metadata_enrichment/artists#index', as: :user_music_library_artists
   get 'users/:user_id/library/music/artists/new' => 'music_metadata_enrichment/artists#new', as: :new_user_music_library_artist
   delete 'users/current/library/music/artists/:id' => 'library/music/artists#destroy', as: :destroy_music_library_artist
+  
+  draw :api
 end
