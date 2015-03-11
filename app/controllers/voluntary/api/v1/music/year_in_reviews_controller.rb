@@ -17,6 +17,7 @@ module Voluntary
               f.json {
                 render json: {
                   current_page: years_in_review.current_page, per_page: years_in_review.per_page, total_entries: years_in_review.total_entries,
+                  total_pages: years_in_review.total_pages,
                   entries: years_in_review.map{|r| { year: r.year } },
                 }.to_json
               }

@@ -65,7 +65,7 @@ module MusicMetadataEnrichment
       
       if @template.present? && !request.xhr?
         render @template
-      elsif !@redirected && @path.present? && !request.xhr?
+      elsif @path.present? && !request.xhr?
         redirect_to @path
       end
     end
@@ -145,10 +145,7 @@ module MusicMetadataEnrichment
         )
       end
       
-      unless @path.blank? || request.xhr?
-        @redirected = true
-        redirect_to @path 
-      end
+      redirect_to @path unless @path.blank? || request.xhr?
     end
     
     def set_template_name_for_xhr_or_render
