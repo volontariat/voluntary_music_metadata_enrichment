@@ -23,7 +23,7 @@ class MusicMetadataEnrichment::ArtistsController < ::MusicMetadataEnrichment::Ap
         @group_artist_connections = @group.artist_connections.where('music_metadata_enrichment_group_artist_connections.artist_id IN(?)', @artists.map(&:id))
         
         if user_signed_in?
-          MusicMetadataEnrichment::GroupArtistConnection.likes_or_dislikes_for(current_user, @group_artist_connections.map(&:id))
+          @group_artist_connection_likes = MusicMetadataEnrichment::GroupArtistConnection.likes_or_dislikes_for(current_user, @group_artist_connections.map(&:id))
         end
         
         @group_artist_connections = @group_artist_connections.index_by(&:artist_id)

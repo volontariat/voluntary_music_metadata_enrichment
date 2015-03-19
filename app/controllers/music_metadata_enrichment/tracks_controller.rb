@@ -99,7 +99,7 @@ class MusicMetadataEnrichment::TracksController < ::MusicMetadataEnrichment::App
   
   def get_variables_for_show
     @videos = @track.videos.order_by_status
-    @video_likes = MusicVideo.likes_or_dislikes_for(current_user, @videos.map(&:id)) unless @videos.none?
+    @video_likes = MusicVideo.likes_or_dislikes_for(current_user, @videos.map(&:id)) unless !user_signed_in? || @videos.none?
     @year_in_review_music_tracks = @track.year_in_review_tops.published.group('position').count
   end
   
