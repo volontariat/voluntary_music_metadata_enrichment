@@ -79,7 +79,7 @@ class MusicMetadataEnrichment::TracksController < ::MusicMetadataEnrichment::App
       redirect_to music_tracks_path(artist_name: params[:artist_name], name: params[:name]) and return
     end
     
-    @tracks = MusicTrack.by_artist_and_name(params[:artist_name], params[:name])
+    @tracks = MusicTrack.by_artist_and_name([[params[:artist_name], params[:name]]])
     @track = @tracks.first if params[:page].blank? && @tracks.count == 1
  
     if @track

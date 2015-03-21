@@ -12,12 +12,82 @@ class MusicRelease < ActiveRecord::Base
   has_many :year_in_review_flops, foreign_key: 'release_id', class_name: 'YearInReviewMusicReleaseFlop', dependent: :destroy
   has_many :year_in_review_tops, foreign_key: 'release_id', class_name: 'YearInReviewMusicRelease', dependent: :destroy
   
-  def self.by_artist_and_name(artist_name, name)
+  def self.by_artist_and_name(releases)
     # TODO: monitor if there are artists with multiple releases with the same name
-    where(
-      "LOWER(artist_name) = :artist_name AND LOWER(name) = :name", 
-      artist_name: artist_name.downcase.strip, name: name.downcase.strip
-    )
+    criteria, values = [], []
+    
+    releases.each do |release|
+      criteria << '(LOWER(artist_name) = ? AND LOWER(name) = ?)'
+      values += [release.first.downcase.strip, release.last.downcase.strip]
+    end
+    
+    where(criteria.join(' OR '), *values)
+  end
+  
+  def self.enrich_metadata(releases_input)
+    primitive_releases = []
+    
+    releases_input = if releases_input.is_a? Hash
+      list = []
+      releases_input.each {|index, release| list << release }
+      list
+    else
+      releases_input
+    end
+    
+    releases_input.each do |release|
+      primitive_releases << [release['artist_name'].downcase.strip, release['name'].downcase.strip]
+    end
+    
+    releases = MusicRelease.by_artist_and_name(primitive_releases).limit(500).offset(0)
+    primitive_voluntary_releases = releases.map{|t| [t.artist_name.downcase.strip, t.name.downcase.strip]}
+    
+    unique_primitive_voluntary_releases = primitive_voluntary_releases.select{|t1| primitive_voluntary_releases.select{|t2| t2 == t1 }.length == 1 }
+    ambiguous_primitive_voluntary_releases = primitive_voluntary_releases.select{|t1| primitive_voluntary_releases.select{|t2| t2 == t1 }.length > 1 }
+    
+    new_releases, already_existing_releases = [], []
+    
+    # make releases uniq this way because releases.uniq removes not persisted releases
+    releases.each do |release|
+      primitive_release = [release.artist_name.downcase, release.name.downcase]
+      
+      next if already_existing_releases.include?(primitive_release)
+      
+      already_existing_releases << primitive_release
+    end
+    
+    primitive_releases.select{|t| !unique_primitive_voluntary_releases.include?(t) }.each do |release|
+      release_input = releases_input.select{|t| t['artist_name'].downcase.strip == release.first && t['name'].downcase.strip == release.last}.first
+      release = MusicRelease.new(artist_name: release_input['artist_name'], name: release_input['name'])
+      release.set_spotify_album_id
+      sleep 1
+      releases << release
+    end
+    
+    releases.map do |release| 
+      hash = { 
+        artist_name: release.artist_name, name: release.name
+      }
+      
+      if release.persisted?
+        hash[:ambiguous] = ambiguous_primitive_voluntary_releases.include?([release.artist_name.strip.downcase, release.name.strip.downcase])
+      else
+        hash[:ambiguous] = nil
+      end
+      
+      if hash[:ambiguous]
+        hash.merge({
+          id: nil, artist_id: nil, mbid: nil, spotify_id: nil, listeners: nil, plays: nil, released_at: nil,
+          future_release_date: nil, is_lp: nil
+        })
+      else
+        hash.merge({
+          id: release.id, artist_id: release.artist_id, mbid: release.mbid, spotify_id: release.spotify_album_id,
+          listeners: release.listeners, plays: release.plays, released_at: release.released_at,
+          future_release_date: release.future_release_date, is_lp: release.persisted? ? release.is_lp : nil
+        })
+      end
+    end
   end
   
   scope :artist_and_name_like, ->(artist_name, name) do
@@ -204,7 +274,7 @@ class MusicRelease < ActiveRecord::Base
       break
     end
     
-    save if spotify_album_id.present?
+    save if persisted? && spotify_album_id.present?
   end
   
   def groups(without_limitation, with_releases = false)

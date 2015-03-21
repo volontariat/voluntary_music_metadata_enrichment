@@ -32,11 +32,15 @@ class MusicTrack < ActiveRecord::Base
     where('year_in_review_music_track_flops.id IS NULL')
   end
   
-  def self.by_artist_and_name(artist_name, name)
-    without_slaves.where(
-      "LOWER(artist_name) = :artist_name AND LOWER(name) = :name", 
-      artist_name: artist_name.downcase.strip, name: name.downcase.strip
-    )
+  def self.by_artist_and_name(tracks)
+    criteria, values = [], []
+    
+    tracks.each do |track|
+      criteria << '(LOWER(artist_name) = ? AND LOWER(name) = ?)'
+      values += [track.first.downcase.strip, track.last.downcase.strip]
+    end
+    
+    without_slaves.where(criteria.join(' OR '), *values)
   end
   
   scope :artist_and_name_like, ->(artist_name, name) do
@@ -120,6 +124,88 @@ class MusicTrack < ActiveRecord::Base
     end
   end
   
+  def self.enrich_metadata(tracks_input)
+    primitive_tracks = []
+    
+    tracks_input = if tracks_input.is_a? Hash
+      list = []
+      tracks_input.each {|index, track| list << track }
+      list
+    else
+      tracks_input
+    end
+    
+    tracks_input.each do |track|
+      primitive_tracks << [track['artist_name'].downcase.strip, track['name'].downcase.strip]
+    end
+    
+    primitive_tracks.uniq!
+    tracks = MusicTrack.by_artist_and_name(primitive_tracks).limit(500).offset(0)
+    primitive_voluntary_tracks = tracks.map{|t| [t.artist_name.downcase.strip, t.name.downcase.strip]}
+    
+    unique_primitive_voluntary_tracks = primitive_voluntary_tracks.select{|t1| primitive_voluntary_tracks.select{|t2| t2 == t1 }.length == 1 }
+    ambiguous_primitive_voluntary_tracks = primitive_voluntary_tracks.select{|t1| primitive_voluntary_tracks.select{|t2| t2 == t1 }.length > 1 }
+    
+    new_tracks, already_existing_tracks = [], []
+    
+    # make tracks uniq this way because tracks.uniq removes not persisted tracks
+    tracks.each do |track|
+      primitive_track = [track.artist_name.downcase, track.name.downcase]
+      
+      next if already_existing_tracks.include?(primitive_track)
+      
+      already_existing_tracks << primitive_track
+    end
+    
+    primitive_tracks.select{|t| !unique_primitive_voluntary_tracks.include?(t) }.each do |track|
+      track_input = tracks_input.select{|t| t['artist_name'].downcase.strip == track.first && t['name'].downcase.strip == track.last}.first
+      track = MusicTrack.new(artist_name: track_input['artist_name'], name: track_input['name'])
+      track.set_spotify_track_id
+      sleep 1
+      tracks << track
+    end
+    
+    tracks.map do |track| 
+      hash = { 
+        artist_name: track.artist_name, name: track.name
+      } 
+      
+      if track.persisted?
+        hash[:ambiguous] = ambiguous_primitive_voluntary_tracks.include?([track.artist_name.strip.downcase, track.name.strip.downcase])
+      
+        if track.release_name == '[Bonus Tracks]'
+          hash[:bonus_track] = true
+        else
+          hash[:bonus_track] = false
+        end
+      else
+        hash[:ambiguous] = nil
+        hash[:bonus_track] = nil
+      end
+      
+      if track.mbid.blank? && track.persisted?
+        hash[:draft] = true
+      elsif track.mbid.present?
+        hash[:draft] = false
+      else
+        hash[:draft] = nil
+      end
+      
+      if hash[:ambiguous]
+        hash.merge({
+          id: nil, artist_id: nil, mbid: nil, spotify_id: nil, release_id: nil, release_name: nil, listeners: nil, 
+          plays: nil, duration: nil, released_at: nil
+        })
+      else
+        hash.merge({
+          id: track.id, artist_id: track.artist_id, mbid: track.mbid, spotify_id: track.spotify_track_id, 
+          release_id: track.release_id, release_name: track.release_name, listeners: track.listeners, 
+          plays: track.plays, duration: track.duration, released_at: track.released_at
+        })
+      end
+    end
+  end
+  
   def set_spotify_track_id
     return if spotify_track_id.present?
 
@@ -154,7 +240,7 @@ class MusicTrack < ActiveRecord::Base
       break if item['artists'].length == 1
     end
     
-    save if spotify_track_id.present?
+    save if persisted? && spotify_track_id.present?
   end
   
   def is_bonus_track?

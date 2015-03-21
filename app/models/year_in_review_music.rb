@@ -86,7 +86,7 @@ class YearInReviewMusic < ActiveRecord::Base
           working_releases << working_release
         end
         
-        music_releases = MusicRelease.by_artist_and_name(lastfm_album['artist']['name'], album_name)
+        music_releases = MusicRelease.by_artist_and_name([[lastfm_album['artist']['name'], album_name]])
         music_releases_count = music_releases.count
         
         if music_releases_count == 0
@@ -198,7 +198,7 @@ class YearInReviewMusic < ActiveRecord::Base
           working_tracks << working_track
         end
         
-        music_tracks = MusicTrack.by_artist_and_name(lastfm_track['artist']['name'], lastfm_track['name'])
+        music_tracks = MusicTrack.by_artist_and_name([[lastfm_track['artist']['name'], lastfm_track['name']]])
         
         if music_tracks.count == 0
           lastfm_track_info = MusicArtist.lastfm_request_class_method(

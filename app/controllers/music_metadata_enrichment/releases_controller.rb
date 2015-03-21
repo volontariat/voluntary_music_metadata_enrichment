@@ -152,7 +152,7 @@ class MusicMetadataEnrichment::ReleasesController < ::MusicMetadataEnrichment::A
        redirect_to music_releases_path(artist_name: params[:artist_name], name: params[:name]) and return
      end
      
-    @releases = MusicRelease.by_artist_and_name(params[:artist_name], params[:name])
+    @releases = MusicRelease.by_artist_and_name([params[:artist_name], params[:name]])
     @release = @releases.first if params[:page].blank? && @releases.count == 1
     
     if @release
