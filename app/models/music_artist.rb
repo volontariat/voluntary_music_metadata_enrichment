@@ -53,6 +53,20 @@ class MusicArtist < ActiveRecord::Base
     end
   end
   
+  def self.create_by_name(name)
+    music_brainz_artists = MusicBrainz::Artist.search(name).select{|a| a[:name].downcase == name.downcase }
+    artist_mbids = music_brainz_artists.map{|a| a[:mbid] }
+    existing_artists = where(mbid: artist_mbids).map{|a| [a.id, a.mbid] }
+    ids = existing_artists.map(&:first); mbids = existing_artists.map(&:last)
+    
+    artist_mbids.select{|m| !mbids.include?(m) }.each do |mbid|
+      artist = create(name: name, mbid: mbid, is_ambiguous: music_brainz_artists.length > 1)
+      ids << artist.id if artist.persisted?
+    end 
+    
+    ids
+  end
+  
   def is_classical?(lastfm = nil)
     lastfm ||= Lastfm.new(LastfmApiKey, LastfmApiSecret)
     

@@ -34,21 +34,17 @@ module MusicMetadataEnrichment
           next
         end
         
-        artist = MusicArtist.where(mbid: lastfm_artist['mbid']).first
+        artist_ids = MusicArtist.create_by_name(artist_name)
         
-        unless artist
-          musicbrainz_artist = MusicBrainz::Artist.find(lastfm_artist['mbid'])
-          
-          if musicbrainz_artist
-            artist = MusicArtist.where(mbid: musicbrainz_artist.id).first
-            artist = MusicArtist.create(name: lastfm_artist['name'], mbid: musicbrainz_artist.id) unless artist
+        next if artist_ids.none?
+            
+        artist_connection_artist_ids = artist_connections.where(artist_id: artist_ids).map(&:artist_id)
+        artist_ids = artist_ids.select{|id| !artist_connection_artist_ids.include?(id) }
+                
+        if artist_ids.any?
+          artist_ids.each do |artist_id|
+            MusicMetadataEnrichment::GroupArtistConnection.create(group_id: id, artist_id: artist_id)
           end
-        end
-        
-        next unless artist
-        
-        if artist_connections.where(artist_id: artist.id).none?
-          MusicMetadataEnrichment::GroupArtistConnection.create(group_id: id, artist_id: artist.id)
         end
       end
       
