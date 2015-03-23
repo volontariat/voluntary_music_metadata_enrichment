@@ -7,7 +7,7 @@ GIT
 PATH
   remote: .
   specs:
-    voluntary_music_metadata_enrichment (0.1.0)
+    voluntary_music_metadata_enrichment (0.1.1)
       lastfm (~> 1.26.0)
       musicbrainz
       voluntary (~> 0.2.4)

@@ -9,7 +9,7 @@ Gem::Specification.new do |s|
   s.version     = VoluntaryMusicMetadataEnrichment::VERSION
   s.authors     = ['Mathias Gawlista']
   s.email       = ['gawlista@gmail.com']
-  s.homepage    = 'https://Volontari.at/music'
+  s.homepage    = 'http://Volontari.at/music'
   s.summary     = 'Music metadata enrichment plugin for crowdsourcing engine voluntary.'
   s.description = 'Importer, year in reviews, videos, etc. - changes: bit.ly/vmme-0-1-0'
   s.license     = 'MIT'
