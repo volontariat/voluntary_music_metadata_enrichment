@@ -60,6 +60,13 @@ class MusicVideo < ActiveRecord::Base
     "#{track.artist_name } – #{track_name} (#{status})"
   end
   
+  def to_json
+    { 
+      id: id, status: status, artist_id: artist_id, artist_name: artist_name, 
+      track_id: track_id, track_name: track_name, url: url
+    } 
+  end
+  
   private
   
   def url_format

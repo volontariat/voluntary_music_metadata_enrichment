@@ -19,6 +19,8 @@ namespace :voluntary, path: 'api', module: 'voluntary/api', defaults: {format: '
           get :bulk
           post :bulk
         end
+        
+        resources :videos, only: [:index, :show]
       end  
     end
     
