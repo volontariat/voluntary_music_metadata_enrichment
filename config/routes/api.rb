@@ -20,8 +20,10 @@ namespace :voluntary, path: 'api', module: 'voluntary/api', defaults: {format: '
           post :bulk
         end
         
-        resources :videos, only: [:index, :show]
+        resources :videos, only: [:index]
       end  
+      
+      resources :videos, only: [:show]
     end
     
     resources :users, only: [:show] do
