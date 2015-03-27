@@ -294,6 +294,18 @@ class MusicTrack < ActiveRecord::Base
     Time.at(duration / 1000).strftime('%M:%S') if duration.present?
   end
   
+  def to_json
+    {
+      id: id, mbid: mbid, spotify_id: spotify_track_id, nr: nr,
+      master_track_id: master_track_id, artist_id: artist_id, 
+      artist_name: artist_name, name: name, 
+      release_id: release_id, release_name: release_name,
+      duration: formatted_duration,
+      released_at: released_at.try(:iso8601), listeners: listeners, 
+      plays: plays, state: state
+    }
+  end
+  
   private
   
   def name_not_included_in_blacklist

@@ -1,14 +1,20 @@
 namespace :voluntary, path: 'api', module: 'voluntary/api', defaults: {format: 'json'} do
   namespace :v1 do
     namespace :music do
-      resources :releases, only: [] do
+      resources :artists, only: [:index, :show] do
+        resources :releases, only: [:index]
+      end
+      
+      resources :releases, only: [:show] do
         collection do
           get :bulk
           post :bulk
         end
+        
+        resources :tracks, only: [:index]
       end  
       
-      resources :tracks, only: [] do
+      resources :tracks, only: [:show] do
         collection do
           get :bulk
           post :bulk

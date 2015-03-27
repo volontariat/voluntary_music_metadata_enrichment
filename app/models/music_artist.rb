@@ -232,6 +232,15 @@ class MusicArtist < ActiveRecord::Base
     end
   end
   
+  def to_json
+    { 
+      id: id, mbid: mbid, name: name, is_ambiguous: is_ambiguous, 
+      disambiguation: disambiguation, listeners: listeners, plays: plays,
+      founded_at: founded_at.try(:iso8601), dissolved_at: dissolved_at.try(:iso8601), 
+      state: state
+    } 
+  end
+  
   private
   
   def create_bonustracks_release

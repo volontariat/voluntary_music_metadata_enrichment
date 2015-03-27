@@ -393,6 +393,16 @@ class MusicRelease < ActiveRecord::Base
     first_track_nr_of_disc
   end 
    
+  def to_json
+    {
+      id: id, mbid: mbid, spotify_id: spotify_album_id, is_lp: is_lp, 
+      artist_id: artist_id, artist_name: artist_name, name: name,
+      future_release_date: future_release_date, 
+      released_at: released_at.try(:iso8601), listeners: listeners, 
+      plays: plays, state: state
+    }
+  end  
+   
   private
   
   def future_release_date_format
