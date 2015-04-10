@@ -287,7 +287,7 @@ class MusicRelease < ActiveRecord::Base
     
     musicbrainz_release_groups = musicbrainz_release_groups.select do |rg| 
       ['Album', 'Soundtrack', 'EP'].include?(rg[:type]) &&
-      rg[:releases].select{|r| r[:status] == 'Official'}.any? && 
+      !rg[:releases].nil? && rg[:releases].select{|r| r[:status] == 'Official'}.any? && 
       (rg[:secondary_types].nil? || rg[:secondary_types].select{|st| SECONDARY_TYPES_BLACKLIST.include?(st)}.none?) && 
       rg[:artists].length == 1
     end
