@@ -6,7 +6,7 @@ class MusicTrack < ActiveRecord::Base
   
   # cached associations
   belongs_to :artist, class_name: 'MusicArtist'
-  belongs_to :release, class_name: 'MusicRelease', counter_cache: true, counter_cache: 'tracks_count'
+  belongs_to :release, class_name: 'MusicRelease', counter_cache: 'tracks_count'
   
   has_many :videos, foreign_key: 'track_id', class_name: 'MusicVideo', dependent: :destroy
   has_many :group_year_in_review_tops, foreign_key: 'track_id', class_name: 'MusicMetadataEnrichment::GroupYearInReviewTrack', dependent: :destroy
