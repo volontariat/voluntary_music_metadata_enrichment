@@ -4,7 +4,7 @@ class Library::MusicController < ::MusicMetadataEnrichment::ApplicationControlle
 
   def index
     @year = Time.now.strftime('%Y')
-    @user = User.find(params[:user_id])
+    @user = User.by_slug_or_id(params[:user_id])
     @releases = @user.music_releases.released_in_year(@year).order('released_at DESC')
   end
   

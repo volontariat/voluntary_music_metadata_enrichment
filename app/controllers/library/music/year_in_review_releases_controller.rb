@@ -6,7 +6,7 @@ class Library::Music::YearInReviewReleasesController < ::MusicMetadataEnrichment
   authorize_resource class: 'YearInReviewMusicRelease'
   
   def index
-    @user = User.find(params[:user_id])
+    @user = User.by_slug_or_id(params[:user_id])
     find_year_in_review
     get_year_in_review_releases
     

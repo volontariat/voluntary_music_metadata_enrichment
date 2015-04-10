@@ -77,7 +77,7 @@ module Voluntary
           private
           
           def find_user
-            @user = User.find(params[:user_id])
+            @user = User.by_slug_or_id(params[:user_id])
           end
           
           def year_in_review

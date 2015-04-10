@@ -17,7 +17,7 @@ class MusicMetadataEnrichment::VideosController < ::MusicMetadataEnrichment::App
       elsif params[:uploaded_by_the_user] == 'true'
         @videos = MusicVideo.where(user_id: params[:user_id])
       elsif params[:user_id].present?
-        @videos = User.find(params[:user_id]).music_videos
+        @videos = User.by_slug_or_id(params[:user_id]).music_videos
       end
       
       @videos = @videos.order('created_at DESC').paginate(per_page: 5, page: params[:page] || 1)

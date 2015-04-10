@@ -14,7 +14,7 @@ class MusicMetadataEnrichment::ReleasesController < ::MusicMetadataEnrichment::A
         @group = MusicMetadataEnrichment::Group.find(params[:id])
         @releases = @group.releases
       elsif params[:user_id].present?
-        @user = User.find(params[:user_id])
+        @user = User.by_slug_or_id(params[:user_id])
         @releases = @user.music_releases
       end
       

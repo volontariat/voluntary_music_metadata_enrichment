@@ -19,7 +19,7 @@ class Library::Music::YearsInReviewController < ::MusicMetadataEnrichment::Appli
   end
   
   def show
-    @user = User.find(params[:user_id])
+    @user = User.by_slug_or_id(params[:user_id])
     @year_in_review = @user.years_in_review_music
     @year_in_review = @year_in_review.published unless current_user.try(:id) == @user.id
     @year_in_review = @year_in_review.where(year: params[:year]).first
@@ -55,7 +55,7 @@ class Library::Music::YearsInReviewController < ::MusicMetadataEnrichment::Appli
   end
   
   def get_years_in_review
-    @user ||= User.find(params[:user_id])
+    @user ||= User.by_slug_or_id(params[:user_id])
     @years_in_review = @user.years_in_review_music
     @years_in_review = @years_in_review.published unless current_user.try(:id) == @user.id
     @years_in_review = @years_in_review.order('year DESC').paginate(per_page: 10, page: params[:page] || 1)

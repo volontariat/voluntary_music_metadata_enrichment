@@ -14,7 +14,7 @@ class MusicMetadataEnrichment::ArtistsController < ::MusicMetadataEnrichment::Ap
         @artists = @group.artists
         @pagination_params = { group_id: (params[:group_id] || params[:id]) }
       elsif params[:user_id].present?
-        @artists = User.find(params[:user_id]).music_artists
+        @artists = User.by_slug_or_id(params[:user_id]).music_artists
       end
       
       @artists = @artists.order('name ASC').paginate(per_page: 10, page: params[:page] || 1)
