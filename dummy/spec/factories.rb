@@ -18,18 +18,18 @@ FactoryGirl.define do
   Voluntary::Test::RspecHelpers::Factories.code.call(self)
   
   factory :music_artist do
-    sequence(:mbid) { |n| "mbid-#{n}#{r_str}" } 
+    sequence(:mbid) { |n| Faker::Lorem.characters(36) } 
     sequence(:name) { |n| "music artist #{n}#{r_str}" } 
   end
   
   factory :music_release do
-    sequence(:mbid) { |n| "mbid-#{n}#{r_str}" } 
+    sequence(:mbid) { |n| Faker::Lorem.characters(36) } 
     association :artist, factory: :music_artist
     sequence(:name) { |n| "music release #{n}#{r_str}" } 
   end
   
   factory :music_track do
-    sequence(:mbid) { |n| "mbid-#{n}#{r_str}" } 
+    sequence(:mbid) { |n| Faker::Lorem.characters(36) } 
     association :artist, factory: :music_artist
     association :release, factory: :music_release
     sequence(:name) { |n| "music release #{n}#{r_str}" } 

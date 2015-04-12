@@ -66,6 +66,8 @@ class MusicTrack < ActiveRecord::Base
   after_update :sync_year_in_review_music_tracks
   after_destroy :destroy_slaves
   
+  after_initialize :set_initial_state
+  
   state_machine :state, initial: :without_metadata do
     event :import_metadata do transition :without_metadata => :active; end
     
@@ -307,6 +309,10 @@ class MusicTrack < ActiveRecord::Base
   end
   
   private
+  
+  def set_initial_state
+    self.state ||= :without_metadata
+  end
   
   def name_not_included_in_blacklist
     if ::MusicTrack.name_included_in_blacklist?(name) 

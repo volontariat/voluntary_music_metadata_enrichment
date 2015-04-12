@@ -19,6 +19,8 @@ class MusicArtist < ActiveRecord::Base
   
   attr_accessible :name, :is_ambiguous, :mbid, :disambiguation, :founded_at, :dissolved_at, :listeners, :plays
   
+  after_initialize :set_initial_state
+  
   state_machine :state, initial: :without_metadata do
     event :import_metadata do transition :without_metadata => :active; end
     
@@ -242,6 +244,10 @@ class MusicArtist < ActiveRecord::Base
   end
   
   private
+  
+  def set_initial_state
+    self.state ||= :without_metadata
+  end
   
   def create_bonustracks_release
     release = releases.create(name: '[Bonus Tracks]', is_lp: true)

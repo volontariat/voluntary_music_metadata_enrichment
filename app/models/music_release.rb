@@ -126,6 +126,8 @@ class MusicRelease < ActiveRecord::Base
   
   attr_accessor :releases
   
+  after_initialize :set_initial_state
+  
   state_machine :state, initial: :without_metadata do
     event :import_metadata do transition :without_metadata => :active; end
     
@@ -404,6 +406,10 @@ class MusicRelease < ActiveRecord::Base
   end  
    
   private
+  
+  def set_initial_state
+    self.state ||= :without_metadata
+  end
   
   def future_release_date_format
     return unless future_release_date.present?

@@ -30,6 +30,7 @@ describe MusicMetadataEnrichment::GroupYearInReview do
       @group.save!
       
       @year_in_review = @user.years_in_review_music.create!(year: @year)
+      @year_in_review.publish!
       @mbids = [
         ("a" * 36), ("b" * 36), ("c" * 36), ("d" * 36), ("e" * 36), ("f" * 36), ("g" * 36), ("h" * 36), ("i" * 36), ("j" * 36),
         ("k" * 36), ("l" * 36), ("m" * 36), ("n" * 36), ("o" * 36), ("p" * 36), ("q" * 36), ("r" * 36), ("s" * 36), ("t" * 36),
@@ -59,6 +60,7 @@ describe MusicMetadataEnrichment::GroupYearInReview do
         user = FactoryGirl.create(:user)
         @group.memberships.create!(user_id: user.id)
         year_in_review = user.years_in_review_music.create!(year: @year)
+        year_in_review.publish!
         releases << FactoryGirl.create(:music_release, artist: @artist, mbid: @mbids.pop)
         
         [releases.second, releases.fourth, releases.third, releases.first].each do |release|

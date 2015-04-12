@@ -9,7 +9,7 @@ describe MusicRelease do
           
           release.valid?
           
-          release.errors[:future_release_date].empty?.should be_true
+          release.errors[:future_release_date].empty?.should be_truthy
           release.future_release_date.should be_nil
           release.released_at.should be_nil
         end
@@ -21,7 +21,7 @@ describe MusicRelease do
           
           release.valid?
           
-          release.errors[:future_release_date].empty?.should be_true
+          release.errors[:future_release_date].empty?.should be_truthy
           release.released_at.strftime('%d.%m.%Y').should == '31.01.2015'
         end
       end
@@ -32,7 +32,7 @@ describe MusicRelease do
           
           release.valid?
           
-          release.errors[:future_release_date].empty?.should be_true
+          release.errors[:future_release_date].empty?.should be_truthy
           release.released_at.should == Time.local(2015, 12, 31)
         end
       end
@@ -43,7 +43,7 @@ describe MusicRelease do
           
           release.valid?
           
-          release.errors[:future_release_date].empty?.should be_true
+          release.errors[:future_release_date].empty?.should be_truthy
           release.released_at.should == Time.local(2015, 1, 1)
         end
       end   
@@ -54,7 +54,7 @@ describe MusicRelease do
           
           release.valid?
           
-          release.errors[:future_release_date].empty?.should be_true
+          release.errors[:future_release_date].empty?.should be_truthy
           release.released_at.should == Time.local(2015, 6, 22)
         end
       end

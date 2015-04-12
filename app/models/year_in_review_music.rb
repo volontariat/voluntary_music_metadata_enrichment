@@ -20,6 +20,8 @@ class YearInReviewMusic < ActiveRecord::Base
   serialize :top_release_matches, Array
   serialize :top_track_matches, Array
   
+  after_initialize :set_initial_state
+  
   state_machine :state, initial: :draft do
     event :publish do
       transition draft: :published
@@ -321,5 +323,11 @@ class YearInReviewMusic < ActiveRecord::Base
         ActiveRecord::Base.connection.execute("UPDATE year_in_review_music_tracks SET position = #{position} WHERE year_in_review_music_tracks.id = #{positions[position.to_s]}")
       end
     end
+  end
+  
+  private
+  
+  def set_initial_state
+    self.state ||= :draft
   end
 end

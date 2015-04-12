@@ -1,7 +1,7 @@
 class IntegrationSessionsController < ActionController::Base
   def new
     @user_id = params[:user_id]
-    render 'features/support/integration_sessions_form', layout: false
+    render file: File.expand_path('./../integration_sessions_form.html.erb', __FILE__), layout: false
   end
   
   def create
@@ -13,11 +13,11 @@ end
 _routes = nil
 
 begin
-  _routes = Dummy::Application.routes
+  _routes = Rails.application.routes
   _routes.disable_clear_and_finalize = true
   _routes.clear!
   
-  Dummy::Application.routes_reloader.paths.each{ |path| load(path) }
+  Rails.application.routes_reloader.paths.each{ |path| load(path) }
   
   _routes.draw do
     # here you can add any route you want

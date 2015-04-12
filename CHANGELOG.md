@@ -1,3 +1,13 @@
+## 0.2.0 (April 12, 2015) ##
+
+*   #121 Rails 4.2.1 upgrade and Travis setup.
+*   #118 API actions for artists, artists/:id, artists/:artist_id/releases, releases/:id, releases/:release_id/tracks, tracks/:id, tracks/:track_id/videos and videos/:id
+*   #116 Import all artists with the same name through MusicMetadataEnrichment::Group#import_artist_connections.
+
+## 0.1.1 (March 23, 2015) ##
+
+*   Changes home page in gemspec.
+
 ## 0.1.0 (March 23, 2015) ##
 
 *   #113 #114 Implements bulk releases and tracks route for API.
