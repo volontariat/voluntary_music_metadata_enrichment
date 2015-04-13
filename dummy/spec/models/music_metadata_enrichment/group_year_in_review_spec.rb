@@ -27,6 +27,7 @@ describe MusicMetadataEnrichment::GroupYearInReview do
       @user = FactoryGirl.create(:user)
       @group = FactoryGirl.build(:music_metadata_enrichment_group)
       @group.user_id = @user.id
+      allow(@group).to receive(:registered_on_lastfm).and_return true
       @group.save!
       
       @year_in_review = @user.years_in_review_music.create!(year: @year)
