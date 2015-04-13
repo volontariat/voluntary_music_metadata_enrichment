@@ -13,7 +13,7 @@ class MusicMetadataEnrichment::TracksController < ::MusicMetadataEnrichment::App
   def autocomplete
     artist = MusicArtist.find(params[:artist_id])
     render json: (
-      artist.tracks.without_slaves.select('id, name').where("LOWER(name) LIKE ?", "#{params[:term].to_s.strip.downcase}%").order(:name).limit(10).map{|r| { id: r.id, value: r.name } }
+      artist.tracks.without_slaves.select('id, name, state').where("LOWER(name) LIKE ?", "#{params[:term].to_s.strip.downcase}%").order(:name).limit(10).map{|r| { id: r.id, value: r.name } }
     ), root: false
   end
   
