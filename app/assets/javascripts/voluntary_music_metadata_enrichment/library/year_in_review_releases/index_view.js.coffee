@@ -68,10 +68,10 @@ window.VoluntaryMusicMetadataEnrichment.Library.YearInReviewReleases.IndexView =
   @putPositions: (competitorId) ->
     newPositionOfCompetitor = null
     
-    unless window.matches.length > 0 && $('#year_in_review_music_releases li.selected').length > 1
+    unless $('#competitive_list_for_releases').data('competitiveList').matches.length > 0 && $('#year_in_review_music_releases li.selected').length > 1
       newPositionOfCompetitor = window.VoluntaryMusicMetadataEnrichment.Library.YearInReviewReleases.IndexView.resetPositions(competitorId)
     
-    if window.matches.length == 0
+    if $('#competitive_list_for_releases').data('competitiveList').matches.length == 0
       positions = {}
         
       $.each $('#year_in_review_music_releases li.selected'), (index, element) ->
