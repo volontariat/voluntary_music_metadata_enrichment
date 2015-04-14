@@ -41,9 +41,10 @@ window.VoluntaryMusicMetadataEnrichment.Library.YearInReviewReleases.IndexView =
     
     new window.VoluntaryMusicMetadataEnrichment.Library.YearInReviewReleases.NewView()
     
-    window.competitive_list_for_releases = new CompetitiveList id: '#competitive_list_for_releases', competitor_name_proc: (csv) ->
-      return '<iframe src="https://embed.spotify.com/?uri=spotify:album:' + csv.split(';')[0] + '" frameborder="0" allowtransparency="true" width="300" height="380"></iframe><br/>' + $("#competitor_#{csv.split(';')[1]}").find('.competitor_name').html()
-    
+    $('#competitive_list_for_releases').competitiveList
+      competitor_name_proc: (csv) ->
+        return '<iframe src="https://embed.spotify.com/?uri=spotify:album:' + csv.split(';')[0] + '" frameborder="0" allowtransparency="true" width="300" height="380"></iframe><br/>' + $("#competitor_#{csv.split(';')[1]}").find('.competitor_name').html()
+        
   @makeCollectionSortable: ->
     $('#year_in_review_music_releases').multisortable
       start: (event, ui) =>
@@ -82,7 +83,7 @@ window.VoluntaryMusicMetadataEnrichment.Library.YearInReviewReleases.IndexView =
       )  
     else
       if $('#year_in_review_music_releases li.selected').length == 1
-        window.competitive_list_for_releases.moveCompetitorToPosition competitorId, newPositionOfCompetitor, => 
+        $('#competitive_list_for_releases').competitiveList 'moveCompetitorToPosition', competitorId, newPositionOfCompetitor, =>
           $('#year_in_review_music_releases').sortable('enable')
           window.VoluntaryMusicMetadataEnrichment.Library.YearInReviewReleases.IndexView.hideSpinnerForSelectedCompetitors()
       else
