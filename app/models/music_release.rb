@@ -268,6 +268,8 @@ class MusicRelease < ActiveRecord::Base
     
     return if response.nil?
     
+    response['albums'] ||= { 'items' => [] }
+    
     response['albums']['items'].each do |item|
       next unless item['name'].downcase == name.downcase
       
