@@ -86,7 +86,13 @@ class MusicMetadataEnrichment::ArtistsController < ::MusicMetadataEnrichment::Ap
   private
   
   def delete_user_id_which_is_not_from_current_user
-    params.delete(:user_id) if action_name != 'index' && params[:user_id].present? && params[:user_id].to_i != current_user.try(:id)
+    if action_name != 'index' && params[:user_id].present?
+      if params[:user_id].match(/\D/) && params[:user_id].downcase != current_user.slug.downcase
+        params.delete(:user_id) 
+      elsif params[:user_id].match(/\d/) && params[:user_id].to_i != current_user.try(:id)
+        params.delete(:user_id) 
+      end
+    end
   end
   
   def get_variables_for_show
