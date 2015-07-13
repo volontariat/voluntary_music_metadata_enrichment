@@ -53,7 +53,7 @@ class MusicMetadataEnrichment::ArtistsController < ::MusicMetadataEnrichment::Ap
     params[:music_artist] ||= {}
     name_and_mbid = params[:music_artist].delete(:name_and_mbid)
     create_artist('new_artist', name_and_mbid)
-    redirect_after_artist_available(from)
+    redirect_after_artist_available('new_artist')
   end
   
   def show
