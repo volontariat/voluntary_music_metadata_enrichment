@@ -15,7 +15,7 @@ class MusicMetadataEnrichment::VideosController < ::MusicMetadataEnrichment::App
       elsif params[:group_id].present?
         @videos = MusicMetadataEnrichment::Group.find(params[:group_id]).videos
       elsif params[:uploaded_by_the_user] == 'true'
-        @videos = MusicVideo.where(user_id: params[:user_id])
+        @videos = MusicVideo.where(user_id: current_user.id)
       elsif params[:user_id].present?
         @videos = User.by_slug_or_id(params[:user_id]).music_videos
       end
