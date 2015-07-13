@@ -107,14 +107,15 @@ module MusicMetadataEnrichment
     def redirect_after_artist_available(from)
       if !@artist.persisted?
         render :new
-      elsif ['new_release', 'new_track', 'new_video'].include?(from) # && @artist.active?
+      elsif ['new_artist', 'new_release', 'new_track', 'new_video'].include?(from) # && @artist.active?
         working_params = {}
         
         if params[:group_id].present?
           MusicMetadataEnrichment::GroupArtistConnection.create(group_id: params[:group_id], artist_id: @artist.id)
           working_params[:group_id] = params[:group_id]
         elsif params[:user_id].present?
-          MusicLibraryArtist.create(user_id: params[:user_id], artist_id: @artist.id)
+          user_id = params[:user_id].match(/\D/) ? User.where('LOWER(slug) = ?', params[:user_id].downcase).first.id : params[:user_id]
+          MusicLibraryArtist.create(user_id: user_id, artist_id: @artist.id)
         end
           
         case from
