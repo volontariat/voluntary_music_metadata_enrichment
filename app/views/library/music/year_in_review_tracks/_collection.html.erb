@@ -1,7 +1,15 @@
 <h3><%= link_to t('year_in_review_music_tracks.index.short_title', year: params[:year]), group_or_user_path('music_year_in_review_top_tracks', @year_in_review) %></h3>
 
-<% content_for :document_ready do %>
-  $('#competitive_list_for_tracks').data('competitiveList').matches = <%= raw @year_in_review.top_track_matches.to_json %>
+<% if request.xhr? %>
+  <%= javascript_tag do %>
+    $(document).ready(function(){
+      $('#competitive_list_for_tracks').data('competitiveList').matches = <%= raw @year_in_review.top_track_matches.to_json %>
+    });
+  <% end %> 
+<% else %>
+  <% content_for :document_ready do %>
+    $('#competitive_list_for_tracks').data('competitiveList').matches = <%= raw @year_in_review.top_track_matches.to_json %>
+  <% end %>
 <% end %>
 
 <table class="table" style="margin-bottom: 0px">
