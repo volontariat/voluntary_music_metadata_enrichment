@@ -41,10 +41,17 @@ window.VoluntaryMusicMetadataEnrichment.Library.YearInReviewReleases.IndexView =
     
     new window.VoluntaryMusicMetadataEnrichment.Library.YearInReviewReleases.NewView()
     
-    $('#competitive_list_for_releases').competitiveList
-      competitor_name_proc: (csv) ->
-        return '<iframe src="https://embed.spotify.com/?uri=spotify:album:' + csv.split(';')[0] + '" frameborder="0" allowtransparency="true" width="300" height="380"></iframe><br/>' + $("#competitor_#{csv.split(';')[1]}").find('.competitor_name').html()
-        
+    competitive_list_for_releases = (object) ->
+      object.competitiveList
+        competitor_name_proc: (csv) ->
+          return '<iframe src="https://embed.spotify.com/?uri=spotify:album:' + csv.split(';')[0] + '" frameborder="0" allowtransparency="true" width="300" height="380"></iframe><br/>' + $("#competitor_#{csv.split(';')[1]}").find('.competitor_name').html()
+          
+    competitive_list_for_releases $('#competitive_list_for_releases')      
+          
+    document.body.addEventListener 'DOMNodeInserted', ((event) ->
+      competitive_list_for_releases($(event.target)) if $(event.target).attr('id') == 'competitive_list_for_releases'
+    ), false
+      
   @makeCollectionSortable: ->
     $('#year_in_review_music_releases').multisortable
       start: (event, ui) =>

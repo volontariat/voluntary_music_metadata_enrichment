@@ -41,10 +41,17 @@ window.VoluntaryMusicMetadataEnrichment.Library.YearInReviewTracks.IndexView = c
     
     new window.VoluntaryMusicMetadataEnrichment.Library.YearInReviewTracks.NewView()
     
-    $('#competitive_list_for_tracks').competitiveList
-      competitor_name_proc: (csv) ->
-        return '<iframe src="https://embed.spotify.com/?uri=spotify:track:' + csv.split(';')[0] + '&view=coverart" frameborder="0" allowtransparency="true" width="300" height="80"></iframe><br/>' + $("#competitor_#{csv.split(';')[1]}").find('.competitor_name').html()
+    competitive_list_for_tracks = (object) ->
+      object.competitiveList
+        competitor_name_proc: (csv) ->
+          return '<iframe src="https://embed.spotify.com/?uri=spotify:track:' + csv.split(';')[0] + '&view=coverart" frameborder="0" allowtransparency="true" width="300" height="80"></iframe><br/>' + $("#competitor_#{csv.split(';')[1]}").find('.competitor_name').html()
    
+    competitive_list_for_tracks $('#competitive_list_for_tracks')      
+          
+    document.body.addEventListener 'DOMNodeInserted', ((event) ->
+      competitive_list_for_tracks($(event.target)) if $(event.target).attr('id') == 'competitive_list_for_tracks'
+    ), false
+    
   @makeCollectionSortable: ->
     $('#year_in_review_music_tracks').multisortable
       start: (event, ui) =>
