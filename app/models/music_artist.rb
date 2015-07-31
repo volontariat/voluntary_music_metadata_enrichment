@@ -70,6 +70,25 @@ class MusicArtist < ActiveRecord::Base
     ids
   end
   
+  def self.import_by_listeners_desc(options = {})
+    artists = where("state = 'without_metadata' AND listeners IS NOT NULL").order('listeners DESC')
+    most_listeners = artists.first.listeners + 1
+    
+    begin
+      artists = artists.where('listeners < ?', most_listeners).limit(1000).offset(0).to_a
+      
+      break if artists.none?
+      
+      artists.each do |artist| 
+        next if options[:without_jazz] && artist.is_jazz?
+        
+        artist.import_metadata!
+      end
+      
+      most_listeners = artists.last.listeners
+    end while true
+  end
+  
   def is_classical?(lastfm = nil)
     begin
       tags = lastfm_tags(lastfm)
