@@ -71,19 +71,22 @@ class MusicArtist < ActiveRecord::Base
   end
   
   def is_classical?(lastfm = nil)
-    lastfm ||= Lastfm.new(LastfmApiKey, LastfmApiSecret)
-    
     begin
-      lastfm_artist_tags = lastfm_request(
-        lastfm, :artist, :get_top_tags, 'The artist you supplied could not be found', artist: name, raise_if_response_is_just_nil: true
-      )
-        
-      if lastfm_artist_tags.nil?
-        raise 'lastfm failed: ' + [:artist, :get_top_tags, 'The artist you supplied could not be found', { artist: name }].inspect
-      end
-      
-      tags = lastfm_artist_tags.map{|t| t['name'].downcase }[0..9] rescue []
+      tags = lastfm_tags(lastfm)
       tags.select{|t| ['classic', 'classical'].include?(t) }.any? && tags.select{|t| ['pop', 'rock', 'crossover', 'alternative'].include?(t) }.none?
+    rescue StandardError => e
+      if e.message.match('last.fm response is just nil without exceptions')
+        false
+      else
+        raise e
+      end 
+    end
+  end
+  
+  def is_jazz?(lastfm = nil)
+    begin
+      tags = lastfm_tags(lastfm)
+      tags.select{|t| ['jazz'].include?(t) }.any? && tags.select{|t| ['pop', 'rock', 'crossover', 'alternative'].include?(t) }.none?
     rescue StandardError => e
       if e.message.match('last.fm response is just nil without exceptions')
         false
@@ -244,6 +247,20 @@ class MusicArtist < ActiveRecord::Base
   end
   
   private
+  
+  def lastfm_tags(lastfm = nil)
+    lastfm ||= Lastfm.new(LastfmApiKey, LastfmApiSecret)
+    
+    lastfm_artist_tags = lastfm_request(
+      lastfm, :artist, :get_top_tags, 'The artist you supplied could not be found', artist: name, raise_if_response_is_just_nil: true
+    )
+      
+    if lastfm_artist_tags.nil?
+      raise 'lastfm failed: ' + [:artist, :get_top_tags, 'The artist you supplied could not be found', { artist: name }].inspect
+    end
+      
+    lastfm_artist_tags.map{|t| t['name'].downcase }[0..9] rescue []
+  end
   
   def set_initial_state
     self.state ||= :without_metadata
