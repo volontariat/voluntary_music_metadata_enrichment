@@ -156,6 +156,7 @@ class MusicRelease < ActiveRecord::Base
       
       musicbrainz_release = MusicBrainz::Release.find(release.mbid, [:recordings])
       first_track_nr_of_disc = release.get_first_track_nr_of_disc(musicbrainz_release)
+      bonus_tracks_release_id = release.artist.bonus_tracks_release.id
       
       musicbrainz_release.media.each do |medium|
         medium.tracks.each do |track|
@@ -175,10 +176,6 @@ class MusicRelease < ActiveRecord::Base
           track = nil
           
           begin
-            draft_track = MusicTrack.where(
-              'release_id = :release_id AND master_track_id IS NULL AND LOWER(name) = :name', release_id: release.artist.bonus_tracks_release.id, name: track_name.downcase
-            ).first
-              
             track = MusicTrack.create(
               mbid: musicbrainz_recording.id, artist_id: release.artist_id, artist_name: release.artist_name, 
               release_id: release.id, release_name: release.name, nr: nr, name: track_name, 
@@ -186,7 +183,10 @@ class MusicRelease < ActiveRecord::Base
             )
             
             if track.persisted?
-              
+              draft_track = MusicTrack.where(
+                'release_id = :release_id AND master_track_id IS NULL AND LOWER(name) = :name', 
+                release_id: bonus_tracks_release_id, name: track_name.downcase
+              ).first  
               
               if draft_track.present?
                 puts "track ##{track.id}: draft track ##{draft_track.try(:id).inspect} present" if track.name.downcase.match('summer')
