@@ -124,9 +124,9 @@ class MusicArtist < ActiveRecord::Base
       
       working_release_groups.each do |array|
         musicbrainz_release_group, musicbrainz_releases = array
-        release = releases.create(
-          artist_name: name, name: musicbrainz_release_group.title,
-          is_lp: musicbrainz_release_group.type == 'Album'
+        release = releases.where("LOWER(name) = ?", musicbrainz_release_group.title.downcase).first_or_initialize
+        release.update_attributes(
+          artist_name: name, name: musicbrainz_release_group.title, is_lp: musicbrainz_release_group.type == 'Album'
         )
         
         unless release.persisted? && release.valid?
@@ -151,7 +151,7 @@ class MusicArtist < ActiveRecord::Base
     voluntary_releases += if working_release_groups.none?
       []
     else 
-      releases.where('LOWER(music_releases.name) IN (?)', working_release_groups.map(&:title).uniq.map(&:downcase)).map{|r| "#{(r.is_lp ? 1 : 0)};#{r.name.downcase}"}
+      releases.where('LOWER(music_releases.name) IN (?) AND tracks_count IS NOT NULL', working_release_groups.map(&:title).uniq.map(&:downcase)).map{|r| "#{(r.is_lp ? 1 : 0)};#{r.name.downcase}"}
     end
     
     voluntary_releases.uniq!
