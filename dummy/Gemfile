@@ -1,9 +1,10 @@
-source 'http://gems.github.com'
 source 'http://rubygems.org'
 
 gemspec path: File.expand_path(File.dirname(__FILE__) + '/../')
 
 gem 'voluntary', path: '../../voluntary'# github: 'volontariat/voluntary', branch: 'jquery-competitive_list'
+
+gem 'musicbrainz', path: '../../../gem_repos/gem_coop/musicbrainz'#github: 'localhots/musicbrainz', branch: '0.8.0.rc1'
 
 # core
 gem 'rack-cors', '~> 0.2.4', require: 'rack/cors'
