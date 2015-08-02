@@ -129,6 +129,7 @@ class Library::Music::YearInReviewTracksController < ::MusicMetadataEnrichment::
     find_year_in_review
     params[:year_in_review_music_track] ||= {}
     @year_in_review_track = @year_in_review.tracks.new(track_id: params[:year_in_review_music_track][:track_id])
+    @year_in_review_track.state = @year_in_review.state
   end
   
   def find_resource
