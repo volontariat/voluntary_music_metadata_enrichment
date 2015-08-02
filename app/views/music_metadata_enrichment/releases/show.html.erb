@@ -22,7 +22,9 @@
         <th><%= t("attributes.nr") %></th>
   <% end %>
         <th><%= t("attributes.name") %></th>
+  <% if @release.name == '[Bonus Tracks]' %>      
         <th><%= t('activerecord.attributes.music_track.is_draft')%>
+  <% end %>
         <th></th>
         <th><%= t("activerecord.attributes.music_track.duration") %></th>
   <% if @release.name == '[Bonus Tracks]' %>
@@ -33,22 +35,24 @@
       </tr>
     </thead>
     <tbody>
-    <% @tracks.each do |track| %>
+  <% @tracks.each do |track| %>
       <tr class="<%= cycle('odd', 'even') %>">
-  <% unless @release.name == '[Bonus Tracks]' %>      
+    <% unless @release.name == '[Bonus Tracks]' %>      
         <td><%= track.nr %></td>
-  <% end %>
+    <% end %>
         <td><%= link_to track.name, music_track_path(track.id) %></td>
+    <% if @release.name == '[Bonus Tracks]' %>          
         <td><%= track.mbid.blank?.inspect %>
+    <% end %>
         <td><%= render partial: 'music_metadata_enrichment/tracks/spotify_track_player', locals: { spotify_track_id: track.spotify_track_id } %></td>
         <td><%= track.formatted_duration %></td>
-  <% if @release.name == '[Bonus Tracks]' %>
+    <% if @release.name == '[Bonus Tracks]' %>
         <td><%= track.released_at.strftime('%d.%m.%Y') if track.released_at.present? %>
-  <% end %>        
+    <% end %>        
         <td><%= track.listeners %></td>
         <td><%= track.plays %></td>
       </tr>
-    <% end %>
+  <% end %>
     </tbody>
   </table>
 <% end %>
