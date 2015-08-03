@@ -1,9 +1,9 @@
 # This migration comes from voluntary_music_metadata_enrichment_engine (originally 20150106183434)
 class AddProductMusicMetadataEnrichment < ActiveRecord::Migration
   def up
-    if Product.where(name: 'Music Metadata Enrichment').first
+    if Product::MusicMetadataEnrichment.first
     else
-      Product.create(name: 'Music Metadata Enrichment', text: 'Dummy') 
+      Product::MusicMetadataEnrichment.create(name: 'Music Metadata Enrichment', text: 'Dummy') 
     end
     
     create_table :music_artists do |t|
