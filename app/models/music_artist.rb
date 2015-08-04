@@ -124,7 +124,11 @@ class MusicArtist < ActiveRecord::Base
       
       working_release_groups.each do |array|
         musicbrainz_release_group, musicbrainz_releases = array
-        release = releases.where("LOWER(name) = ?", musicbrainz_release_group.title.downcase).first_or_initialize
+        release = releases.where(
+          'LOWER(name) = :name AND is_lp = :is_lp', 
+          name: musicbrainz_release_group.title.downcase,
+          is_lp: musicbrainz_release_group.type == 'Album'
+        ).first_or_initialize
         release.update_attributes(
           artist_name: name, name: musicbrainz_release_group.title, is_lp: musicbrainz_release_group.type == 'Album'
         )
