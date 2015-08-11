@@ -1,7 +1,7 @@
 # This migration comes from voluntary_engine (originally 20150808155719)
 class AddApiKeyToUsers < ActiveRecord::Migration
   def change
-    #add_column :users, :api_key, :string, limit: 32
+    add_column :users, :api_key, :string, limit: 32
     
     User.where('api_key IS NULL').find_each do |user|
       begin
