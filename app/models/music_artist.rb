@@ -18,6 +18,9 @@ class MusicArtist < ActiveRecord::Base
   after_create :create_bonustracks_release
   
   attr_accessible :name, :is_ambiguous, :mbid, :disambiguation, :founded_at, :dissolved_at, :listeners, :plays
+  attr_accessible :is_classic, :is_jazz
+  
+  attr_accessor :determine_classic_or_jazz_check_already_done
   
   after_initialize :set_initial_state
   
@@ -47,8 +50,10 @@ class MusicArtist < ActiveRecord::Base
         lastfm_artist = artist.lastfm_request(lastfm, :artist, :get_info, 'The artist you supplied could not be found', artist: artist.name)
         artist.update_attributes(listeners: lastfm_artist['stats']['listeners'], plays: lastfm_artist['stats']['playcount']) unless lastfm_artist.nil?
       end
+      
+      artist.determine_classic_or_jazz(lastfm) unless determine_classic_or_jazz_check_already_done
        
-      unless artist.is_classical?(lastfm)
+      unless artist.is_classical?
         artist.import_releases(musicbrainz_artist)
         #artist.import_bonus_tracks
         #artist.import_music_videos_from_tapetv
@@ -80,8 +85,14 @@ class MusicArtist < ActiveRecord::Base
       break if artists.none?
       
       artists.each do |artist| 
-        next if options[:without_jazz] && artist.is_jazz?
+        artist.determine_classic_or_jazz
         
+        if options[:without_jazz] && artist.is_jazz?
+          artist.update_attribute :state, 'active'
+          next
+        end
+        
+        artist.determine_classic_or_jazz_check_already_done = true
         artist.import_metadata!
       end
       
@@ -89,30 +100,21 @@ class MusicArtist < ActiveRecord::Base
     end while true
   end
   
-  def is_classical?(lastfm = nil)
+  def determine_classic_or_jazz(lastfm = nil)
     begin
       tags = lastfm_tags(lastfm)
-      tags.select{|t| ['classic', 'classical'].include?(t) }.any? && tags.select{|t| ['pop', 'rock', 'crossover', 'alternative'].include?(t) }.none?
     rescue StandardError => e
       if e.message.match('last.fm response is just nil without exceptions')
-        false
+        tags = []
       else
         raise e
       end 
     end
-  end
-  
-  def is_jazz?(lastfm = nil)
-    begin
-      tags = lastfm_tags(lastfm)
-      tags.select{|t| ['jazz'].include?(t) }.any? && tags.select{|t| ['pop', 'rock', 'crossover', 'alternative'].include?(t) }.none?
-    rescue StandardError => e
-      if e.message.match('last.fm response is just nil without exceptions')
-        false
-      else
-        raise e
-      end 
-    end
+    
+    update_attributes(
+      is_classic: tags.select{|t| ['classic', 'classical'].include?(t) }.any? && tags.select{|t| ['pop', 'rock', 'crossover', 'alternative'].include?(t) }.none?,
+      is_jazz: tags.select{|t| ['jazz'].include?(t) }.any? && tags.select{|t| ['pop', 'rock', 'crossover', 'alternative'].include?(t) }.none?
+    )
   end
   
   def import_releases(musicbrainz_artist = nil)
