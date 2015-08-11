@@ -51,9 +51,9 @@ class MusicArtist < ActiveRecord::Base
         artist.update_attributes(listeners: lastfm_artist['stats']['listeners'], plays: lastfm_artist['stats']['playcount']) unless lastfm_artist.nil?
       end
       
-      artist.determine_classic_or_jazz(lastfm) unless determine_classic_or_jazz_check_already_done
+      artist.determine_classic_or_jazz(lastfm) unless artist.determine_classic_or_jazz_check_already_done
        
-      unless artist.is_classical?
+      unless artist.is_classic?
         artist.import_releases(musicbrainz_artist)
         #artist.import_bonus_tracks
         #artist.import_music_videos_from_tapetv
