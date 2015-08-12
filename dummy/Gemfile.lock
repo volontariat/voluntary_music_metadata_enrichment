@@ -8,31 +8,8 @@ GIT
       rdiscount
 
 GIT
-  remote: https://github.com/binarylogic/settingslogic.git
-  revision: 0ae134bc6b93463bb0bc406e5b0df82ed07fc53f
-  specs:
-    settingslogic (2.0.9)
-
-GIT
-  remote: https://github.com/pivotal/jasmine-gem.git
-  revision: 869cae76cf1a755e45531998d7a150bfcd37da69
-  specs:
-    jasmine (2.3.0)
-      jasmine-core (~> 2.3)
-      phantomjs
-      rack (>= 1.2.1)
-      rake
-
-PATH
-  remote: ../../../gem_repos/gem_coop/musicbrainz
-  specs:
-    musicbrainz (0.7.6)
-      faraday
-      nokogiri (~> 1.6.5)
-      roxml (~> 3.3.1)
-
-PATH
-  remote: ../../voluntary
+  remote: git://github.com/volontariat/voluntary.git
+  revision: 6d48a1319bb8c276420a331dd5fd01d5c63b7a39
   specs:
     voluntary (0.4.0)
       activerecord-deprecated_finders (~> 1.0.3)
@@ -43,7 +20,7 @@ PATH
       auto_html (~> 1.6.4)
       bitmask_attributes (~> 1.0.0)
       bootstrap-datetimepicker-rails (~> 0.0.11)
-      bootstrap-sass-rails (~> 2.3.2.1)
+      bootstrap-sass-rails (~> 3.1.0.0)
       cancan (~> 1.6.10)
       coffee-rails (~> 4.1.0)
       coffee-script (~> 2.2.0)
@@ -89,7 +66,7 @@ PATH
       selectize-rails (~> 0.12.0)
       simple-navigation (~> 3.11.0)
       simple-navigation-bootstrap (~> 1.0.0)
-      simple_form (~> 3.0.0)
+      simple_form (~> 3.1.0)
       slim (~> 2.0.2)
       state_machine (~> 1.2.0)
       typhoeus (~> 0.5.3)
@@ -98,6 +75,30 @@ PATH
       will_paginate (~> 3.0.7)
       will_paginate_mongoid (~> 2.0.1)
       zip-zip (~> 0.2)
+
+GIT
+  remote: https://github.com/binarylogic/settingslogic.git
+  revision: 0ae134bc6b93463bb0bc406e5b0df82ed07fc53f
+  specs:
+    settingslogic (2.0.9)
+
+GIT
+  remote: https://github.com/pivotal/jasmine-gem.git
+  revision: 869cae76cf1a755e45531998d7a150bfcd37da69
+  specs:
+    jasmine (2.3.0)
+      jasmine-core (~> 2.3)
+      phantomjs
+      rack (>= 1.2.1)
+      rake
+
+PATH
+  remote: ../../../gem_repos/gem_coop/musicbrainz
+  specs:
+    musicbrainz (0.7.6)
+      faraday
+      nokogiri (~> 1.6.5)
+      roxml (~> 3.3.1)
 
 PATH
   remote: /Users/gawlim/workspace/voluntary/voluntary_music_metadata_enrichment
@@ -155,7 +156,7 @@ GEM
     addressable (2.3.8)
     ancestry (2.0.0)
       activerecord (>= 3.0.0)
-    arel (6.0.1)
+    arel (6.0.3)
     auto_html (1.6.4)
       redcarpet (~> 3.1)
       rinku (~> 1.5.0)
@@ -164,9 +165,12 @@ GEM
     bitmask_attributes (1.0.0)
       activerecord (>= 3.1)
     bootstrap-datetimepicker-rails (0.0.11)
-    bootstrap-sass-rails (2.3.2.1)
-      railties (>= 3.1.0)
-      sass-rails (>= 3.1.0)
+    bootstrap-sass (3.1.0.2)
+      sass (~> 3.2)
+    bootstrap-sass-rails (3.1.0.0)
+      bootstrap-sass (~> 3.1.0.0)
+      railties (>= 3.2.0)
+      sass-rails (>= 3.2.0)
     bson (3.2.1)
     builder (3.2.2)
     byebug (4.0.5)
@@ -266,7 +270,7 @@ GEM
       activerecord (>= 4.0.0)
     gherkin (2.12.2)
       multi_json (~> 1.3)
-    globalid (0.3.5)
+    globalid (0.3.6)
       activesupport (>= 4.1.0)
     gon (5.0.4)
       actionpack (>= 2.3.0)
@@ -346,7 +350,7 @@ GEM
     method_source (0.8.2)
     mime-types (1.25.1)
     mini_portile (0.6.2)
-    minitest (5.7.0)
+    minitest (5.8.0)
     mongoid (4.0.2)
       activemodel (~> 4.0)
       moped (~> 2.0.0)
@@ -511,7 +515,7 @@ GEM
     simple-navigation-bootstrap (1.0.2)
       railties (>= 3.1)
       simple-navigation (>= 3.7.0, < 4.0.0)
-    simple_form (3.0.4)
+    simple_form (3.1.0)
       actionpack (~> 4.0)
       activemodel (~> 4.0)
     simplecov (0.7.1)
