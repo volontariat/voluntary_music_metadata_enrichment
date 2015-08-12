@@ -7,7 +7,7 @@
     <%= t('music_releases.index.empty_collection')%>
   </div>
   <div class="modal-footer">
-    <%= submit_tag t('general.close') %>
+    <%= submit_tag t('general.close'), class: 'btn btn-default' %>
   </div>
   <% else %>
   <div class="modal-header">
@@ -52,7 +52,8 @@
     </table>
   </div>
   <div class="modal-footer">
-    <%= submit_tag t('general.close') %> <%= submit_tag t('year_in_review_music_releases.multiple_new.submit') %>
+    <%= submit_tag t('general.close'), class: 'btn btn-default' %> 
+    <%= submit_tag t('year_in_review_music_releases.multiple_new.submit'), class: 'btn btn-default' %>
   </div>
   <% end %>
 <% end %>

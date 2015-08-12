@@ -4,7 +4,9 @@
 
 <h3><%= t('music_videos.metadata.title') %></h3>
 
-<%= simple_form_for(@video, url: music_videos_path, method: :post, html: {class: 'form-horizontal'}) do |f| %>
+<%= simple_form_for(
+  @video, url: music_videos_path, method: :post, html: {class: 'form-horizontal'}, wrapper: :horizontal_form
+) do |f| %>
   <%= render partial: 'shared/form/error_messages', locals: { resource: @video } %>
   <%= hidden_field_tag :group_id, params[:group_id] if params[:group_id].present? %>
   <%= f.hidden_field :track_id %>
@@ -21,5 +23,10 @@
     <%= f.input :location %>
     <%= f.input :recorded_at, as: :string, input_html: { class: 'datepicker' } %>
   </div>
-  <%= f.submit %>
+  
+  <div class="form-group">
+    <div class="col-sm-offset-3 col-sm-9">
+      <%= f.submit %>
+    </div>
+  </div>
 <% end %>

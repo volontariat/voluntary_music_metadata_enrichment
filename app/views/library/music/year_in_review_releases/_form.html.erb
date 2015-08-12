@@ -1,7 +1,10 @@
-<%= simple_form_for(@year_in_review_release, url: create_user_music_year_in_review_top_release_path(params[:user_id], params[:year]), method: :post, remote: true, html: {class: 'form-horizontal'}) do |f| %>
+<%= simple_form_for(
+  @year_in_review_release, url: create_user_music_year_in_review_top_release_path(params[:user_id], params[:year]), 
+  method: :post, remote: true, html: { class: 'form-horizontal' }, wrapper: :horizontal_form
+) do |f| %>
   <%= hidden_field_tag :year_in_review_music_id, @year_in_review.id %>
   <div class="modal-header">
-    <button type="button" id="close_bootstrap_modal_button" class="close" data-dismiss="modal" aria-hidden="true">&times;</button>
+    <button type="button" class="btn btn-default" id="close_bootstrap_modal_button" class="close" data-dismiss="modal" aria-hidden="true">&times;</button>
     <h3><%= t('year_in_review_music_releases.index.add_single_long', year: params[:year])%></h3>
   </div>
   <div class="modal-body" style="overflow-y:none;">
@@ -14,6 +17,6 @@
     <div id="year_in_review_music_release_release_name_suggestions"/>
   </div>
   <div class="modal-footer">
-    <input type="button" id="add_release_button" value="<%= t('music_releases.new.short_title')%>"/>
+    <input type="button" id="add_release_button" class="btn btn-default" value="<%= t('music_releases.new.short_title')%>"/>
   </div>
 <% end %>

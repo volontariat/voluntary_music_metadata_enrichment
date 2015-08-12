@@ -1,6 +1,9 @@
 <h3><%= title %></h3>
 
-<%= simple_form_for(@track, url: form_url, method: :get, html: {class: 'form-horizontal'}, remote: request.xhr?) do |f| %>
+<%= simple_form_for(
+  @track, url: form_url, method: :get, html: {class: 'form-horizontal'}, remote: request.xhr?,
+  wrapper: :horizontal_form
+) do |f| %>
   <%= render partial: 'shared/form/error_messages', locals: { resource: @release } %>
   <%= hidden_field_tag :group_id, params[:group_id] if params[:group_id].present? %>
   <%= hidden_field_tag :year_in_review_music_id, params[:year_in_review_music_id] %>
