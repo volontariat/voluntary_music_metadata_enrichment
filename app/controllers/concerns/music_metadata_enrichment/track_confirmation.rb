@@ -40,7 +40,7 @@ module MusicMetadataEnrichment
           end
         end  
           
-        if name.blank? && (@track.artist.is_classical? || is_bonus_track)
+        if name.blank? && (@track.artist.is_classic? || is_bonus_track)
           @track.create_bonus_track(name_and_mbid.split(';').last)
           
           if @track.persisted?

@@ -120,7 +120,7 @@ module MusicMetadataEnrichment
           
         case from
         when 'new_release'
-          if @artist.is_classical?
+          if @artist.is_classic?
             flash[:alert] = I18n.t('music_releases.artist_confirmation.classical_releases_not_supported')
             
             @path = params[:group_id].present? ? music_group_path(params[:group_id]) : music_path  
