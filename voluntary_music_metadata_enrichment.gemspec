@@ -16,10 +16,10 @@ Gem::Specification.new do |s|
 
   s.files = Dir['{app,config,db,lib}/**/*', 'LICENSE', 'Rakefile', 'README.md', 'CHANGELOG.md']
 
-  s.add_dependency 'voluntary', '~> 0.4.0'
+  s.add_dependency 'voluntary', '~> 0.5.0'
   
   s.add_dependency 'musicbrainz'
-  s.add_dependency 'lastfm', '~> 1.26.0'
+  s.add_dependency 'lastfm', '~> 1.27.0'
   
   # group :development
   s.add_development_dependency 'letter_opener', '~> 1.0.0'
