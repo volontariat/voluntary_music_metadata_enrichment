@@ -5,6 +5,7 @@ gemspec path: File.expand_path(File.dirname(__FILE__) + '/../')
 gem 'voluntary', github: 'volontariat/voluntary'
 
 gem 'musicbrainz', path: '../../../gem_repos/gem_coop/musicbrainz'#github: 'localhots/musicbrainz', branch: '0.8.0.rc1'
+gem 'lastfm', github: 'volontarian/ruby-lastfm', branch: 'handle_nil_releasedates'
 
 # core
 gem 'rack-cors', '~> 0.2.4', require: 'rack/cors'

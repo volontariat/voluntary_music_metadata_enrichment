@@ -12,9 +12,12 @@
   <%= f.hidden_field :track_id %>
   <%= f.input :url %>
   
-  <div class="control-group url optional music_video_status">
-    <label for="music_video_status" class="url optional control-label"><%= t('activerecord.attributes.music_video.status') %></label>
-    <div class="controls">
+  <div class="form-group status required music_video_status">
+    <label for="music_video_status" class="status required control-label col-sm-3">
+      <abbr title="required">*</abbr>
+      <%= t('activerecord.attributes.music_video.status') %>
+    </label>
+    <div class="col-sm-9">
       <%= f.select :status, MusicVideo::STATUSES.map{|status| [status, t("music_videos.metadata.statuses.#{status.tableize.singularize}")]} %>
     </div>
   </div>
@@ -26,7 +29,7 @@
   
   <div class="form-group">
     <div class="col-sm-offset-3 col-sm-9">
-      <%= f.submit %>
+      <button type="submit" class="btn btn-default"><%= t('general.submit') %></button>
     </div>
   </div>
 <% end %>
