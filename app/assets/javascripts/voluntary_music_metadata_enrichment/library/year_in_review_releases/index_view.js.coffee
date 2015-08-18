@@ -19,7 +19,7 @@ window.VoluntaryMusicMetadataEnrichment.Library.YearInReviewReleases.IndexView =
     
       if target == '#bootstrap_modal'
         $(target).html(
-          '<div class="modal-header">' +
+          '<div class="modal-dialog"><div class="modal-content"><div class="modal-header">' +
           '<button type="button" id="close_bootstrap_modal_button" class="close" data-dismiss="modal" aria-hidden="true">&times;</button>' +
           '<h3>Play Album</h3>' +
           '</div>' +
@@ -27,7 +27,7 @@ window.VoluntaryMusicMetadataEnrichment.Library.YearInReviewReleases.IndexView =
           iframe +
           '</div>' +
           '<div class="modal-footer">' +
-          '</div>'
+          '</div></div></div>'
         )  
         $(target).modal('show')
       else
