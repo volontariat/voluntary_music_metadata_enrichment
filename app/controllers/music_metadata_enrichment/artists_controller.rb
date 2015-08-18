@@ -27,7 +27,7 @@ class MusicMetadataEnrichment::ArtistsController < ::MusicMetadataEnrichment::Ap
         end
         
         @group_artist_connections = @group_artist_connections.index_by(&:artist_id)
-      elsif params[:user_id].present? && current_user.try(:id) == params[:user_id].to_i && @artists.any?
+      elsif params[:user_id].present? && current_user.try(:id) == @user.id && @artists.any?
         @music_library_artists = current_user.music_library_artists.where('music_library_artists.artist_id IN(?)', @artists.map(&:id)).index_by(&:artist_id)
       end
       
@@ -86,12 +86,10 @@ class MusicMetadataEnrichment::ArtistsController < ::MusicMetadataEnrichment::Ap
   private
   
   def delete_user_id_which_is_not_from_current_user
-    if action_name != 'index' && params[:user_id].present?
-      if params[:user_id].match(/\D/) && params[:user_id].downcase != current_user.slug.downcase
-        params.delete(:user_id) 
-      elsif params[:user_id].match(/\d/) && params[:user_id].to_i != current_user.try(:id)
-        params.delete(:user_id) 
-      end
+    @user = User.by_slug_or_id(params[:user_id])
+    
+    if action_name != 'index' && params[:user_id].present? && @user.id != current_user.try(:id)
+      params.delete(:user_id)
     end
   end
   

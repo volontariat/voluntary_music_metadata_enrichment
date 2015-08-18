@@ -24,7 +24,7 @@
       </td>
       <td class="list-element-striped" style="width: 75px"><%= year_in_review_release.released_at.present? ? year_in_review_release.released_at.strftime('%d.%m.%Y') : '' %></td>
       <td class="list-element-striped">
-        <% if @group.blank? && current_user.try(:id) == params[:user_id].to_i %>
+        <% if @group.blank? && current_user.try(:id) == @user.id %>
           <%= link_to destroy_music_year_in_review_top_release_path(year_in_review_release.id), method: :delete, remote: true, class: 'btn btn-danger destroy_music_year_in_review_top_release_link' do %>
             <%= t('general.remove') %> <%= image_tag 'voluntary/spinner.gif', class: 'ajax_spinner hide' %>
           <% end %>

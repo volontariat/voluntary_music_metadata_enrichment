@@ -35,7 +35,7 @@
           <% end %>
         </td>
         <td>
-          <% if @group.blank? && current_user.try(:id) == params[:user_id].to_i && year_in_review.draft? %>
+          <% if @group.blank? && current_user.try(:id) == @user.id && year_in_review.draft? %>
             <%= link_to(
               publish_music_year_in_review_path(year_in_review.id), method: :put, remote: true, 
               class: 'btn publish_music_year_in_review_link', id: "year_in_review_publish_link_#{year_in_review.id}"
@@ -44,7 +44,7 @@
             <% end %>
           <% end %>
           
-          <% if @group.blank? && current_user.try(:id) == params[:user_id].to_i %>
+          <% if @group.blank? && current_user.try(:id) == @user.id %>
             <%= link_to destroy_music_year_in_review_path(year_in_review.id), method: :delete, remote: true, class: 'btn btn-danger destroy_music_year_in_review_link' do %>
               <%= t('general.remove') %> <%= image_tag 'voluntary/spinner.gif', class: 'ajax_spinner hide' %>
             <% end %>
@@ -58,7 +58,7 @@
 
 <%= will_paginate @years_in_review %>
 
-<% if !@group.present? && current_user.try(:id) == params[:user_id].to_i %>
+<% if !@group.present? && current_user.try(:id) == @user.id %>
   <%= form_tag(create_user_music_year_in_review_path(params[:user_id]), method: :post, class: 'form-search', id: 'new_music_year_in_review_form', remote: true) do %>
     <%= hidden_field_tag :authenticity_token, form_authenticity_token %>
     <%= render partial: 'shared/form/error_messages', locals: { resource: @year_in_review } %>

@@ -37,7 +37,7 @@
   
   <nav>
     <ul class="pagination">
-<% if @group.blank? && current_user.try(:id) == params[:user_id].to_i %>       
+<% if @group.blank? && current_user.try(:id) == @user.id %>       
       <li>
         <button type="button" class="btn btn-default remote_modal_link" data-url="<%= new_user_music_year_in_review_top_track_path(params[:user_id], params[:year]) %>">
           <%= t('year_in_review_music_tracks.index.add_single') %>
@@ -59,7 +59,7 @@
         </button>
       </li>
 <% end %>
-<% if @group.present? || current_user.try(:id) == params[:user_id].to_i %>
+<% if @group.present? || current_user.try(:id) == @user.id %>
       <li>
         <button type="button" class="btn btn-default remote_modal_link" data-url="<%= group_or_user_path('export_music_year_in_review_top_tracks', params[:year]) %>">
           <%= t('general.export') %>
