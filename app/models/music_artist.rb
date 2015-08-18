@@ -280,9 +280,7 @@ class MusicArtist < ActiveRecord::Base
       lastfm, :artist, :get_top_tags, 'The artist you supplied could not be found', artist: name, raise_if_response_is_just_nil: true
     )
       
-    if lastfm_artist_tags.nil?
-      raise 'lastfm failed: ' + [:artist, :get_top_tags, 'The artist you supplied could not be found', { artist: name }].inspect
-    end
+    return [] if lastfm_artist_tags.nil?
       
     lastfm_artist_tags.map{|t| t['name'].downcase }[0..9] rescue []
   end
