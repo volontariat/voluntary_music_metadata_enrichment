@@ -155,6 +155,11 @@ class MusicRelease < ActiveRecord::Base
       release.set_spotify_album_id
       
       musicbrainz_release = MusicBrainz::Release.find(release.mbid, [:recordings])
+      
+      if musicbrainz_release.nil?
+        raise 'Release cannot be found by mbid: ' + [release.artist.name, release.mbid, release.name].inspect
+      end
+      
       first_track_nr_of_disc = release.get_first_track_nr_of_disc(musicbrainz_release)
       bonus_tracks_release_id = release.artist.bonus_tracks_release.id
       
