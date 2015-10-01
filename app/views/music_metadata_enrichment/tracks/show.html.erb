@@ -2,7 +2,7 @@
   <%= javascript_include_tag 'voluntary_music_metadata_enrichment/tracks/show' %>
 <% end %>
 
-<h3><%= @track.artist_name %> - <%= @track.name %></h3>
+<h3><%= @track.artist_name %> – <%= @track.name %></h3>
 
 <dl class="dl-horizontal">
  <%= show_attribute :mbid, value: link_to(@track.mbid, "http://musicbrainz.org/recording/#{@track.mbid}") if @track.mbid.present? %>
