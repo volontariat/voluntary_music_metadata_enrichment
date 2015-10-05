@@ -109,7 +109,7 @@ class MusicMetadataEnrichment::VideosController < ::MusicMetadataEnrichment::App
     end
     
     if @video
-      render :show
+      redirect_to music_video_path(@video)
     else
       if @videos.count == 0
         @videos = MusicVideo.artist_and_name_like(params[:artist_name], name)
