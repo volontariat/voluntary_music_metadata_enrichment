@@ -117,7 +117,7 @@ PATH
     voluntary_music_metadata_enrichment (0.2.0)
       lastfm (~> 1.27.0)
       musicbrainz
-      voluntary (~> 0.5.0)
+      voluntary (~> 0.5)
 
 GEM
   remote: http://rubygems.org/
