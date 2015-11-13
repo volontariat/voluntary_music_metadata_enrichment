@@ -59,7 +59,11 @@ module MusicMetadataEnrichment
             ) 
           end
         else
-          @path = track_name_music_tracks_path(
+          if ::MusicTrack.name_included_in_bonustrack_blacklist?(@track.name)
+            flash[:alert] = I18n.t('music_tracks.create.name_included_in_bonustrack_blacklist')
+          end
+          
+          @path = track_name_music_videos_path(
             (params[:group_id].present? ? {group_id: params[:group_id]} : {}).merge(music_track: { artist_id: @track.artist_id })
           )
         end
