@@ -30,6 +30,8 @@ module MusicMetadataEnrichment
           end
           
           redirect_after_artist_available(from)
+          
+          return
         else
           flash[:alert] = I18n.t('music_artists.new.mbid_invalid')
           
