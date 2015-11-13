@@ -119,8 +119,8 @@ class MusicTrack < ActiveRecord::Base
       true
     elsif name =~ /medley|megamix|mega mix|mastermix|master mix|acoustic/i
       true
-    elsif name =~ /\(/
-      true
+    #elsif name =~ /\(/
+    #  true
     else
       false
     end
