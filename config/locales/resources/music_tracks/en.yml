@@ -26,7 +26,8 @@ en:
       scheduled_release_for_import: Successfully scheduled music release including the track for metadata import.   
       draft_successful: Draft of track has been created.
       draft_failed: "Creation of track draft failed: %{errors}"
-      
+      name_included_in_bonustrack_blacklist: Name is included in bonus track blacklist.
+        
     by_name:
       title: Track search results       
       artist_name_or_name_blank: Artist name and track name can't be blank.     
