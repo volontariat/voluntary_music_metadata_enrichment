@@ -117,6 +117,7 @@ class MusicMetadataEnrichment::VideosController < ::MusicMetadataEnrichment::App
       end
       
       @videos = @videos.paginate(per_page: 10, page: params[:page] || 1)
+      @video_likes = MusicVideo.likes_or_dislikes_for(current_user, @videos.map(&:id)) unless !user_signed_in? || @videos.none?
     end
   end
   
